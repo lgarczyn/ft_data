@@ -1,0 +1,332 @@
+%******************************************************************************%
+%                                                                              %
+%                  sample.fr.tex for LaTeX                                     %
+%                  Created on : Tue Mar 10 13:27:28 2015                       %
+%                  Made by : David "Thor" GIRON <thor@42.fr>                   %
+%                  Updated by : Catherine "Cat" MADINIER <cat@42.fr>           %
+%                                                                              %
+%******************************************************************************%
+
+\documentclass{42-fr}
+
+
+%******************************************************************************%
+%                                                                              %
+%                                  Prologue                                    %
+%                                                                              %
+%******************************************************************************%
+\begin{document}
+
+
+
+                           \title{Document d'exemple}
+                          \subtitle{Sous-titre de fou}
+                         \member{Ton nom}{ton@mail.com}
+                      \member{42 Staff}{pedago@staff.42.fr}
+
+\summary {
+  Ce document est un exemple d'utilisation de LaTeX et de la
+  classe de style maison de \href{www.42.fr}{42}.
+}
+
+\maketitle
+
+\tableofcontents
+
+
+%******************************************************************************%
+%                                                                              %
+%                                  Préambule                                   %
+%                                                                              %
+%******************************************************************************%
+\chapter{Préambule}
+
+    Le pr\'eambule d'un sujet \texttt{42} est g\'en\'eralement sans
+    rapport avec le sujet en lui-m\^eme. Il s'agit ici de partager
+    un trait d'humour (souvent discutable) ou une curiosit\'e avec la
+    communaut\'e \texttt{42}.\\
+
+
+
+
+
+    % Les sauts de lignes dans le code source n'ont pas d'influence
+    % sur le pdf généré. Les lignes vides au-dessus et au-dessous
+    % n'apparaitront pas. A la place, utilisez \newline (ou son
+    % raccourci \\) et \newpage pour créer des sauts de ligne ou des
+    % sauts de page.
+
+
+
+
+
+    Nous profiterons donc du pr\'eambule de ce sujet \texttt{42}
+    d'exemple pour introduire son contenu et son int\'er\^et, en
+    particulier la structure d'un document LaTeX simple et le
+    chapitrage normalis\'e de nos sujets. Si vous lisez ces lignes
+    depuis le pdf, pensez \`a ouvrir les sources (fichier
+    \texttt{sample.fr.tex}) \`a cot\'e du pdf pour voir l'envers du
+    d\'ecor et comprendre quelles commandes g\'en\`erent quels
+    r\'esultats dans le pdf. Si au contraire, vous avez commenc\'e par
+    ouvrir les sources, f\'elicitations, vous avez l'esprit. Mais
+    ouvrez quand m\^eme le pdf (fichier \texttt{sample.fr.pdf}) pour
+    garder le fil.\\
+
+    Que faire si le fichier \texttt{sample.fr.pdf} n'est pas pr\'esent ?
+    Facile, il suffit de compiler les sources
+    (fichier \texttt{sample.fr.tex}) en utilisant la commande
+    \texttt{make}. Veuillez vous r\'ef\'erer \`a la documentation
+    pour installer LaTeX sur votre syst\`eme si n\'ecessaire.\\
+
+    Si vous n'\^etes pas familliers avec la syntaxe de LaTeX, voici
+    une liste assez exhaustive de ce dont vous aurez besoin pour
+    r\'ediger votre sujet :\\
+
+    \section{Example de section}
+
+
+        \subsection{Example de sous-section}
+
+            Cette sous-section est vide.
+
+
+        \newpage
+
+
+        \subsection{Liste \`a puces}
+
+            \begin{itemize}\itemsep1pt
+                \item what
+                \item a
+                \item wonderful
+                \item list.\\
+            \end{itemize}
+
+
+        \subsection{Liste de descriptions}
+
+            \begin{description}\itemsep3pt
+                \item [Orange :] Fruit rond et orange.
+                \item [Fraise :] Fruit en forme de fraise, et rouge aussi.
+                \item [Concombre :] L\'egume vert de forme phallique.\\
+            \end{description}
+
+
+        \subsection{Une \'enum\'eration}
+
+            Une \'enum\'eration des raisons pour lesquelles je vous
+            aime :\\
+
+            \begin{enumerate}\itemsep7pt
+                \item Vous \^etes intelligent(e).
+                \item Vous \^etes tr\`es talentueux(se).
+                \item Vous \^etes magnifique.
+                \item Je suis quelqu'un de gentil.
+            \end{enumerate}
+
+
+        \subsection{Urls et liens}
+
+            Si vous n'avez aucune id\'ee de comment ins\'erer des
+            liens ou des urls dans votre document, cherchez une
+            explication en ligne en utilisant
+            \href{www.google.com}{Google}. Veuillez noter que
+            \texttt{Google} est disponible \`a l'adresse
+            \url{www.google.com}.
+
+
+        \newpage
+
+
+        \subsection{Une bo\^ite d'info}
+
+            \info{
+              Pour information, merci de lire cette bo\^ite d'information.
+            }
+
+
+        \subsection{Une bo\^ite de conseil}
+
+            \hint {
+              Vous devriez lire cette bo\^ite de conseil, vraiment.
+            }
+
+
+        \subsection{Une bo\^ite d'avertissement}
+
+            \warn {
+              Prenez garde ! Ceci est une bo\^ite d'avertissement !
+            }
+
+
+        \newpage
+
+
+        \subsection{Un morceau de \texttt{shell}}
+
+           \begin{42console}
+$sudo rm -rf /\end{42console}
+
+
+
+        \subsection{Un morceau de code \texttt{C}}
+
+           \begin{42ccode}
+int main( void ) {
+
+    puts( "hello world !" );
+    return 0;
+}
+\end{42ccode}
+
+
+        \subsection{Un morceau de code \texttt{C++}}
+
+            \begin{42cppcode}
+int main( void ) {
+
+    std::cout << "hello world !" << std::endl;
+    return 0;
+}
+\end{42cppcode}
+
+
+        \subsection{Une image !}
+
+            \begin{figure}[H]
+                \begin{center}
+                    \includegraphics[width=8cm]{42.png}
+                \end{center}
+            \end{figure}
+
+
+        \newpage
+
+
+        \subsection{Quelques caract\`eres sp\'eciaux}
+
+            \begin{description}\itemsep1pt
+                \item [Underscore :] \_
+                \item [Esperluette :] \&
+                \item [Dollar :] \$
+                \item [Points de suspension :] \dots
+            \end{description}
+
+
+
+
+     \section{Concernant le chapitrage}
+
+     Chaque chapitre de ce pdf doit \^etre pr\'esent dans votre sujet,
+     y compris le chapitre \texttt{Pr\'eambule}. Pour votre confort,
+     la meilleure facon d'utiliser ce fichier LaTeX d'exemple est de
+     simplement le copier et de le renommer, puis de remplacer les
+     descriptions fournies dans chaque chapitre par votre propre
+     contenu.\\
+
+     \warn{
+       Si vous faites parti d'une entreprise, le chapitre
+       \texttt{Pr\'eambule} est l'endroit le plus adapt\'e pour
+       \'ecrire au sujet de votre entreprise, du contexte de ce
+       projet, vous pr\'esenter vous et/ou votre \'equipe, etc.
+     }
+
+
+%******************************************************************************%
+%                                                                              %
+%                                 Introduction                                 %
+%                                                                              %
+%******************************************************************************%
+\chapter{Introduction}
+
+    L'introduction est une pr\'esentation des grandes lignes du
+    projet. Il est appr\'eci\'e de donner un peu de contexte et une
+    id\'ee du travail \`a r\'ealiser. Ainsi en lisant ces quelques
+    lignes, un \'etudiant peut avoir une vue d'ensemble des th\`emes
+    abord\'es.
+
+
+
+%******************************************************************************%
+%                                                                              %
+%                                  Objectifs                                   %
+%                                                                              %
+%******************************************************************************%
+\chapter{Objectifs}
+
+    Il s'agit ici d'expliquer l'int\'er\^et p\'edagogique du projet,
+    car au-del\`a de sa forme, un projet est avant tout un
+    pr\'etexte \`a la d\'ecouverte ou \`a l'approfondissement d'une
+    notion ou d'un groupe de notions. Par exemple, \texttt{42} propose
+    un projet de \texttt{C++} appel\'e \texttt{Nibbler}. Sous
+    l'apparence d'un simple jeu de \texttt{Snake}, ce projet permet
+    d'initier les \'etudiants \`a la cr\'eation d'API et de plugins
+    pour un programme en \texttt{C++}.
+
+
+
+%******************************************************************************%
+%                                                                              %
+%                             Consignes générales                              %
+%                                                                              %
+%******************************************************************************%
+\chapter{Consignes g\'en\'erales}
+
+    Cette section regroupe les consignes de base d'un
+    projet. Langages, restrictions, autorisations, compilation, etc.
+
+
+
+%******************************************************************************%
+%                                                                              %
+%                             Partie obligatoire                               %
+%                                                                              %
+%******************************************************************************%
+\chapter{Partie obligatoire}
+
+    Partie centrale d'un sujet, la partie obligatoire d\'ecrit en
+    d\'etail le travail \`a r\'ealiser et les possibles outils et/ou
+    technologies impose\'es. Tout le secret d'un bon sujet
+    r\'eside dans l'\'equilibre subtile entre \^etre pr\'ecis et
+    laisser une part \`a l'interpr\'etation et \`a l'imagination. Ce
+    facteur est important puisque c'est le moteur des discussions et
+    des confrontations lors des soutenances de peer-\'evaluation.
+
+
+
+%******************************************************************************%
+%                                                                              %
+%                                 Partie bonus                                 %
+%                                                                              %
+%******************************************************************************%
+\chapter{Partie bonus}
+
+    Lorsqu'on a investi du temps sur un projet et que le r\'esultat
+    est au rendez-vous, il est naturel d'avoir envie d'aller plus loin !
+    La section bonus propose des ouvertures pour r\'epondre \`a
+    cette envie. Bien entendu, la partie bonus n'est accessible que si
+    et seulement si la partie obligatoire a \'et\'e r\'ealis\'ee
+    enti\`erement et parfaitement.
+
+
+%******************************************************************************%
+%                                                                              %
+%                           Rendu et peer-évaluation                           %
+%                                                                              %
+%******************************************************************************%
+\chapter{Rendu et peer-\'evaluation}
+
+    Cette section d\'ecrit les conditions et les instructions
+    concernant le rendu et la peer-\'evaluation du projet. Si votre
+    projet ne requiert pas de consignes de rendu ou de peer-evaluation
+    sortant de l'ordinaire, vous pouvez utiliser le paragraphe suivant
+    en l\'etat:\\
+
+    Rendez-votre travail sur votre d\'epot \texttt{GiT} comme
+    d'habitude. Seul le travail pr\'esent sur votre d\'epot sera
+    \'evalu\'e en soutenance.
+
+
+
+%******************************************************************************%
+\end{document}

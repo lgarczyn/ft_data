@@ -1,0 +1,403 @@
+# **************************************************************************** #
+#                                                                              #
+#               YOUR_PROJECT_NAME.ro.yml for YOUR_PROJECT_NAME                 #
+#               Created on : Mon Oct  5 18:10:13 2015                          #
+#               Made by : David "Thor" GIRON <thor@staff.42.fr>                #
+#                                                                              #
+# **************************************************************************** #
+
+# **************************************************************************** #
+#                                                                              #
+#    Baremele folosite pentru corectari la 42 sunt sub forma de fisiere YAML.  #
+#  Aceste fisiere vor fi incarcate de catre echipa pedagogica in intranet      #
+#  pentru a genera formularele web pe care studentii le vor folosi in timpul   #
+#  corectarilor.                                                               #
+#                                                                              #
+#    Acest sablon YAML documenteaza in detaliu stilul si continutul unui       #
+#  barem de corectare. Este un punct de pornire excelent pentru creearea       #
+#  propriului barem de corectare. Nu ezitati sa stergeti comentariile pe care  #
+#  nu le considerati necesare in varianta finala.                              #
+#                                                                              #
+#    Un barem este compus  dintr-un bloc antet urmat de una sau mai multe      #
+#  sectiuni. Fiecare sectiune este alcatuita din unul sau mai multe blocuri    #
+#  de intrebari. Aceste sistem de blocuri va permite sa grupati intrebarile    #
+#  corelate in aceeasi sectiune.                                               #
+#                                                                              #
+#    Pentru a evalua aptitudinile unui student, 42 a dezvoltat un sistem de    #
+#  skill-uri, inspirat din jocurile RPG. Fiecarui proiect ii sunt asociate     #
+#  intre 2 si 4 skill-uri. Odata cu cresterea in aptitudini pentru proiectele  #
+#  realizate, skill-urile vor mari si nivelul global din profilul studentului. #
+#  Aceasta este lista completa de skill-uri folosite la 42 :                   #
+#                                                                              #
+#  - Adaptation & creativity                                                   #
+#  - Algorithms & AI                                                           #
+#  - Company experience                                                        #
+#  - DB & Data                                                                 #
+#  - Functional programming                                                    #
+#  - Graphics                                                                  #
+#  - Group & interpersonal                                                     #
+#  - Imperative programming                                                    #
+#  - Network & system administration                                           #
+#  - Object-oriented programming                                               #
+#  - Organization                                                              #
+#  - Parallel computing                                                        #
+#  - Rigor                                                                     #
+#  - Security                                                                  #
+#  - Technology integration                                                    #
+#  - Unix                                                                      #
+#  - Web                                                                       #
+#                                                                              #
+#    FIECARE skill asociat cu proiecul valoreaza 100 de puncte, nu 100 de      #
+#  puncte pentru totalul skill-urilor. Fiecare grup de 100 de puncte va fi     #
+#  dispersat de-a lungul proiectului. Sa vedem un exemplu.                     #
+#  Un proiect numit "Lube" ar putea fi asociat cu urmatoarele skill-uri :      #
+#  "Group & interpersonal" (100pts), "Rigor" (100pts) si "Web" (100pts).       #
+#  Daca baremul include 2 sectiune a cate 3 intrebari fiecare, s-ar putea      #
+#  imagina urmatoarea distributie:                                             #
+#                                                                              #
+#  Sectiunea 1:                                                                #
+#      Intrebarea 1:                                                           #
+#          Group & interpersonal:    0                                         #
+#          Adaptation & creativity: 20                                         #
+#          Web:                     33                                         #
+#      Intrebarea 2:                                                           #
+#          Group & interpersonal:   10                                         #
+#          Adaptation & creativity: 20                                         #
+#          Web:                     33                                         #
+#      Intrebarea 3:                                                           #
+#          Group & interpersonal:    0                                         #
+#          Adaptation & creativity: 20                                         #
+#          Web:                     34                                         #
+#  Sectiunea 2:                                                                #
+#      Intrebarea 1:                                                           #
+#          Group & interpersonal:   33                                         #
+#          Adaptation & creativity: 20                                         #
+#          Web:                      0                                         #
+#      Intrebarea 2:                                                           #
+#          Group & interpersonal:   23                                         #
+#          Adaptation & creativity: 15                                         #
+#          Web:                      0                                         #
+#      Intrebarea 3:                                                           #
+#          Group & interpersonal:   34                                         #
+#          Adaptation & creativity:  5                                         #
+#          Web:                      0                                         #                                             
+#                                                                              #
+#  In submodulul "resources/" asociat repository-ului, veti gasi un script     #
+#  "scale_validator.py". Acest script primeste ca parametru un fisier          #
+#  descriptor de barem asemenea celui pe care il cititi acum si ii verifica    #
+#  validitatea din punct de vedere sintactic si semantic. In caz de eroare,    #
+#  partile problematice vor fi semnalizate pentru a putea fi corectate.        #
+#                                                                              #
+#                                                                              #
+#                                                                              #
+#                                                                              #
+# **************************************************************************** #
+
+---
+# **************************************************************************** #
+#                                                                              #
+#                  Barem pentru proiectul <project name>                       #
+#                                  Antet                                       #
+#                                                                              #
+# **************************************************************************** #
+# **************************************************************************** #
+# Intrarea 'nume' :                                                            #
+#   Aceasta intrare precizeaza numele proiectului asociat cu acest barem.      #
+#                                                                              #
+#   Acest nume va fi folosit si ca titlui pentru fomularul generat.            #
+# **************************************************************************** #
+name: Numele Proiectului
+
+
+# **************************************************************************** #
+# Intrarea 'lg' :                                                              #
+#  Corespunde traducerii baremului. Baremul trebuie sa fie in limba in care    #
+#  este scris subiectul.                                                       #
+# **************************************************************************** #
+lg: ro
+
+
+# **************************************************************************** #
+# Intrarea 'is_primary' :                                                      #
+#   Daca un proiectul are mai multe bareme, aceasta intrare va permite sa      #
+#   alegeti baremul activ. De aceea aceasta intrare este rezervata echipei     #
+#   pedagogice a scolii si valoarea ei trebuie sa ramana "true".               #
+# **************************************************************************** #
+is_primary: true
+
+
+# **************************************************************************** #
+# Intrarea 'comment' :                                                         #
+#   Aceasta intrare nu va fi afisata in formularele web generate.              #
+#   Singurul ei scop este de a adauga comentarii la continutul baremului.      #
+#   Puteti lasa aceasta intrare goala daca nu este nevoie de niciun comentariu.#
+# **************************************************************************** #
+comment: ''
+
+
+# **************************************************************************** #
+# Intrarea 'introduction_md' :                                                 #
+#   Aceasta intrare este introducerea baremului, ceea ce inseamna ca este      #
+#   primul lucru pe care il vor citi studentii in momentul in care incep       #
+#   sesiunea de corectari. Aici trebuie sumarizat scopul si telul proiectului, #
+#   precum si regulile de conduita care trebuite urmate pentru a asigura ca    #
+#   lucrulie merg lin in timpul corectarilo peer-to-peer.                      #
+#   Regulile care sunt in vigoare la scoala sunt listate in sablonul de mai    #
+#   jos. Este indicat sa le pastrati asa cum sunt (doar daca nu este absolut   #
+#   necesar).                                                                  #
+# **************************************************************************** #
+introduction_md: |
+
+  Pentru a va asigura ca aceasta corectare se desfasoara fara probleme, va rugam 
+  sa respecati regulile urmatoare :
+
+  - Va rugam sa fiti politicosi, respectuosi si constructivi pe toata durata 
+    acestui schimb. Relatia de incredere dintre comunitatea scolara si voi 
+    depinde de acestea.
+
+  - Daca observati erori de functionare in proiect, asigurativa ca va 
+    rezervati timp ca sa le discutati cu studentul (sau grupul de studenti) 
+    care este corectat.
+
+  - Tineti cont de faptul ca unele proiecte pot fi interpretate diferit.
+    Daca intampinati o situatie in care studentul pe care il corectati
+    a interpretat subiectul intr-o maniera diferita decat voi, incercati
+    sa judecati intr-un mod corect daca interpretarea lui este sau nu acceptabile,
+    si notati-l corespunzator. Sistemul nostru de evaluare peer-to-peer poate
+    sa functioneze doar daca amandoi il tratati intr-un mod cat mai serios.
+
+
+# **************************************************************************** #
+# Intrarea 'disclamer_md' :                                                    #
+#   Singurul rol al acestei intrari este de a informa daca aceste proiect      #
+#   contine materiale sensibile sau secrete.                                   #
+#   In cazul particular in care ati colaborat cu o companie pentru acest       #
+#   proiect, puteti folosi aceasta intrare pentru a sumariza contextul         #
+#   parteneriatului. Scrieti cateva cuvinte despre companie si explicati       #
+#   asteptarile voastre si scopul.                                             #
+#   In orice alta situatie, va rugam sa lasati aceasta intrare goala.          #
+# **************************************************************************** #
+disclaimer_md: ''
+
+
+# **************************************************************************** #
+# Intrarea 'guidelines_md' :                                                   #
+#   Aceasta intrare explica regulile tehnice generale pentru ca evaluarea sa se#
+#   desfasoare fara probleme. Daca aveti indicatii speciale pentru predarea    #
+#   proiectului, mentionate explicit in subiectul proiectului, invocati-le aici#
+#   In orice alta situatie lasati aceasta sectiune neschimbata.                #
+# **************************************************************************** #
+guidelines_md: |
+
+  - Puteti evalua doar ceea ce se afla in directorul predat pe GIT al studentului 
+    pe care il corectati.
+
+  - Asigurati-va ca directorul predat pe GIT apartine studentului (sau grupului) 
+    pe care il corectati, si ca proiectul este cel care trebuie.
+
+  - Asigurati-va ca nu au fost folosite alias-uri intr-un mod rauvaoitor pentru 
+    a va pacali sa corectati ceva ce nu este cu adevarat in directorul predat
+    oficial.
+
+  - Orice script creat pentru a face sesiunea de evaluare mai usoara - fie ca
+    a fost facut de voi sau de catre studentul care este corectat- trebuie  
+    verificat intr-un mod riguros pentru a evita surprizele neplacute.
+
+  - Daca studentul care face corectarea nu a facut el insusi proiectul inca,
+    va trebui sa citeasca intreg subiectul inainte sa inceapa sesiunea de 
+	corectare.
+    
+
+  - Folositi butoanele pe care le aveti la dispozitie in acest barem pentru a 
+    raporta un director de predare care este gol, nu functioneaza, contine
+    erori de norma sau un caz de trisare, etc...
+    In aceasta situatie, sesiunea de corectare se termina si nota finala este 0
+    (sau -42, in cazul unei trisari). Oricum, cu exceptia situatiei in care studentul
+	a trisat, va sfatuim sa parcurgeti proiectul impreuna pentru ca voi doi
+	(sau mai multi) sa identificati probleme care au determinat sa esuati la 
+	acest proiect, si pentru a evita sa repetati aceleasi greseli in proiectele viitoare.
+    
+
+
+# **************************************************************************** #
+# Intrarea 'correction_number' :                                               #
+#   Aceasta intrare ne permite sa modificam numarul de corectari  necesare     #
+#   pentru ca proiectului sa i se calculeze nota finala de catre intranet.     #
+#   Aceasta valoare poate fi modificata doar de catre membrii echipei pedago.  #
+# **************************************************************************** #
+correction_number: 5
+
+# **************************************************************************** #
+# Intrare 'duration' :                                                         #
+#   Aceasta intrare ne permite sa controlam intervalul de timp al unei sesiuni #
+#   de evaluare. Aceasta valoare poate fi modificata doar de catre membrii     #
+#   echipei pedago.                                                            #
+# **************************************************************************** #
+duration: 2
+
+
+
+# **************************************************************************** #
+
+
+
+# **************************************************************************** #
+#                                                                              #
+#                  Barem de corectare pentru proiectul <project name>          #
+#                                   Sectiuni                                   #
+#                                                                              #
+# **************************************************************************** #
+# **************************************************************************** #
+# Intrarea 'sections' :                                                        #
+#  Aceasta intrare indica inceputul listei de sectiuni pentru acest barem.     #
+#  Nici o modificare nu este necesara. Lasati-o asa cum este.                  #
+# **************************************************************************** #
+sections:
+
+
+# **************************************************************************** #
+#                 Section 1: <Title for section 1 of the scale>                #
+# **************************************************************************** #
+# **************************************************************************** #
+# Intrarea 'name' :                                                            #
+#   Aceasta intrare ne permite sa precizam numele sectiunii, si va fi prezentat#
+#   sub forma de titlu  in formularul web generat.                             #
+# **************************************************************************** #
+- name: <Title for section 1 of the scale>
+
+# **************************************************************************** #
+# Intrarea 'position' :                                                        #
+#  Aceasta intrare ne permite sa precizam ordinea in care vor fi afisate       #
+#  sectiunile  in baremul de pe intranet. De asemenea ne permite sa modificam  #
+#  ordinea sectiunilor mai repede. Numerotarea incepe de la 1.                 #
+# **************************************************************************** #
+  position: 1
+
+# **************************************************************************** #
+# Intrarea 'description' :                                                     #
+#  Intrarea ne permite sa explicam care dintre aspectele proiectului vor fi    #
+#  evaluate in aceasta sectiune, precum si sa oferim informatii aditionale     #
+#  relevante cu privire la oricare dintre intrebarile grupare in aceasta       #
+#  sectiune. Daca nu e nevoie de nicio clarificare puteti lasa intrarea goala. #
+# **************************************************************************** #
+  description: ''
+
+
+# **************************************************************************** #
+# Intrarea 'questions' :                                                       #
+#  Intrarea indica inceputul listei de intrebari pentru sectiunea curenta.     #
+#  Nu este necesara nicio modificare. Puteti lasa intrarea goala.              #
+# **************************************************************************** #
+  questions:
+
+
+# **************************************************************************** #
+# Intrarea 'name' :                                                            #
+#   Intrarea ne permite sa precizam numele intrebarii, si va fi prezentat sub  #
+#   forma de titlu in formularul web.                                          #
+# **************************************************************************** #
+  - name: <Title for question 1 in section 1 of the scale>
+
+
+# **************************************************************************** #
+# Intrarea 'position' :                                                        #
+#  Intrarea ne permite sa precizam ordinea in care vor fi afisate intrebarile  #
+#  in sectiunile lor corespunzatoare dupa ce baremul este generat de intranet. #
+#  De asemenea ne permite sa modificam  ordinea intrebarilor mai repede.       #
+#  Numaratoarea incepe de la  1.                                               #
+# **************************************************************************** #
+    position: 1
+
+# **************************************************************************** #
+# Intrarea 'guidelines' :                                                      #
+#   Aceasta intrare corespunde intrebarii insasi. Aici trebuie sa fiti foarte  #
+#   exacti despre ceea ce se evalueaza si ce anume face din raspunsul primit   #
+#   un succes sau un eseca.                                                    #
+# **************************************************************************** #
+    guidelines: |
+
+      Textul intrebarii numarul 1 din sectiunea 1 a baremului.
+
+    rating: bool
+    kind: standard
+    questions_skills:
+    - percentage: 0
+      name: <numele skill-ului 1>
+      ...
+    - percentage: 0
+      name: <numele skill-ului n>
+
+
+- name: Prima sectiune
+  description: 'Descrierea primei sectiuni'
+
+
+  questions:
+
+
+  - name: Prima intrebare
+    guidelines: |
+
+      Indrumari pentru prima intrebare folosind sintaxa YAML 
+      Luati aminte de caracterul '|' de mai sus.
+
+    rating: bool
+    kind: standard
+    questions_skills:
+    - percentage: x
+      name: <name of skill 1>
+      ...
+    - percentage: y
+      name: <name of skill n>
+
+  - name: A doua intrebare
+    guidelines: |
+
+      Idem.
+
+    rating: multi
+    kind: standard
+    questions_skills:
+    - percentage: x
+      name: <name of skill 1>
+      ...
+    - percentage: y
+      name: <name of skill n>
+
+
+
+- name: Bonus
+  description: ''
+
+
+  questions:
+
+
+  - name: Primul bonus
+    guidelines: |
+
+      Descriere...
+
+    rating: bool
+    kind: bonus
+    questions_skills:
+    - percentage: x
+      name: <name of skill 1>
+      ...
+    - percentage: y
+      name: <name of skill n>
+
+
+  - name: Al doilea bonus
+    guidelines: |
+
+      Idem.
+
+    rating: multi
+    kind: bonus
+    questions_skills:
+    - percentage: x
+      name: <name of skill 1>
+      ...
+    - percentage: y
+      name: <name of skill n>

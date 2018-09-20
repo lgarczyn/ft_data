@@ -1,0 +1,313 @@
+%******************************************************************************%
+%                                                                              %
+%                  sample.en.tex for LaTeX                                     %
+%                  Created on : Tue Mar 10 13:27:28 2015                       %
+%                  Made by : David "Thor" GIRON <thor@42.fr>                   %
+%                                                                              %
+%******************************************************************************%
+
+\documentclass{42-en}
+
+
+%******************************************************************************%
+%                                                                              %
+%                                    Header                                    %
+%                                                                              %
+%******************************************************************************%
+\begin{document}
+
+
+
+                           \title{Sample document}
+                          \subtitle{Awesome subtitle}
+                       \member{Your Name}{your@mail.com}
+                        \member{42 Staff}{pedago@42.fr}
+
+\summary {
+  Acest document este un exemplu si o introdurere in \texttt{LaTeX} si
+  stilul homebrew al claselor din \href{www.42.fr}{42}.
+}
+
+\maketitle
+
+\tableofcontents
+
+
+%******************************************************************************%
+%                                                                              %
+%                                  Cuvant inainte                              %
+%                                                                              %
+%******************************************************************************%
+\chapter{Prefata}
+
+    Sectiunea prefata a unui subiect \texttt{42} nu este in general
+    legata in vreun mod de subiectul actual al proiectului. Ideea este
+    de a impartasii unele glume (de multe ori discutabile) sau un subiect
+    care ar putea fi interesant pentru comunitate.\\
+
+
+
+
+
+    % Spatiere in codul sursa nu influenteaza spatierea in
+    % pdf-ul generat. Liniile goale de deasupra si de mai jos nu vor aparea.
+    % In schimb, folositi \newline (sau prescurtarea \\) si \newpage pentru
+    % spatiere verticala.
+
+
+
+
+
+    Haideti sa utilizam aceasta prefata din exemplul acesta de subiect
+    \texttt{42} pentru a introduce continutul acestui document si
+    scopul lui. In particular, formatarea unui banal document
+    \texttt{LaTeX} si impartirea formala pe capitole a subiectelor
+    noastre. Daca cititi asta dintr-un PDF, nu uitati sa deschideti
+    fisierul sursa (file \texttt{sample.ro.tex}) asociat fisierului, pentru
+    a vedea ce se intampla in spate, si pentru a intelege care comanda
+    genereaza un anumit tip de rezultat. Daca ati inceput cu sursele,
+    felicitari, ati inceput cu dreptul ! Dar deschideti pdf-ul (file
+    \texttt{sample.ro.pdf}) in orice caz.\\
+
+    Ce sa faceti daca fisierul \texttt{sample.ro.pdf} nu este disponibil ?
+    Simplu, doar compilati fisierul sursa \texttt{sample.ro.tex} folosind
+    comanda shell \texttt{make}. Consultati documentatia pentru a instala
+    \texttt{LaTeX} pe sistemul vostru daca este necesar.\\
+
+    Daca nu sunteti obisnuiti cu sintaxa \texttt{LaTeX} , aici aveti o 
+    lista destul de exhaustiva cu tot ceea ce veti avea nevoie pentru a 
+    scrie propriul subiect.\\
+
+
+    \section{Sectiune exemplu}
+
+
+        \subsection{Sub-sectiune exemplu}
+
+           Aceasta sub-sectiune este goala.
+
+
+        \newpage
+
+
+        \subsection{O lista de itemi}
+
+            \begin{itemize}\itemsep1pt
+                \item o
+                \item ce
+                \item lista
+                \item minunata.\\
+            \end{itemize}
+
+
+        \subsection{O lista de descrieri}
+
+            \begin{description}\itemsep3pt
+                \item [Orange:] Round and orange fruit.
+                \item [Strawberry:] Strawberry shaped fruit. Also red.
+                \item [Cucumber:] Phallus shaped and green vegetable.\\
+            \end{description}
+
+
+        \subsection{O enumeratie}
+
+            O enumeratie a motivelor penru care va plac:\\
+
+            \begin{enumerate}\itemsep7pt
+                \item Sunteti inteligenti.
+                \item Sunteti foarte talentati.
+                \item Sunteti magnifici.
+                \item Sunt o persoana de treaba.
+            \end{enumerate}
+
+
+        \subsection{URL-uri si link-uri}
+
+            Daca nu aveti nici o idee despre cum sa inserati URL-uri si link-uri
+            in document, cautati un raspuns online folosind
+            \href{www.google.com}{Google}. Google este disponibile la adresa
+            \url{www.google.com}.
+
+
+        \newpage
+
+
+        \subsection{O casuta cu informatii}
+
+            \info{
+              Pentru mai multe informatii cititi aceasta casuta.
+            }
+
+
+        \subsection{O casuta cu indicii}
+
+            \hint {
+              Chiar ar trebui sa cititi ce scrie aici.
+            }
+
+
+        \subsection{O casuta cu un avertisment}
+
+            \warn {
+              Atentie ! Aceasta este o casuta cu un avertisment !
+            }
+
+
+        \newpage
+
+
+        \subsection{A \texttt{shell} snippet}
+
+           \begin{42console}
+$sudo rm -rf /\end{42console}
+
+
+
+        \subsection{A \texttt{C} code snippet}
+
+           \begin{42ccode}
+int main( void ) {
+
+    puts( "hello world !" );
+    return 0;
+}
+\end{42ccode}
+
+
+        \subsection{A \texttt{C++} code snippet}
+
+            \begin{42cppcode}
+int main( void ) {
+
+    std::cout << "hello world !" << std::endl;
+    return 0;
+}
+\end{42cppcode}
+
+
+        \subsection{O imagine !}
+
+            \begin{figure}[H]
+                \begin{center}
+                    \includegraphics[width=8cm]{42.png}
+                \end{center}
+            \end{figure}
+
+
+        \newpage
+
+
+        \subsection{Cateva caractere speciale}
+
+            \begin{description}\itemsep1pt
+                \item [Underscore :] \_
+                \item [Ampersand :] \&
+                \item [Dollar :] \$
+                \item [Elipsis :] \dots
+            \end{description}
+
+
+    \section{Despre capitole}
+
+    Fiecare capitol al fisierului pdf trebuie sa existe in subiect,
+    \textbf{inclusiv} capitolul \texttt{Prefata}. Pentru simplitate,
+    cel mai bun mod de a folosi acest model \texttt{LaTeX} este de 
+    a-l copia si redenumi, apoi inlocuiti descrierile prezente
+    cu propriul vostru continut.\\
+
+    \warn{
+      Daca reprezentati o companie,  capitolul \texttt{Prefata} este
+      cel mai potrivit loc ca sa descrieti compania, contextul
+      proiectului, sa va prezentati echipa, etc.
+    }
+
+%******************************************************************************%
+%                                                                              %
+%                                 Introducere                                  %
+%                                                                              %
+%******************************************************************************%
+\chapter{Introducere}
+
+    Introducerea este o prezentare a structurii proiectului. Este indicat
+    sa prezentati contextul si unele idei despre ce trebuie facut.
+    Astfel,citind aceste cateva linii, un student isi poate forma o imagine generala.
+
+
+
+%******************************************************************************%
+%                                                                              %
+%                                  Obiective                                   %
+%                                                                              %
+%******************************************************************************%
+\chapter{Obiective}
+
+    Acest capitol introduce aspectele pedagocice ale proiectului,
+    pentru ca in final, proiectul este doar un mifloc de a explora
+    si descoperi subiecte noi. De exemplu, proiectul \texttt{C++} al \texttt{42}, 
+    \texttt{Nibbler}. In ciuda faptului ca este un simplu joc 
+    \texttt{Snake}, acest proiect introduce studentii in crearea unui API
+    si unele plugin-uri pentru un program \texttt{C++}.
+
+
+
+%******************************************************************************%
+%                                                                              %
+%                             Instructiuni Generale                            %
+%                                                                              %
+%******************************************************************************%
+\chapter{Instructiuni Generale}
+
+    Acest capitol insira toate instructiunile unui proiect.
+    Limbajul de programare, restrictii, permisiuni, compilare, etc.
+
+
+
+%******************************************************************************%
+%                                                                              %
+%                             Parte obligatorie                                %
+%                                                                              %
+%******************************************************************************%
+\chapter{Parte obligatorie}
+
+    Fundatia subiectului, partea obligatorie descrie in detalie ceea ce
+    se asteapta si posibilele unelte si/sau tehnologii necesare.
+    Secretul unui subiect bun este echilibrul dintre a fi specific
+    si a lasa o parte spre a fi interpretata si imaginata.
+    Acest echilibru este foarte important pentru ca este motorul
+    care alimenteaza dezbaterile si argumentarile in timpul corectarilor peer-2-peer.
+
+
+
+%******************************************************************************%
+%                                                                              %
+%                                 Bonus part                                   %
+%                                                                              %
+%******************************************************************************%
+\chapter{Partea bonus}
+
+    Cand un student investeste timp intr-un proiect si si-a atins obiectivele,
+    este firesc sa isi doreasca sa mearga mai departe ! Sectiunea bonus are
+    scopul de a satisface aceste ambitii. Bineinteles, partea bonus este disponibila 
+    daca si numai daca partea obligatorie a fost realizata perfect.
+
+
+
+%******************************************************************************%
+%                                                                              %
+%                           Predare si evaluare peer-2-peer                    %
+%                                                                              %
+%******************************************************************************%
+\chapter{Predare si evaluare peer-2-peer}
+
+    Aceasta sectiune descrie conditiile si instructiunile privind predarea si
+    corectarea peer-2-peer a proiectelor. Daca proiectul nu necesita
+    instructiuni ciudate de predare sau de evaluare, folositi cu incredere
+    urmatorul paragraf asa cum este:\\
+
+    Predati proiectul folosind repository-ul vostru \texttt{GiT}, ca deobicei.
+    Doar fisierele prezente in repository vor fi notate in timpul corectarii.
+
+
+
+%******************************************************************************%
+\end{document}
