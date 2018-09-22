@@ -15,7 +15,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define PRINT_ERR(i, j) do { printf("%s() %s:%i : %i != %i\n", __func__, __FILE__, __LINE__, i, j);} while (0)
+#define PRINT_ERR(i, j) do { printf("%s() %s:%i : %lu != %lu\n",\
+	__func__, __FILE__, __LINE__, (size_t)i, (size_t)j);} while (0)
 
 void			test_array(void)
 {
@@ -81,114 +82,94 @@ int				lt(const void *a, const void *b)
 
 int				gt(const void *a, const void *b)
 {
-	return (*((int*)a)> *((int*)b));
+	return (*((int *)a)> *((int *)b));
+}
+
+void			test_sorted_spe(bool less_pred, bool asc, bool split)
+{
+	t_sorted	a;
+	t_searchres	res;
+	int			i;
+	int			j;
+	int			k;
+	int			ret;
+	int			max;
+
+	max = 10000;
+
+	if (less_pred)
+		a = sorted(&lt, sizeof(int));
+	else
+		a = sorted(&gt, sizeof(int));
+
+	for (i = 0; i < 10000; i++)
+	{
+		j = 9999 - i;
+		k = i + 1;
+
+		if (split)
+			if (asc)
+			{
+				sorted_insert(&a, &j);
+				sorted_insert(&a, &i);
+			}
+			else
+			{
+				sorted_insert(&a, &i);
+				sorted_insert(&a, &j);
+			}
+		else
+		{
+			if (asc)
+				sorted_insert(&a, &i);
+			else
+				sorted_insert(&a, &j);
+		}
+		res = sorted_search(&a, &i);
+		if (asc == false && split == false && less_pred)
+		{
+			if ((i < 5000 && res.index != 0 && res.found) ||
+				(i >= 5000 && res.index != (size_t)i - 5000 && res.found == false))
+				PRINT_ERR(0, res.index);
+		}
+		else if (less_pred)
+		{
+			if (res.index != (size_t)i || res.found != true)
+				PRINT_ERR(0, res.index);
+		}
+		if (asc && split == false)
+		{
+			res = sorted_search(&a, &k);
+			if (res.index != (size_t)k && res.index != false)
+				PRINT_ERR(k, res.index);
+		}
+		/*sorted_insert(&a, &max);
+		j = sorted_search(&a, &max).index;
+		if (j != sorted_len(&a) - 1)
+			PRINT_ERR(j, sorted_len(&a) - 1);
+		sorted_pop(&a, &res);
+		if (res != max)
+			PRINT_ERR(res, max);*/
+	}
+	for (i = 0; i < 10000; i++)
+	{
+		sorted_pop(&a, &ret);
+		if (ret != (less_pred ? 9999 - i : i))
+			PRINT_ERR(i, ret);
+	}
+	sorted_free(&a);
 }
 
 void			test_sorted(void)
 {
-	t_sorted	a;
-	int			ret;
-
-	//decreasing order check
-	a = sorted(&gt, sizeof(int));
-	for (int i = 9999; i >= 0; i--)
-	{
-		sorted_insert(&a, &i);
-	}
-	for (int i = 0; i < 10000; i++)
-	{
-		sorted_pop(&a, &ret);
-		if (ret != i)
-			PRINT_ERR(i, ret);
-	}
-	sorted_free(&a);
-	a = sorted(&gt, sizeof(int));
-	for (int i = 0; i < 10000; i++)
-	{
-		sorted_insert(&a, &i);
-	}
-	for (int i = 0; i < 10000; i++)
-	{
-		sorted_pop(&a, &ret);
-		if (ret != i)
-			PRINT_ERR(i, ret);
-	}
-	sorted_free(&a);
-
-	//increasing order check
-	a = sorted(&lt, sizeof(int));
-	for (int i = 9999; i >= 0; i--)
-	{
-		sorted_insert(&a, &i);
-	}
-	for (int i = 9999; i >= 0; i--)
-	{
-		sorted_pop(&a, &ret);
-		if (ret != i)
-			PRINT_ERR(i, ret);
-	}
-	sorted_free(&a);
-	a = sorted(&lt, sizeof(int));
-	for (int i = 0; i < 10000; i++)
-	{
-		sorted_insert(&a, &i);
-	}
-	for (int i = 9999; i >= 0; i--)
-	{
-		sorted_pop(&a, &ret);
-		if (ret != i)
-			PRINT_ERR(i, ret);
-	}
-	sorted_free(&a);
-	//varied insertion check
-	a = sorted(&lt, sizeof(int));
-	for (int i = 0; i < 5000; i++)
-	{
-		int j = 9999 - i;
-		sorted_insert(&a, &i);
-		sorted_insert(&a, &j);
-	}
-	for (int i = 9999; i >= 0; i--)
-	{
-		sorted_pop(&a, &ret);
-		if (ret != i)
-			PRINT_ERR(i, ret);
-	}
-	sorted_free(&a);
-	a = sorted(&lt, sizeof(int));
-	for (int i = 0; i < 10000; i++)
-	{
-		int j = i + 1;
-		int k;
-		sorted_insert(&a, &i);
-		sorted_insert(&a, &j);
-		sorted_pop(&a, &k);
-		if (k != j)
-			PRINT_ERR(j, k);
-	}
-	for (int i = 9999; i >= 0; i--)
-	{
-		sorted_pop(&a, &ret);
-		if (ret != i)
-			PRINT_ERR(i, ret);
-	}
-	sorted_free(&a);
-	a = sorted(&lt, sizeof(int));
-	for (int i = 0; i < 10000; i++)
-	{
-		int j = i + 1;
-
-		sorted_insert(&a, &i);
-
-		t_searchres r = sorted_search(&a, &i);
-		if (r.index != (size_t)i || r.found == 0)
-			PRINT_ERR(i, (int)r.index);
-
-		r = sorted_search(&a, &j);
-		if (r.index != (size_t)j || r.found)
-			PRINT_ERR(j, (int)r.index);
-	}
-	sorted_free(&a);
+	test_sorted_spe(false, false, false);
+	test_sorted_spe(false, true, false);
+	test_sorted_spe(true, false, false);
+	test_sorted_spe(true, true, false);
+	test_sorted_spe(false, false, true);
+	test_sorted_spe(false, true, true);
+	test_sorted_spe(true, false, true);
+	test_sorted_spe(true, true, true);
 }
 
 int		main(void)
