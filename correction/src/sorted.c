@@ -28,38 +28,46 @@ void			sorted_free(t_sorted *a)
 	*a = sorted(a->predicate, a->word);
 }
 
-t_searchres		sorted_search(t_sorted *a, void *ptr, size_t start, size_t end)
+t_searchres		sorted_search_range(
+	const t_sorted *a, const void *ptr, size_t start, size_t end)
 {
 	t_searchres	res;
 
 	res.index = start + (end - start) / 2;
 	res.found = 0;
-	if (start >= end)
-		res.index = -1;
-	else if (res.index == start)
+	if (start < end)
 	{
-		if (a->predicate(&a->data[res.index * a->word], ptr) == 0)
+		if (res.index == start)
+		{
 			if (a->predicate(ptr, &a->data[res.index * a->word]) == 0)
-				res.found = 1;
-			else
-				res.index--;
+			{
+				if (a->predicate(&a->data[res.index * a->word], ptr) == 0)
+					res.found = 1;
+				else
+					res.index++;
+			}
+		}
+		else if (a->predicate(ptr, &a->data[res.index * a->word]))
+			res = sorted_search_range(a, ptr, start, res.index);
 		else
-			res.index++;
+			res = sorted_search_range(a, ptr, res.index, end);
 	}
-	else if (a->predicate(ptr, &a->data[res.index * a->word]))
-		res = sorted_search(a, ptr, start, res.index - 1);
-	else
-		res = sorted_search(a, ptr, res.index, end);
 	return (res);
 }
 
-int				sorted_insert(t_sorted *a, void *data)
+t_searchres		sorted_search(const t_sorted *a, const void *ptr)
+{
+	return (sorted_search_range(a, ptr, 0, a->pos / a->word));
+}
+
+int				sorted_insert(t_sorted *a, const void *data)
 {
 	size_t		new_pos;
+	size_t		prev_len;
 	t_searchres	res;
 	void		*array_data;
 
-	res = sorted_search(a, data, 0, a->pos / a->word);
+	res = sorted_search(a, data);
 	if (res.found)
 		ft_memcpy(a->data + res.index * a->word, data, a->word);
 	else
@@ -71,8 +79,10 @@ int				sorted_insert(t_sorted *a, void *data)
 				return (ERR_ALLOC);
 			a->size = new_pos * 2;
 		}
-		array_data = a->data + res.index * a->word;
-		ft_memmove(array_data + a->word, array_data, a->pos);
+		prev_len = res.index * a->word;
+		array_data = a->data + prev_len;
+		if (a->pos - prev_len)
+			ft_memmove(array_data + a->word, array_data, a->pos - prev_len);
 		ft_memcpy(array_data, data, a->word);
 		a->pos = new_pos;
 	}
@@ -87,5 +97,24 @@ int				sorted_reserve(t_sorted *a, size_t s)
 		if (ft_realloc(&a->data, a->size, s))
 			return (ERR_ALLOC);
 	}
+	return (OK);
+}
+
+int				sorted_pop(t_sorted *a, void *data)
+{
+	size_t		new_pos;
+
+	if (a->pos <= 0)
+		return (ERR_ARG);
+	new_pos = a->pos - a->word;
+	ft_memcpy(data, a->data + new_pos, a->word);
+	if (new_pos <= a->size / 4)
+	{
+		if (ft_realloc(&a->data, a->size, new_pos) == 0)
+		{
+			a->size = new_pos * 2;
+		}
+	}
+	a->pos = new_pos;
 	return (OK);
 }

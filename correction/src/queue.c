@@ -17,7 +17,7 @@ t_queue				queue(size_t word)
 	t_queue			out;
 
 	ft_bzero(&out, sizeof(out));
-	out.word = word;
+	out.word = MAX(word, 1);
 	return (out);
 }
 
@@ -52,7 +52,7 @@ int					queue_realloc(t_queue *a, size_t new_size)
 	return (OK);
 }
 
-int					queue_push_back(t_queue *a, void *data)
+int					queue_push_back(t_queue *a, const void *data)
 {
 	size_t			new_pos;
 
@@ -70,7 +70,7 @@ int					queue_push_back(t_queue *a, void *data)
 	return (OK);
 }
 
-int					queue_push_front(t_queue *a, void *data)
+int					queue_push_front(t_queue *a, const void *data)
 {
 	size_t			new_pos;
 

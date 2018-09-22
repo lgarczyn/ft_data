@@ -26,7 +26,7 @@ void				array_free(t_array *a)
 	*a = array();
 }
 
-int					array_push(t_array *a, void *data, size_t size)
+int					array_push(t_array *a, const void *data, size_t size)
 {
 	size_t			new_pos;
 

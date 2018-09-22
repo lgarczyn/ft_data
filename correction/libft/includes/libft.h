@@ -68,7 +68,7 @@ typedef struct		s_queue
 	size_t			word;
 }					t_queue;
 
-typedef int			(*t_predicate)(void* a, void *b);
+typedef int			(*t_predicate)(const void *a, const void *b);
 
 typedef struct		s_sorted
 {
@@ -199,23 +199,29 @@ void				ft_striteri(char *s, void (*f)(unsigned int, char *));
 
 t_array				array(void);
 void				array_free(t_array *a);
-int					array_push(t_array *a, void *data, size_t size);
+size_t				arrray_len(const t_array *a);
+int					array_push(t_array *a, const void *data, size_t size);
 int					array_pop(t_array *a, void *data, size_t size);
 int					array_reserve(t_array *a, size_t s);
 
 t_queue				queue(size_t word);
 void				queue_free(t_queue *a);
+size_t				queue_len(const t_array *a);
 int					queue_realloc(t_queue *a, size_t new_size);
-int					queue_push_back(t_queue *a, void *data);
-int					queue_push_front(t_queue *a, void *data);
+int					queue_push_back(t_queue *a, const void *data);
+int					queue_push_front(t_queue *a, const void *data);
 int					queue_pop_back(t_queue *a, void *data);
 int					queue_pop_front(t_queue *a, void *data);
 int					queue_reserve(t_queue *a, size_t s);
 
 t_sorted			sorted(t_predicate predicate, size_t word);
 void				sorted_free(t_sorted *a);
-t_searchres			sorted_search(t_sorted *a, void *ptr, size_t s, size_t e);
-int					sorted_insert(t_sorted *a, void *data);
+size_t				sorted_len(const t_array *a);
+t_searchres			sorted_search_range(
+	const t_sorted *a, const void *ptr, size_t s, size_t e);
+t_searchres			sorted_search(const t_sorted *a, const void *ptr);
+int					sorted_insert(t_sorted *a, const void *data);
+int					sorted_pop(t_sorted *a, void *data);
 int					sorted_reserve(t_sorted *a, size_t s);
 
 #endif
