@@ -12,6 +12,8 @@
 
 #include "libft.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
 
 #define PRINT_ERR(i, j) do { printf("%s() %s:%i : %i != %i\n", __func__, __FILE__, __LINE__, i, j);} while (0)
 
@@ -34,11 +36,12 @@ void			test_array(void)
 		array_pop(&a, ret, ft_intlen(i) + 1);
 		if (ft_strcmp(str, ret))
 			PRINT_ERR(i, ft_strcmp(str, ret));
+		free(str);
 	}
 	array_free(&a);
 }
 
-void			test_queue(void)
+void			test_queue_spe(bool push_back, bool pop_back)
 {
 	t_queue		a;
 	int			ret;
@@ -46,51 +49,29 @@ void			test_queue(void)
 	a = queue(sizeof(int));
 	for (int i = 0; i < 10000; i++)
 	{
-		queue_push_back(&a, &i);
+		if (push_back)
+			queue_push_back(&a, &i);
+		else
+			queue_push_front(&a, &i);
 	}
 	for (int i = 0; i < 10000; i++)
 	{
-		queue_pop_front(&a, &ret);
-		if (ret != i)
+		if (pop_back)
+			queue_pop_back(&a, &ret);
+		else
+			queue_pop_front(&a, &ret);
+		if (ret != (push_back == pop_back ? 9999 - i : i))
 			PRINT_ERR(i, ret);
 	}
 	queue_free(&a);
-	a = queue(sizeof(int));
-	for (int i = 0; i < 10000; i++)
-	{
-		queue_push_front(&a, &i);
-	}
-	for (int i = 0; i < 10000; i++)
-	{
-		queue_pop_back(&a, &ret);
-		if (ret != i)
-			PRINT_ERR(i, ret);
-	}
-	queue_free(&a);
-	a = queue(sizeof(int));
-	for (int i = 0; i < 10000; i++)
-	{
-		queue_push_back(&a, &i);
-	}
-	for (int i = 9999; i >= 0; i--)
-	{
-		queue_pop_back(&a, &ret);
-		if (ret != i)
-			PRINT_ERR(i, ret);
-	}
-	queue_free(&a);
-	a = queue(sizeof(int));
-	for (int i = 0; i < 10000; i++)
-	{
-		queue_push_front(&a, &i);
-	}
-	for (int i = 9999; i >= 0; i--)
-	{
-		queue_pop_front(&a, &ret);
-		if (ret != i)
-			PRINT_ERR(i, ret);
-	}
-	queue_free(&a);
+}
+
+void			test_queue(void)
+{
+	test_queue_spe(false, false);
+	test_queue_spe(false, true);
+	test_queue_spe(true, false);
+	test_queue_spe(true, true);
 }
 
 int				lt(const void *a, const void *b)
@@ -215,5 +196,7 @@ int		main(void)
 	test_array();
 	test_queue();
 	test_sorted();
+	printf("All checks done, press enter after checking for leaks\n");
+	getchar();
 	return (0);
 }
