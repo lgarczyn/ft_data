@@ -18,6 +18,7 @@
 # include <stdlib.h>
 # include <stdint.h>
 # include <stddef.h>
+# include <stdbool.h>
 
 # define U8 typedef uint8_t u8;
 # define U16 typedef uint16_t u16;
@@ -59,6 +60,13 @@ typedef struct		s_array
 	size_t			pos;
 	size_t			size;
 }					t_array;
+
+typedef struct		s_bitmap
+{
+	char			*data;
+	size_t			pos;
+	size_t			size;
+}					t_bitmap;
 
 typedef struct		s_queue
 {
@@ -204,6 +212,14 @@ size_t				array_len(const t_array *a, size_t word);
 int					array_push(t_array *a, const void *data, size_t size);
 int					array_pop(t_array *a, void *data, size_t size);
 int					array_reserve(t_array *a, size_t s);
+
+t_bitmap			bitmap(void);
+void				bitmap_free(t_bitmap *a);
+int					bitmap_realloc(t_bitmap *bitmap, size_t new_size);
+int					bitmap_push(t_bitmap *a, bool b);
+int					bitmap_pop(t_bitmap *a, bool *data);
+bool				bitmap_get(const t_bitmap *a, size_t i);
+int					bitmap_get_safe(const t_bitmap *a, size_t i, bool *out);
 
 t_queue				queue(size_t word);
 void				queue_free(t_queue *a);

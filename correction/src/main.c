@@ -30,6 +30,12 @@ void			test_array(void)
 		str = ft_itoa(i);
 		array_push(&a, str, ft_intlen(i) + 1);
 		free(str);
+
+		str = ft_itoa(i + 1);
+		array_push(&a, str, ft_intlen(i + 1) + 1);
+		free(str);
+
+		array_pop(&a, ret, ft_intlen(i + 1) + 1);
 	}
 	for (int i = 9999; i >= 0; i--)
 	{
@@ -40,6 +46,47 @@ void			test_array(void)
 		free(str);
 	}
 	array_free(&a);
+}
+
+void			test_bitmap(void)
+{
+	t_bitmap	b;
+
+	b = bitmap();
+	for (int i = 0; i < 10000; i++)
+	{
+		bitmap_push(&b, i % 2);
+		bitmap_push(&b, i % 3);
+		bitmap_push(&b, i % 4);
+		bitmap_push(&b, i % 5);
+	}
+	for (int i = 0; i < 10000; i++)
+	{
+		if (bitmap_get(&b, i * 4) != !!(i % 2) ||
+			bitmap_get(&b, i * 4 + 1) != !!(i % 3) ||
+			bitmap_get(&b, i * 4 + 2) != !!(i % 4) ||
+			bitmap_get(&b, i * 4 + 3) != !!(i % 5))
+		{
+			PRINT_ERR(!!(i % 2), bitmap_get(&b, i * 4));
+			PRINT_ERR(!!(i % 3), bitmap_get(&b, i * 4 + 1));
+			PRINT_ERR(!!(i % 4), bitmap_get(&b, i * 4 + 2));
+			PRINT_ERR(!!(i % 5), bitmap_get(&b, i * 4 + 3));
+		}
+	}
+	for (int i = (10000 * 4) - 1; i >= 0; i--)
+	{
+		bool o_a;
+		bool o_b;
+
+		//o_a = bitmap_get(&b, i * 4);
+		o_a = bitmap_get(&b, b.pos - 1);
+		bitmap_pop(&b, &o_b);
+
+		if (o_a != o_b)
+			PRINT_ERR(i, (o_a << 1) | o_b);
+	}
+
+	bitmap_free(&b);
 }
 
 void			test_queue_spe(bool push_back, bool pop_back)
@@ -149,7 +196,16 @@ void			test_sorted_spe(bool less_pred, bool asc, bool split)
 			PRINT_ERR(j, sorted_len(&a) - 1);
 		sorted_pop(&a, &res);
 		if (res != max)
-			PRINT_ERR(res, max);*/
+			PRINT_ERR(res, max);
+			
+			
+		sorted_insert(&a, &max);
+		res = sorted_search(&a, &max);
+		if (res.index != a.pos - 1 || res.found != true)
+			PRINT_ERR(j, a.pos);
+		sorted_pop(&a, &ret);
+		if (ret != max)
+			PRINT_ERR(ret, max);*/
 	}
 	for (i = 0; i < 10000; i++)
 	{
@@ -175,6 +231,7 @@ void			test_sorted(void)
 int		main(void)
 {
 	test_array();
+	test_bitmap();
 	test_queue();
 	test_sorted();
 	printf("All checks done, press enter after checking for leaks\n");
