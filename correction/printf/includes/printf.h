@@ -13,9 +13,9 @@
 #ifndef PRINTF_H
 # define PRINTF_H
 
-int						print(const char *restrict format, ...);
-int						printerr(const char *restrict format, ...);
-int						printind(const char *restrict format, ...);
-int						printfd(int fd, const char *restrict format, ...);
+int						print(const char *format, ...);
+int						printerr(const char *format, ...);
+int						printind(const char *format, ...);
+int						printfd(int fd, const char *format, ...);
 
 #endif

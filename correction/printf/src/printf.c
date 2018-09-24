@@ -83,7 +83,7 @@ static int			get_width(const char **format, char starter)
 	return (-1);
 }
 
-void				ft_printf(const char *restrict format, va_list ap)
+void				ft_printf(const char *format, va_list ap)
 {
 	t_info			info;
 	const char		*str;

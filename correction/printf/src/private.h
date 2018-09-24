@@ -20,7 +20,7 @@
 # include <stdbool.h>
 # include <stdarg.h>
 
-void					ft_printf(const char *restrict format, va_list ap);
+void					ft_printf(const char *format, va_list ap);
 
 # define MIN(a,b)		(((a)<(b))?(a):(b))
 # define MAX(a,b)		(((a)>(b))?(a):(b))

@@ -17,6 +17,7 @@
 # include <errno.h>
 # include <stdlib.h>
 # include <stdint.h>
+# include <stddef.h>
 
 # define U8 typedef uint8_t u8;
 # define U16 typedef uint16_t u16;
@@ -27,10 +28,10 @@
 # define I16 typedef int16_t i16;
 # define I32 typedef int32_t i32;
 # define I64 typedef int64_t i64;
-# define ISIZE typedef ssize_t isize;
+# define ISIZE typedef ptrdiff_t isize;
 # define ILLEGAL {}; U8 U16 U32 U64 USIZE I8 I16 I32 I64 ISIZE
 
-static int g_a[0] = ILLEGAL;
+static const int g_a[0] = ILLEGAL;
 
 # define MIN(a,b)			(((a)<(b))?(a):(b))
 # define MAX(a,b)			(((a)>(b))?(a):(b))

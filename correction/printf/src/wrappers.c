@@ -13,7 +13,7 @@
 #include "private.h"
 #include <stdarg.h>
 
-int					print_ind(const char *restrict format, ...)
+int					print_ind(const char *format, ...)
 {
 	char			buf[2048];
 	va_list			ap;
@@ -25,7 +25,7 @@ int					print_ind(const char *restrict format, ...)
 	return (ft_flush_buf());
 }
 
-int					print(const char *restrict format, ...)
+int					print(const char *format, ...)
 {
 	va_list			ap;
 
@@ -36,7 +36,7 @@ int					print(const char *restrict format, ...)
 	return (ft_flush_buf());
 }
 
-int					printerr(const char *restrict format, ...)
+int					printerr(const char *format, ...)
 {
 	size_t			total;
 	va_list			ap;
@@ -50,7 +50,7 @@ int					printerr(const char *restrict format, ...)
 	return (total);
 }
 
-int					printfd(int fd, const char *restrict format, ...)
+int					printfd(int fd, const char *format, ...)
 {
 	int				old_fd;
 	size_t			total;
