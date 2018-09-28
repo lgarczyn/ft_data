@@ -25,6 +25,9 @@ void			test_array(void)
 	char		ret[10];
 
 	a = array();
+	array_free(&a);
+	a = array();
+	array_free(&a);
 	for (int i = 0; i < 10000; i++)
 	{
 		str = ft_itoa(i);
@@ -53,6 +56,11 @@ void			test_bitmap(void)
 	t_bitmap	b;
 
 	b = bitmap();
+	bitmap_free(&b);
+	bitmap_push(&b, true);
+	bitmap_free(&b);
+	b = bitmap();
+	bitmap_free(&b);
 	for (int i = 0; i < 10000; i++)
 	{
 		bitmap_push(&b, i % 2);
@@ -95,6 +103,9 @@ void			test_queue_spe(bool push_back, bool pop_back)
 	int			ret;
 
 	a = queue(sizeof(int));
+	queue_free(&a);
+	a = queue(sizeof(int));
+	queue_free(&a);
 	for (int i = 0; i < 10000; i++)
 	{
 		if (push_back)
@@ -142,13 +153,21 @@ void			test_sorted_spe(bool less_pred, bool asc, bool split)
 	int			ret;
 	int			max;
 
-	max = 10000;
+	max = 20000;
 
+	a = sorted(&lt, sizeof(int));
+	sorted_free(&a);
 	if (less_pred)
+	{
 		a = sorted(&lt, sizeof(int));
+		max = 20000;
+	}
 	else
+	{
 		a = sorted(&gt, sizeof(int));
-
+		max = -20000;
+	}
+	sorted_free(&a);
 	for (i = 0; i < 10000; i++)
 	{
 		j = 9999 - i;
@@ -173,6 +192,10 @@ void			test_sorted_spe(bool less_pred, bool asc, bool split)
 				sorted_insert(&a, &j);
 		}
 		res = sorted_search(&a, &i);
+		//printf("i: %i\n", i);
+		// for (size_t i = 0; i < sorted_len(&a); i++)
+		// 	printf("%i ", *(int*)sorted_cget(&a, i));
+		// printf("\n");
 		if (asc == false && split == false && less_pred)
 		{
 			if ((i < 5000 && res.index != 0 && res.found) ||
@@ -190,22 +213,28 @@ void			test_sorted_spe(bool less_pred, bool asc, bool split)
 			if (res.index != (size_t)k && res.index != false)
 				PRINT_ERR(k, res.index);
 		}
-		/*sorted_insert(&a, &max);
-		j = sorted_search(&a, &max).index;
-		if (j != sorted_len(&a) - 1)
-			PRINT_ERR(j, sorted_len(&a) - 1);
-		sorted_pop(&a, &res);
-		if (res != max)
-			PRINT_ERR(res, max);
-			
-			
-		sorted_insert(&a, &max);
+		
 		res = sorted_search(&a, &max);
-		if (res.index != a.pos - 1 || res.found != true)
-			PRINT_ERR(j, a.pos);
+		if (res.index != sorted_len(&a) || res.found != false)
+			PRINT_ERR(res.index, sorted_len(&a));
+
+		sorted_insert(&a, &max);
+		
+		res = sorted_search(&a, &max);
+		if (res.index != sorted_len(&a) - 1 || res.found != true)
+			PRINT_ERR(res.index, sorted_len(&a));
+		
 		sorted_pop(&a, &ret);
 		if (ret != max)
-			PRINT_ERR(ret, max);*/
+			PRINT_ERR(ret, max);
+		
+		res = sorted_delete(&a, &max, NULL);
+		if (res.found != true && res.index != sorted_len(&a))
+			PRINT_ERR(res.index, sorted_len(&a));
+		
+		res = sorted_search(&a, &max);
+		if (res.index != sorted_len(&a) || res.found != false)
+			PRINT_ERR(res.index, sorted_len(&a));
 	}
 	for (i = 0; i < 10000; i++)
 	{

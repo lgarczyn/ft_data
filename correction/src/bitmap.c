@@ -92,3 +92,8 @@ int					bitmap_get_safe(const t_bitmap *a, size_t i, bool *out)
 	}
 	return (ERR_ARG);
 }
+
+size_t				bitmap_len(const t_bitmap *a)
+{
+	return (a->pos);
+}

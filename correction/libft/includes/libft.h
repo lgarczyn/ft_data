@@ -91,7 +91,7 @@ typedef struct		s_sorted
 typedef struct		s_searchres
 {
 	size_t			index;
-	char			found;
+	bool			found;
 }					t_searchres;
 
 typedef struct		s_buffer
@@ -180,6 +180,7 @@ void				*ft_memccpy(void *dst, const void *src, int c, size_t n);
 void				*ft_memchr(const void *s, int c, size_t n);
 void				*ft_memcpy(void *dst, const void *src, size_t n);
 void				*ft_memmove(void *dst, const void *src, size_t n);
+void				*ft_memswap(void *dst, void *src, size_t len);
 void				*ft_memset(void *b, int c, size_t len);
 int					ft_realloc(void **ptr, size_t old_size, size_t new_size);
 int					ft_realloc_double(void **ptr, size_t *old_size);
@@ -217,14 +218,13 @@ t_bitmap			bitmap(void);
 void				bitmap_free(t_bitmap *a);
 int					bitmap_realloc(t_bitmap *bitmap, size_t new_size);
 int					bitmap_push(t_bitmap *a, bool b);
-int					bitmap_pop(t_bitmap *a, bool *data);
+int					bitmap_pop(t_bitmap *a, bool *data);	
 bool				bitmap_get(const t_bitmap *a, size_t i);
 int					bitmap_get_safe(const t_bitmap *a, size_t i, bool *out);
 
 t_queue				queue(size_t word);
 void				queue_free(t_queue *a);
 size_t				queue_len(const t_queue *a);
-int					queue_realloc(t_queue *a, size_t new_size);
 int					queue_push_back(t_queue *a, const void *data);
 int					queue_push_front(t_queue *a, const void *data);
 int					queue_pop_back(t_queue *a, void *data);
@@ -233,12 +233,19 @@ int					queue_reserve(t_queue *a, size_t s);
 
 t_sorted			sorted(t_predicate predicate, size_t word);
 void				sorted_free(t_sorted *a);
-size_t				sorted_len(const t_sorted *a);
+void				*sorted_get(t_sorted *a, size_t index);
+const void			*sorted_cget(const t_sorted *a, size_t index);
 t_searchres			sorted_search_range(
-	const t_sorted *a, const void *ptr, size_t s, size_t e);
-t_searchres			sorted_search(const t_sorted *a, const void *ptr);
+	const t_sorted *a, const void *ptr, size_t start, size_t end);
+t_searchres			sorted_search(const t_sorted *a, const void *d);
+int					sorted_insert_hint(t_sorted *a, const void *d, size_t h);
 int					sorted_insert(t_sorted *a, const void *data);
+t_searchres			sorted_replace(t_sorted *a, void *data);
+t_searchres			sorted_replace_hint(t_sorted *a, void *data, size_t hint);
+void				sorted_delete_index(t_sorted *a, size_t index, void *out);
+t_searchres			sorted_delete(t_sorted *a, const void *data, void *out);
 int					sorted_pop(t_sorted *a, void *data);
 int					sorted_reserve(t_sorted *a, size_t s);
+size_t				sorted_len(const t_sorted *a);
 
 #endif

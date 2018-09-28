@@ -12,7 +12,7 @@
 
 NAME = libft.a
 
-DEB = -g #-g3 -fsanitize=address
+DEB = -g -g3 -fsanitize=address
 
 OPT = -O3
 
@@ -46,6 +46,7 @@ SRC = ft_atoi.c \
 	  ft_memcpy.c \
 	  ft_memdel.c \
 	  ft_memmove.c \
+	  ft_memswap.c \
 	  ft_memset.c \
 	  ft_putchar.c \
 	  ft_putchar_fd.c \

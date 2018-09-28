@@ -70,3 +70,8 @@ int					array_reserve(t_array *a, size_t s)
 	}
 	return (OK);
 }
+
+size_t				array_len(const t_array *a, size_t word)
+{
+	return (a->pos / word);
+}
