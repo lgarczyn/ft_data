@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "libft.h"
+#include "data.h"
 
 t_sorted		sorted(t_predicate predicate, size_t word)
 {
