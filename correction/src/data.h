@@ -65,10 +65,18 @@ typedef struct		s_branch
 	void			*data;
 }					t_branch;
 
+typedef struct		s_sizes
+{
+	t_uint			key;
+	t_uint			val;
+	t_uint			word;
+	t_uint			bucket;
+}					t_sizes;
+
 typedef struct		s_btree
 {
-	t_uint			count;
-	t_uint			word;
+	size_t			count;
+	t_sizes			sizes;
 	t_branch		root;
 }					t_btree;
 
@@ -81,10 +89,18 @@ typedef struct		s_branch_it
 typedef struct		s_btree_it
 {
 	t_btree			*tree;
+	void			*key;
+	void			*data;
 	t_uint			pos;
 	t_branch_it		iterators[6];
 	bool			end;
 }					t_btree_it;
+
+typedef struct		s_btree_en
+{
+	t_btree_it		it;
+	char			*key;
+}					t_btree_en;
 
 t_array				array(void);
 void				array_free(t_array *a);
@@ -127,19 +143,19 @@ int					sorted_pop(t_sorted *a, void *data);
 int					sorted_reserve(t_sorted *a, size_t s);
 size_t				sorted_len(const t_sorted *a);
 
-t_btree				btree(t_predicate predicate, t_uint word);
+t_btree				btree(t_predicate predicate, t_uint key, t_uint value);
 void				btree_free(t_btree *a);
-t_btree_it			btree_search(const t_btree *a, const void *d);
-int					btree_insert(t_btree *a, const void *data);
-t_searchres			btree_replace(t_btree *a, void *data);
-t_searchres			btree_delete(t_btree *a, const void *data, void *out);
-int					btree_pop(t_btree *a, void *data);
+t_btree_en			btree_search(const t_btree *a, const void *key);
+t_btree_en			btree_delete(t_btree *a, const void *key, void *out);
+bool				btree_insert(t_btree *a, const void *key, const void *data);
+bool				btree_replace(t_btree *a, const void *key, void *data);
 size_t				btree_len(const t_btree *a);
 
-bool				btree_get(t_btree_it *i, void *data);
-bool				btree_next(t_btree_it *i, void *data);
-int					btree_insert_it(t_btree_it *i, const void *date);
-t_searchres			btree_replace_it(t_btree_it *i, void *data);
-void				btree_delete_it(t_btree_it *i, void *out);
+bool				btree_get(const t_btree_it *i, void *data, void *key);
+bool				btree_next(t_btree_it *i, void *data, void *key);
+bool				btree_prev(t_btree_it *i, void *data, void *key);
+
+t_btree_it			btree_ensure(t_btree_en res, void *data);
+bool				btree_delete_it(t_btree_it *i, void *out);
 
 #endif
