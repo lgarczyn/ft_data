@@ -54,7 +54,7 @@ int					bitmap_get_safe(const t_bitmap *a, size_t i, bool *out)
 	return (ERR_ARG);
 }
 
-void				bitmap_set(const t_bitmap *a, size_t p, bool b)
+void				bitmap_set(t_bitmap *a, size_t p, bool b)
 {
 	size_t			i;
 	size_t			j;
@@ -67,7 +67,7 @@ void				bitmap_set(const t_bitmap *a, size_t p, bool b)
 		a->data[i] &= ~(1 << j);
 }
 
-int					bitmap_set_safe(const t_bitmap *a, size_t i, bool b)
+int					bitmap_set_safe(t_bitmap *a, size_t i, bool b)
 {
 	if (i < a->pos)
 	{

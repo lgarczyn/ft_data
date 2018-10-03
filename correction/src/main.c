@@ -16,8 +16,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define PRINT_ERR(i, j) do { printf("%s() %s:%i : %lu != %lu\n",\
-	__func__, __FILE__, __LINE__, (size_t)i, (size_t)j);} while (0)
+#define PRINT_ERR(a, b) do { printf("%s:%i (i=%i): %lu != %lu\n",\
+	__FILE__, __LINE__, i, (size_t)a, (size_t)b);} while (0)
 
 void			test_array(void)
 {
@@ -37,19 +37,47 @@ void			test_array(void)
 
 		str = ft_itoa(i + 1);
 		array_push(&a, str, ft_intlen(i + 1) + 1);
-		free(str);
 
 		array_pop(&a, ret, ft_intlen(i + 1) + 1);
+		if (ft_strcmp(str, ret))
+		{
+			ft_putnstr(a.data, a.pos);
+			ft_putchar('\n');
+			printf("a %lu/%lu\n", a.pos, a.size);
+			PRINT_ERR(i, ft_strcmp(str, ret));
+		}
+		free(str);
 	}
 	for (int i = 9999; i >= 0; i--)
 	{
 		str = ft_itoa(i);
 		array_pop(&a, ret, ft_intlen(i) + 1);
 		if (ft_strcmp(str, ret))
+		{
+			printf("a %lu/%lu\n", a.pos, a.size);
 			PRINT_ERR(i, ft_strcmp(str, ret));
+		}
 		free(str);
 	}
 	array_free(&a);
+	for (int i = 0; i < 10000; i++)
+	{
+		str = ft_itoa(i);
+		array_insert(&a, str, 0, ft_intlen(i) + 1);
+		array_remove(&a, ret, 0, ft_intlen(i) + 1);
+		if (ft_strcmp(str, ret))
+			PRINT_ERR(i, ft_strcmp(str, ret));
+		array_insert(&a, str, 0, ft_intlen(i) + 1);
+	}
+	for (int j = 9999; j >= 0; j--)
+	{
+		int i = 9999 - j;
+		str = ft_itoa(i);
+		array_pop(&a, ret, ft_intlen(i) + 1);
+		if (ft_strcmp(str, ret))
+			PRINT_ERR(i, ft_strcmp(str, ret));
+		free(str);
+	}
 }
 
 void			test_bitmap(void)

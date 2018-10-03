@@ -91,6 +91,11 @@ typedef struct		s_pma_en
 t_array				array(void);
 void				array_free(t_array *a);
 size_t				array_len(const t_array *a, size_t word);
+int					array_insert(t_array *a, const void *data,
+	size_t i, size_t size);
+int					array_remove(t_array *a, void *data,
+	size_t i, size_t size);
+int					array_move(t_array *a, size_t from, size_t to, size_t len);
 int					array_push(t_array *a, const void *data, size_t size);
 int					array_pop(t_array *a, void *data, size_t size);
 int					array_reserve(t_array *a, size_t s);
@@ -100,8 +105,8 @@ void				bitmap_free(t_bitmap *a);
 int					bitmap_realloc(t_bitmap *bitmap, size_t new_size);
 bool				bitmap_get(const t_bitmap *a, size_t i);
 int					bitmap_get_safe(const t_bitmap *a, size_t i, bool *out);
-void				bitmap_set(const t_bitmap *a, size_t p, bool b);
-int					bitmap_set_safe(const t_bitmap *a, size_t i, bool b);
+void				bitmap_set(t_bitmap *a, size_t p, bool b);
+int					bitmap_set_safe(t_bitmap *a, size_t i, bool b);
 int					bitmap_push(t_bitmap *a, bool b);
 int					bitmap_pop(t_bitmap *a, bool *data);
 
@@ -135,8 +140,8 @@ t_pma				pma(t_predicate predicate, t_uint key, t_uint value);
 void				pma_free(t_pma *a);
 t_pma_en			pma_search(const t_pma *a, const void *key);
 t_pma_en			pma_delete(t_pma *a, const void *key, void *out);
-bool				pma_insert(t_pma *a, const void *key, const void *data);
-bool				pma_replace(t_pma *a, const void *key, void *data);
+int					pma_insert(t_pma *a, const void *key, const void *data);
+int					pma_replace(t_pma *a, const void *key, void *data);
 size_t				pma_len(const t_pma *a);
 
 bool				pmait_get(const t_pma_it *i, void *data, void *key);
