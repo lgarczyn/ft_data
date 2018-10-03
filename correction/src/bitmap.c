@@ -39,46 +39,6 @@ int					bitmap_realloc(t_bitmap *a, size_t new_size)
 	return (OK);
 }
 
-int					bitmap_push(t_bitmap *a, bool b)
-{
-	size_t			new_size;
-	size_t			i;
-	size_t			j;
-
-	if (a->pos + 1 >= a->size)
-	{
-		new_size = MAX(a->size * 2, 64);
-		if (bitmap_realloc(a, new_size))
-			return (ERR_ALLOC);
-	}
-	i = a->pos / 8;
-	j = a->pos % 8;
-	if (b)
-		a->data[i] |= (1 << j);
-	else
-		a->data[i] &= ~(1 << j);
-	a->pos++;
-	return (OK);
-}
-
-int					bitmap_pop(t_bitmap *a, bool *data)
-{
-	size_t			new_pos;
-
-	if (a->pos <= 0)
-		return (ERR_ARG);
-	
-	new_pos = a->pos - 1;
-
-	*data = a->data[new_pos / 8] & (1 << (new_pos % 8));
-
-	if (new_pos <= a->size / 4)
-		bitmap_realloc(a, a->size / 8);
-	
-	a->pos = new_pos;
-	return (OK);
-}
-
 bool				bitmap_get(const t_bitmap *a, size_t i)
 {
 	return (a->data[i / 8] & (1 << (i % 8)));
@@ -92,6 +52,62 @@ int					bitmap_get_safe(const t_bitmap *a, size_t i, bool *out)
 		return (OK);
 	}
 	return (ERR_ARG);
+}
+
+void				bitmap_set(const t_bitmap *a, size_t p, bool b)
+{
+	size_t			i;
+	size_t			j;
+
+	i = p / 8;
+	j = p % 8;
+	if (b)
+		a->data[i] |= (1 << j);
+	else
+		a->data[i] &= ~(1 << j);
+}
+
+int					bitmap_set_safe(const t_bitmap *a, size_t i, bool b)
+{
+	if (i < a->pos)
+	{
+		bitmap_set(a, i, b);
+		return (OK);
+	}
+	return (ERR_ARG);
+}
+
+int					bitmap_push(t_bitmap *a, bool b)
+{
+	size_t			new_size;
+
+	if (a->pos + 1 >= a->size)
+	{
+		new_size = MAX(a->size * 2, 64);
+		if (bitmap_realloc(a, new_size))
+			return (ERR_ALLOC);
+	}
+	bitmap_set(a, a->pos, b);
+	a->pos++;
+	return (OK);
+}
+
+int					bitmap_pop(t_bitmap *a, bool *data)
+{
+	size_t			new_pos;
+
+	if (a->pos <= 0)
+		return (ERR_ARG);
+
+	new_pos = a->pos - 1;
+
+	*data = bitmap_get(a, new_pos);
+
+	if (new_pos <= a->size / 4)
+		bitmap_realloc(a, a->size / 8);
+
+	a->pos = new_pos;
+	return (OK);
 }
 
 size_t				bitmap_len(const t_bitmap *a)

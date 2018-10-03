@@ -58,49 +58,35 @@ typedef struct		s_searchres
 	bool			found;
 }					t_searchres;
 
-typedef struct		s_branch
+typedef struct		s_bucket
 {
-	t_uint			size;
-	t_uint			pos;
-	void			*data;
-}					t_branch;
+	t_bitmap		occ;
+	t_array			values;
+}					t_bucket;
 
-typedef struct		s_sizes
+typedef struct		s_pma
 {
-	t_uint			key;
-	t_uint			val;
-	t_uint			word;
-	t_uint			bucket;
-}					t_sizes;
-
-typedef struct		s_btree
-{
+	t_uint			key_size;
+	t_uint			value_size;
 	size_t			count;
-	t_sizes			sizes;
-	t_branch		root;
-}					t_btree;
+	t_predicate		predicate;
+	t_bucket		bucket;
+	//t_array			data;
+}					t_pma;
 
-typedef struct		s_branch_it
+typedef struct		s_pma_it
 {
-	t_branch		*branch;
-	t_uint			pos;
-}					t_branch_it;
+	t_pma			*pma;
+	size_t			bucket_id;
+//	size_t			data_id;
+}					t_pma_it;
 
-typedef struct		s_btree_it
+typedef struct		s_pma_en
 {
-	t_btree			*tree;
+	t_pma_it		it;
 	void			*key;
-	void			*data;
-	t_uint			pos;
-	t_branch_it		iterators[6];
-	bool			end;
-}					t_btree_it;
+}					t_pma_en;
 
-typedef struct		s_btree_en
-{
-	t_btree_it		it;
-	char			*key;
-}					t_btree_en;
 
 t_array				array(void);
 void				array_free(t_array *a);
@@ -112,10 +98,12 @@ int					array_reserve(t_array *a, size_t s);
 t_bitmap			bitmap(void);
 void				bitmap_free(t_bitmap *a);
 int					bitmap_realloc(t_bitmap *bitmap, size_t new_size);
-int					bitmap_push(t_bitmap *a, bool b);
-int					bitmap_pop(t_bitmap *a, bool *data);
 bool				bitmap_get(const t_bitmap *a, size_t i);
 int					bitmap_get_safe(const t_bitmap *a, size_t i, bool *out);
+void				bitmap_set(const t_bitmap *a, size_t p, bool b);
+int					bitmap_set_safe(const t_bitmap *a, size_t i, bool b);
+int					bitmap_push(t_bitmap *a, bool b);
+int					bitmap_pop(t_bitmap *a, bool *data);
 
 t_queue				queue(size_t word);
 void				queue_free(t_queue *a);
@@ -143,19 +131,19 @@ int					sorted_pop(t_sorted *a, void *data);
 int					sorted_reserve(t_sorted *a, size_t s);
 size_t				sorted_len(const t_sorted *a);
 
-t_btree				btree(t_predicate predicate, t_uint key, t_uint value);
-void				btree_free(t_btree *a);
-t_btree_en			btree_search(const t_btree *a, const void *key);
-t_btree_en			btree_delete(t_btree *a, const void *key, void *out);
-bool				btree_insert(t_btree *a, const void *key, const void *data);
-bool				btree_replace(t_btree *a, const void *key, void *data);
-size_t				btree_len(const t_btree *a);
+t_pma				pma(t_predicate predicate, t_uint key, t_uint value);
+void				pma_free(t_pma *a);
+t_pma_en			pma_search(const t_pma *a, const void *key);
+t_pma_en			pma_delete(t_pma *a, const void *key, void *out);
+bool				pma_insert(t_pma *a, const void *key, const void *data);
+bool				pma_replace(t_pma *a, const void *key, void *data);
+size_t				pma_len(const t_pma *a);
 
-bool				btree_get(const t_btree_it *i, void *data, void *key);
-bool				btree_next(t_btree_it *i, void *data, void *key);
-bool				btree_prev(t_btree_it *i, void *data, void *key);
+bool				pmait_get(const t_pma_it *i, void *data, void *key);
+bool				pmait_next(t_pma_it *i, void *data, void *key);
+bool				pmait_prev(t_pma_it *i, void *data, void *key);
+bool				pmait_delete(t_pma_it *i, void *out);
 
-t_btree_it			btree_ensure(t_btree_en res, void *data);
-bool				btree_delete_it(t_btree_it *i, void *out);
+t_pma_it			pma_ensure(t_pma_en res, void *data);
 
 #endif
