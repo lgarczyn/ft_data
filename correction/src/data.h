@@ -105,9 +105,9 @@ t_bitmap			bitmap(void);
 void				bitmap_free(t_bitmap *a);
 int					bitmap_realloc(t_bitmap *bitmap, size_t new_size);
 bool				bitmap_get(const t_bitmap *a, size_t i);
-int					bitmap_get_safe(const t_bitmap *a, size_t i, bool *out);
+bool				bitmap_get_safe(const t_bitmap *a, size_t i, bool *out);
 void				bitmap_set(t_bitmap *a, size_t p, bool b);
-int					bitmap_set_safe(t_bitmap *a, size_t i, bool b);
+bool				bitmap_set_safe(t_bitmap *a, size_t i, bool b);
 int					bitmap_push(t_bitmap *a, bool b);
 int					bitmap_pop(t_bitmap *a, bool *data);
 
@@ -145,7 +145,7 @@ int					pma_insert(t_pma *a, const void *key, const void *data);
 int					pma_replace(t_pma *a, const void *key, void *data);
 size_t				pma_len(const t_pma *a);
 
-bool				pmait_get(const t_pma_it *i, void *data, void *key);
+bool				pmait_get(t_pma_it *i, void *data, void *key);
 bool				pmait_next(t_pma_it *i, void *data, void *key);
 bool				pmait_prev(t_pma_it *i, void *data, void *key);
 bool				pmait_delete(t_pma_it *i, void *out);

@@ -44,14 +44,14 @@ bool				bitmap_get(const t_bitmap *a, size_t i)
 	return (a->data[i / 8] & (1 << (i % 8)));
 }
 
-int					bitmap_get_safe(const t_bitmap *a, size_t i, bool *out)
+bool				bitmap_get_safe(const t_bitmap *a, size_t i, bool *out)
 {
 	if (i < a->pos)
 	{
 		*out = bitmap_get(a, i);
-		return (OK);
+		return (true);
 	}
-	return (ERR_ARG);
+	return (false);
 }
 
 void				bitmap_set(t_bitmap *a, size_t p, bool b)
@@ -67,14 +67,14 @@ void				bitmap_set(t_bitmap *a, size_t p, bool b)
 		a->data[i] &= ~(1 << j);
 }
 
-int					bitmap_set_safe(t_bitmap *a, size_t i, bool b)
+bool				bitmap_set_safe(t_bitmap *a, size_t i, bool b)
 {
 	if (i < a->pos)
 	{
 		bitmap_set(a, i, b);
-		return (OK);
+		return (true);
 	}
-	return (ERR_ARG);
+	return (false);
 }
 
 int					bitmap_push(t_bitmap *a, bool b)

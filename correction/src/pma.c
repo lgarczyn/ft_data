@@ -13,8 +13,6 @@
 #include "libft.h"
 #include "data.h"
 
-#define SIZE(a) (a->key_size + a->value_size)
-
 t_pma			pma(t_predicate predicate, t_uint key, t_uint value)
 {
 	t_pma		out;
@@ -89,20 +87,6 @@ t_pma_en		pma_search(const t_pma *a, const void *ptr)
 	return (pma_search_range(a, ptr, 0, pma_len(a)));
 }
 
-static void		bucket_delete(t_pma *a, t_bucket *b, size_t id, void *out)
-{
-	void		*value;
-
-	if (out)
-	{
-		value = pma_get(a, id) + a->key_size;
-		ft_memmove(out, value, a->value_size);
-		ft_bzero(value, a->value_size);//to remove
-	}
-	bitmap_set(&(b->occ), id, false);
-	a->count--;
-}
-
 static void		bucket_set(t_pma *a, t_bucket *b, size_t id, void *key, void *val)
 {
 	void		*ptr;
@@ -111,6 +95,25 @@ static void		bucket_set(t_pma *a, t_bucket *b, size_t id, void *key, void *val)
 	ft_memmove(ptr, key, a->key_size);
 	ft_memmove(ptr + a->key_size, val, a->value_size);
 	bitmap_set(&(b->occ), id, true);
+}
+
+static void		bucket_get(t_pma *a, t_bucket *b, size_t id, void *key, void *val)
+{
+	void		*ptr;
+
+	ptr = pma_get(a, id);
+	ft_memmove(key, ptr, a->key_size);
+	ft_memmove(val, ptr + a->key_size, a->value_size);
+}
+
+static void		bucket_delete(t_pma *a, t_bucket *b, size_t id)
+{
+	void		*value;
+
+	value = pma_get(a, id);
+	ft_bzero(value, a->value_size + a->key_size);
+	bitmap_set(&(b->occ), id, false);
+	a->count--;
 }
 
 static int		bucket_insert(t_pma *a, t_bucket *b, size_t id, void *key, void *val)
@@ -125,7 +128,7 @@ static int		bucket_insert(t_pma *a, t_bucket *b, size_t id, void *key, void *val
 	{
 		move_len++;
 	}
-	size = SIZE(a);
+	size = a->key_size + a->value_size;
 	r = array_move(a, id * size, (id + 1) * size, move_len * size);
 	if (r)
 		return (r);
@@ -140,14 +143,16 @@ static int		bucket_insert(t_pma *a, t_bucket *b, size_t id, void *key, void *val
 	return (OK);
 }
 
-t_pma_en		pma_delete(t_pma *a, const void *key, void *out)
+t_pma_en		pma_delete(t_pma *a, const void *key,
+	void *out_key, void *out_val)
 {
 	t_pma_en	en;
 
 	en = pma_search(a, key);
 	if (en.key)
 	{
-		bucket_delete(a, &(a->bucket), en.it.bucket_id, out);
+		bucket_get(a, &(a->bucket), en.it.bucket_id, out_key, out_val);
+		bucket_delete(a, &(a->bucket), en.it.bucket_id);
 	}
 	en.key = key;
 	return (en);
@@ -193,15 +198,83 @@ size_t			pma_len(const t_pma *a)
 	return (a->count);
 }
 
-bool			pmait_get(const t_pma_it *i, void *data, void *key)
+bool			pmait_get(t_pma_it *i, void *key, void *val)
 {
+	bool		b;
+	t_pma		*a;
+	t_bitmap	*bmp;
 
+	a = i->pma;
+	bmp = &(a->bucket.occ);
+	b = true;
+	while (bitmap_get_safe(bmp, i->bucket_id, &b) && b == false)
+		i->bucket_id++;
+	if (i->bucket_id >= bitmap_len(bmp))
+		return (false);
+	if (key)
+		ft_memmove(key, pma_cget(a, i->bucket_id), a->key_size);
+	if (val)
+		ft_memmove(val, pma_cget(a, i->bucket_id) + a->key_size, a->value_size);
+	return (true);
 }
 
-bool			pmait_next(t_pma_it *i, void *data, void *key);
-bool			pmait_prev(t_pma_it *i, void *data, void *key);
-bool			pmait_delete(t_pma_it *i, void *out);
+bool			pmait_next(t_pma_it *i, void *key, void *val)
+{
+	if (pmait_get(i, key, val))
+	{
+		i->bucket_id++;
+		return (true);
+	}
+	return (false);
+}
 
-t_pma_it		pma_ensure(t_pma_en res, void *data);
-t_pma_it		pma_start(t_pma *a);
-t_pma_it		pma_end(t_pma *a);
+bool			pmait_prev(t_pma_it *i, void *key, void *val)
+{
+	if (pmait_get(i, key, val))
+	{
+		while (bitmap_get_safe(bmp, i->bucket_id, &b) && b == false)
+			i->bucket_id--;
+		return (true);
+	}
+}
+
+bool			pmait_delete(t_pma_it *i, void *key, void *val)
+{
+	if (pmait_get(i, key, val))
+	{
+		bucket_delete(i->pma, &(i->pma->bucket), i->bucket_id);
+		return (true);
+	}
+	return (false);
+}
+
+int				pma_ensure(t_pma_en *en, const void *data)
+{
+	if (en->key != NULL)
+	{
+		if (bucket_insert(
+			&(en->it.pma),
+			&(en->it.pma->bucket),
+			en->it.bucket_id,
+			en->key, data))
+			return (ERR_ALLOC);
+		en->key = NULL;
+		en->found = true;
+	}
+}
+
+t_pma_it		pmait_first(t_pma *a)
+{
+	t_pma_it	it;
+
+	it.bucket_id = 0;
+	it.pma = a;
+}
+
+t_pma_it		pmait_last(t_pma *a)
+{
+	t_pma_it	it;
+
+	it.bucket_id = a->;
+	it.pma = a;
+}
