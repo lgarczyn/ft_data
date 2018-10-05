@@ -85,6 +85,7 @@ typedef struct		s_pma_en
 {
 	t_pma_it		it;
 	void			*key;
+	bool			found;
 }					t_pma_en;
 
 
