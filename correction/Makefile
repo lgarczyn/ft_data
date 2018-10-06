@@ -12,7 +12,7 @@
 
 NAME = nm_otool
 
-SRC = main.c array.c sorted.c queue.c bitmap.c
+SRC = main.c array.c sorted.c queue.c bitmap.c pma.c
 
 INC = -Ilibft/includes -Iprintf/includes
 		

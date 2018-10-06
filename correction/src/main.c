@@ -286,12 +286,77 @@ void			test_sorted(void)
 	test_sorted_spe(true, true, true);
 }
 
+void			pma_display(t_pma *a)
+{
+	size_t		i;
+	bool		b;
+	int			n;
+	char		c;
+
+	i = 0;
+	while (bitmap_get_safe(&(a->bucket.occ), i, &b))
+	{
+		ft_putchar('0' + i % 10);
+	}
+	ft_putchar('\n');
+	i = 0;
+	while (bitmap_get_safe(&(a->bucket.occ), i, &b))
+	{
+		ft_putchar(b ? 'X' : '_');
+	}
+	ft_putchar('\n');
+
+	t_pma_it	it;
+
+	it = pmait_first(a);
+	while (pmait_next(&it, &n, &c)) {
+		printf("%i:%c\n", n, c);
+	}
+}
+
+void			test_pma(void)
+{
+	//reproduce test_sorted
+	//reproduce test_queue
+
+	t_pma		a;
+	int			n;
+	char		s;
+	int			out_key;
+	char		out_val;
+
+	a = pma(&lt, sizeof(int), sizeof(char));
+
+	while (1) {
+		pma_display(&a);
+		switch (getchar()) {
+			case 'q': return ;
+			case 'f': pma_free(&a); break;
+			case 's': scanf ("%d",&n); printf("%lu\n", pma_search(&a, &n).it.bucket_id); break;
+			case 'd': scanf ("%d",&n); pma_delete(&a, &n, &out_key, &out_val); break;
+			case 'i': scanf ("%d%c",&n,&s); pma_insert(&a, &n, &s); break;
+
+
+			// pma_replace(&a, void *key, void *val);
+			// size_t				pma_len(const &a);
+			// pmait_get(t_pma_it *i, void *key, void *val);
+			// pmait_next(t_pma_it *i, void *key, void *val);
+			// pmait_prev(t_pma_it *i, void *key, void *val);
+			// pmait_delete(t_pma_it *i, void *key, void *val);
+			// pma_ensure(t_pma_en *en, const void *data);
+			// pmait_first(&a);
+			// pmait_last(&a);
+		}
+	}
+}
+
 int		main(void)
 {
 	test_array();
 	test_bitmap();
 	test_queue();
 	test_sorted();
+	test_pma();
 	printf("All checks done, press enter after checking for leaks\n");
 	getchar();
 	return (0);

@@ -58,16 +58,22 @@ typedef struct		s_searchres
 	bool			found;
 }					t_searchres;
 
+typedef struct		s_sizes
+{
+	t_uint			key;
+	t_uint			val;
+}					t_sizes;
+
 typedef struct		s_bucket
 {
 	t_bitmap		occ;
 	t_array			values;
+	t_sizes			sizes;
 }					t_bucket;
 
 typedef struct		s_pma
 {
-	t_uint			key_size;
-	t_uint			value_size;
+	t_sizes			sizes;
 	size_t			count;
 	t_predicate		predicate;
 	t_bucket		bucket;
@@ -103,6 +109,7 @@ int					array_reserve(t_array *a, size_t s);
 
 t_bitmap			bitmap(void);
 void				bitmap_free(t_bitmap *a);
+size_t				bitmap_len(const t_bitmap *a);
 int					bitmap_realloc(t_bitmap *bitmap, size_t new_size);
 bool				bitmap_get(const t_bitmap *a, size_t i);
 bool				bitmap_get_safe(const t_bitmap *a, size_t i, bool *out);
@@ -140,16 +147,18 @@ size_t				sorted_len(const t_sorted *a);
 t_pma				pma(t_predicate predicate, t_uint key, t_uint value);
 void				pma_free(t_pma *a);
 t_pma_en			pma_search(const t_pma *a, const void *key);
-t_pma_en			pma_delete(t_pma *a, const void *key, void *out);
-int					pma_insert(t_pma *a, const void *key, const void *data);
-int					pma_replace(t_pma *a, const void *key, void *data);
+t_pma_en			pma_delete(t_pma *a, const void *key,
+	void *out_key, void *out_val);
+int					pma_insert(t_pma *a, const void *key, const void *val);
+int					pma_replace(t_pma *a, void *key, void *val);
 size_t				pma_len(const t_pma *a);
-
-bool				pmait_get(t_pma_it *i, void *data, void *key);
-bool				pmait_next(t_pma_it *i, void *data, void *key);
-bool				pmait_prev(t_pma_it *i, void *data, void *key);
-bool				pmait_delete(t_pma_it *i, void *out);
-
-t_pma_it			pma_ensure(t_pma_en res, void *data);
+bool				pmait_get(t_pma_it *i, void *key, void *val);
+bool				pmait_next(t_pma_it *i, void *key, void *val);
+bool				pmait_prev(t_pma_it *i, void *key, void *val);
+bool				pmait_delete(t_pma_it *i, void *key, void *val);
+int					pma_ensure(t_pma_en *en, const void *data);
+t_pma_it			pmait_first(t_pma *a);
+t_pma_it			pmait_last(t_pma *a);
+void				pma_display(t_pma *a);
 
 #endif
