@@ -10,7 +10,7 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME = nm_otool
+NAME = ft_data
 
 SRC = main.c array.c sorted.c queue.c bitmap.c pma.c
 
@@ -39,7 +39,7 @@ obj/%.o: src/%.c
 
 lib:
 	rm -rf $(OBJ)
-	rm -f ft_nm ft_otool
+	rm -f ft_data
 	rm -rf *.dSYM
 
 clean:
@@ -48,7 +48,7 @@ clean:
 	cd printf && make clean
 
 fclean: lib
-	rm -f ft_nm ft_otool
+	rm -f ft_data
 	rm -rf *.dSYM
 	cd libft && make fclean
 	cd printf && make fclean

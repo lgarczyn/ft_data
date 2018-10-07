@@ -27,15 +27,23 @@ void				bitmap_free(t_bitmap *a)
 	*a = bitmap();
 }
 
-int					bitmap_realloc(t_bitmap *a, size_t new_size)
+int					bitmap_set_size(t_bitmap *a, size_t new_size)
 {
-	if (new_size < a->pos)
-		return (ERR_ARG);
 	if (ft_realloc((void**)&a->data,
-		(a->size + 7) / 8,
+		(a->pos + 7) / 8,
 		(new_size + 7) / 8))
 		return (ERR_ALLOC);
-	a->size = new_size;
+	a->size = ((new_size + 7) / 8) * 8;
+	a->pos = MIN(a->pos, a->size);
+	return (OK);
+}
+
+int					bitmap_reserve(t_bitmap *a, size_t new_size)
+{
+	new_size = MAX(new_size, a->pos);
+	if (new_size <= a->size)
+		return (OK);
+	bitmap_set_size(a, new_size);
 	return (OK);
 }
 
@@ -79,12 +87,9 @@ bool				bitmap_set_safe(t_bitmap *a, size_t i, bool b)
 
 int					bitmap_push(t_bitmap *a, bool b)
 {
-	size_t			new_size;
-
 	if (a->pos + 1 >= a->size)
 	{
-		new_size = MAX(a->size * 2, 64);
-		if (bitmap_realloc(a, new_size))
+		if (bitmap_set_size(a, (a->pos + 1) * 2))
 			return (ERR_ALLOC);
 	}
 	bitmap_set(a, a->pos, b);
@@ -103,8 +108,9 @@ int					bitmap_pop(t_bitmap *a, bool *data)
 
 	*data = bitmap_get(a, new_pos);
 
-	if (new_pos <= a->size / 4)
-		bitmap_realloc(a, a->size / 8);
+	//put back when you figure out the min alloc
+	//if (new_pos <= a->size / 4)
+	//	bitmap_set_size(a, a->size / 8);
 
 	a->pos = new_pos;
 	return (OK);

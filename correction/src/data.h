@@ -23,6 +23,7 @@ typedef struct		s_array
 	void			*data;
 	size_t			pos;
 	size_t			size;
+	size_t			warning;
 }					t_array;
 
 typedef struct		s_bitmap
@@ -69,6 +70,7 @@ typedef struct		s_bucket
 	t_bitmap		occ;
 	t_array			values;
 	t_sizes			sizes;
+	size_t			count;
 }					t_bucket;
 
 typedef struct		s_pma
@@ -110,13 +112,14 @@ int					array_reserve(t_array *a, size_t s);
 t_bitmap			bitmap(void);
 void				bitmap_free(t_bitmap *a);
 size_t				bitmap_len(const t_bitmap *a);
-int					bitmap_realloc(t_bitmap *bitmap, size_t new_size);
 bool				bitmap_get(const t_bitmap *a, size_t i);
 bool				bitmap_get_safe(const t_bitmap *a, size_t i, bool *out);
 void				bitmap_set(t_bitmap *a, size_t p, bool b);
 bool				bitmap_set_safe(t_bitmap *a, size_t i, bool b);
 int					bitmap_push(t_bitmap *a, bool b);
 int					bitmap_pop(t_bitmap *a, bool *data);
+int					bitmap_set_size(t_bitmap *bitmap, size_t new_size);
+int					bitmap_reserve(t_bitmap *bitmap, size_t new_size);
 
 t_queue				queue(size_t word);
 void				queue_free(t_queue *a);

@@ -286,6 +286,8 @@ void			test_sorted(void)
 	test_sorted_spe(true, true, true);
 }
 
+int				bucket_rebalance(t_bucket *b);
+
 void			pma_display(t_pma *a)
 {
 	size_t		i;
@@ -293,7 +295,9 @@ void			pma_display(t_pma *a)
 	int			n;
 	char		c;
 
-	printf("\n[");
+	printf("\n%lu==%lu: [",
+		bitmap_len(&(a->bucket.occ)),
+		array_len(&(a->bucket.values), a->sizes.key + a->sizes.val));
 	i = 0;
 	while (bitmap_get_safe(&(a->bucket.occ), i, &b))
 	{
@@ -301,7 +305,7 @@ void			pma_display(t_pma *a)
 		i++;
 	}
 	
-	printf("]\n%lu: {", pma_len(a));
+	printf("]\n%lu==%lu: {", pma_len(a), a->bucket.count);
 
 	t_pma_it	it;
 
@@ -341,6 +345,7 @@ void			test_pma(void)
 				break;
 			case 'd': scanf ("%d",&n); pma_delete(&a, &n, &out_key, &out_val); break;
 			case 'i': scanf ("%d%c",&n,&s); pma_insert(&a, &n, &s); break;
+			case 'r': bucket_rebalance(&(a.bucket)); break;
 			default : to_update = false;
 
 
@@ -359,10 +364,10 @@ void			test_pma(void)
 
 int		main(void)
 {
-	//test_array();
-	//test_bitmap();
-	//test_queue();
-	//test_sorted();
+	test_array();
+	test_bitmap();
+	test_queue();
+	test_sorted();
 	test_pma();
 	printf("All checks done, press enter after checking for leaks\n");
 	getchar();

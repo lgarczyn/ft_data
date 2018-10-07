@@ -125,13 +125,3 @@ int					queue_pop_front(t_queue *a, void *data)
 	}
 	return (OK);
 }
-
-int					queue_reserve(t_queue *a, size_t s)
-{
-	if (s > a->size)
-	{
-		if (ft_realloc(&a->data, a->size, s))
-			return (ERR_ALLOC);
-	}
-	return (OK);
-}

@@ -149,6 +149,7 @@ static void		bucket_delete(t_bucket *b, size_t id)
 	value = bucket_at(b, id);
 	ft_bzero(value, b->sizes.val + b->sizes.key);
 	bitmap_set(&(b->occ), id, false);
+	b->count--;
 }
 
 static int		bucket_insert(t_bucket *b, size_t id, const void *key, const void *val)
@@ -170,9 +171,56 @@ static int		bucket_insert(t_bucket *b, size_t id, const void *key, const void *v
 		r = bitmap_push(&(b->occ), true);
 	else
 		bitmap_set(&(b->occ), id + move_len, true);
+	//Find a way to not advance before memory availability has been confirmed
 	if (r)
 		return (r);
 	bucket_set(b, id, key, val);
+	b->count++;
+	return (OK);
+}
+
+int				bucket_rebalance(t_bucket *b)
+{
+	size_t		b_i;
+	size_t		tmp_i;
+	size_t		size;
+	t_array		tmp;
+	size_t		new_size;
+
+	size = b->sizes.key + (size_t)b->sizes.val;
+	if (b->count == 0)
+		return (OK);
+	new_size = b->count * 2 + 1;
+	tmp = array();
+	if (bitmap_reserve(&(b->occ), new_size))
+	 	return (ERR_ALLOC);
+	if (array_reserve(&tmp, new_size * size))
+		return (ERR_ALLOC);
+	b_i = 0;
+	tmp_i = 1;
+	while (b_i < bitmap_len(&(b->occ)))
+	{
+		if (bitmap_get(&(b->occ), b_i))
+		{
+			ft_bzero(tmp.data + (tmp_i * size), size);
+			ft_memmove(
+				tmp.data + (tmp_i * size),
+				b->values.data + (b_i * size), size);
+			ft_bzero(tmp.data + ((tmp_i + 1) * size), size);
+			tmp_i += 2;
+		}
+		b_i++;
+	}
+	tmp.pos = tmp.size;
+	array_free(&(b->values));
+	b->values = tmp;
+	b->occ.pos = b->count * 2 + 1;
+	b_i = 0;
+	while (b_i < bitmap_len(&(b->occ)))
+	{
+		bitmap_set(&(b->occ), b_i, b_i % 2);
+		b_i++;
+	}
 	return (OK);
 }
 
