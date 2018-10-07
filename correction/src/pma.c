@@ -186,6 +186,7 @@ t_pma_en		pma_delete(t_pma *a, const void *key,
 	{
 		bucket_get(&(a->bucket), en.it.bucket_id, out_key, out_val);
 		bucket_delete(&(a->bucket), en.it.bucket_id);
+		a->count--;
 	}
 	en.key = (void*)key;
 	return (en);
@@ -203,10 +204,14 @@ int				pma_insert(t_pma *a, const void *key, const void *val)
 	}
 	else
 	{
-		return (bucket_insert(&(a->bucket), en.it.bucket_id, key, val));
+		if (bucket_insert(&(a->bucket), en.it.bucket_id, key, val))
+			return (ERR_ALLOC);
+		a->count++;
+		return (OK);
 	}
 }
 
+//TO DELETE ?
 int				pma_replace(t_pma *a, void *key, void *val)
 {
 	t_pma_en	en;
@@ -223,6 +228,7 @@ int				pma_replace(t_pma *a, void *key, void *val)
 	{
 		if (bucket_insert(&(a->bucket), en.it.bucket_id, key, val))
 			return (ERR_ALLOC);
+		a->count++;
 		ft_bzero(key, a->sizes.key);
 		ft_bzero(val, a->sizes.val);
 	}
@@ -280,6 +286,7 @@ bool			pmait_delete(t_pma_it *i, void *key, void *val)
 	if (pmait_get(i, key, val))
 	{
 		bucket_delete(&(i->pma->bucket), i->bucket_id);
+		i->pma->count--;
 		return (true);
 	}
 	return (false);
@@ -294,6 +301,7 @@ int				pma_ensure(t_pma_en *en, const void *data)
 			en->it.bucket_id,
 			en->key, data))
 			return (ERR_ALLOC);
+		en->it.pma->count--;
 		en->key = NULL;
 		en->found = true;
 	}
