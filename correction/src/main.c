@@ -293,25 +293,24 @@ void			pma_display(t_pma *a)
 	int			n;
 	char		c;
 
+	printf("\n[");
 	i = 0;
 	while (bitmap_get_safe(&(a->bucket.occ), i, &b))
 	{
-		ft_putchar('0' + i % 10);
+		printf("%c", b ? 'X' : '_');
+		i++;
 	}
-	ft_putchar('\n');
-	i = 0;
-	while (bitmap_get_safe(&(a->bucket.occ), i, &b))
-	{
-		ft_putchar(b ? 'X' : '_');
-	}
-	ft_putchar('\n');
+	
+	printf("]\n%lu: {", pma_len(a));
 
 	t_pma_it	it;
 
 	it = pmait_first(a);
 	while (pmait_next(&it, &n, &c)) {
-		printf("%i:%c\n", n, c);
+		printf("%i:%c ", n, c);
+		i++;
 	}
+	printf("}\n");
 }
 
 void			test_pma(void)
@@ -324,17 +323,25 @@ void			test_pma(void)
 	char		s;
 	int			out_key;
 	char		out_val;
+	bool		to_update;
 
 	a = pma(&lt, sizeof(int), sizeof(char));
-
+	to_update = true;
 	while (1) {
-		pma_display(&a);
+		if (to_update)
+			pma_display(&a);
+		to_update = true;
 		switch (getchar()) {
 			case 'q': return ;
 			case 'f': pma_free(&a); break;
-			case 's': scanf ("%d",&n); printf("%lu\n", pma_search(&a, &n).it.bucket_id); break;
+			case 's':
+				scanf ("%d",&n);
+				printf("a[%lu] == %i\n", pma_search(&a, &n).it.bucket_id, n);
+				to_update = false;
+				break;
 			case 'd': scanf ("%d",&n); pma_delete(&a, &n, &out_key, &out_val); break;
 			case 'i': scanf ("%d%c",&n,&s); pma_insert(&a, &n, &s); break;
+			default : to_update = false;
 
 
 			// pma_replace(&a, void *key, void *val);
@@ -352,10 +359,10 @@ void			test_pma(void)
 
 int		main(void)
 {
-	test_array();
-	test_bitmap();
-	test_queue();
-	test_sorted();
+	//test_array();
+	//test_bitmap();
+	//test_queue();
+	//test_sorted();
 	test_pma();
 	printf("All checks done, press enter after checking for leaks\n");
 	getchar();

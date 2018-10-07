@@ -52,23 +52,40 @@ const void		*pma_cat(const t_pma *a, size_t index)
 	return (bucket_cat(&(a->bucket), index));
 }
 
+size_t			pma_len(const t_pma *a)
+{
+	return (a->count);
+}
+
+size_t			pma_size(const t_pma *a)
+{
+	return (bitmap_len(&(a->bucket.occ)));
+}
+
+
 //add pma search it
 t_pma_en		pma_search_range(const t_pma *a, const void *key, size_t start, size_t end)
 {
 	t_pma_en	res;
 	size_t		i;
 
-	i = start + (end - start) / 2;
 	res.key = (void*)key;
 	//WHILE SEARCH RANGE IS VALID
+	i = start + (end - start) / 2;
 	while (start < end)
 	{
 		//while i is in range, and is not a valid target
 		while (i < end && bitmap_get(&(a->bucket.occ), i) == false)
+		{
+			//printf("WTF3 %lu->%lu %lu\n", start, end, i);
 			i++;
+		}
 		//if i reached end, change range
 		if (i == end)
+		{
+			//printf("WTF4 %lu->%lu %lu  %lu->%lu\n", start, end, i, end, start + (end - start) / 2);
 			end = start + (end - start) / 2;
+		}
 		//if there's only one pos left
 		else if (end == start + 1)
 		{
@@ -80,14 +97,21 @@ t_pma_en		pma_search_range(const t_pma *a, const void *key, size_t start, size_t
 				//if current pos is too small, take next place
 				else
 					i++;
-				break;
 			}
+			break;
 		}
 		//if key is smaller than i, reduce end, else increase start
 		else if (a->predicate(key, pma_cat(a, i)))
+		{
+			//printf("WTF1 %lu->%lu %lu != %lu\n", start, end, i, start + (end - start) / 2);
 			end = i;
+		}
 		else
+		{
+			//printf("WTF2 %lu->%lu %lu != %lu\n", start, end, i, start + (end - start) / 2);
 			start = i;
+		}
+		i = start + (end - start) / 2;
 	}
 	res.it.bucket_id = i;
 	res.found = res.key == NULL;
@@ -96,7 +120,7 @@ t_pma_en		pma_search_range(const t_pma *a, const void *key, size_t start, size_t
 
 t_pma_en		pma_search(const t_pma *a, const void *key)
 {
-	return (pma_search_range(a, key, 0, pma_len(a)));
+	return (pma_search_range(a, key, 0, pma_size(a)));
 }
 
 static void		bucket_set(t_bucket *b, size_t id, const void *key, const void *val)
@@ -158,7 +182,7 @@ t_pma_en		pma_delete(t_pma *a, const void *key,
 	t_pma_en	en;
 
 	en = pma_search(a, key);
-	if (en.key)
+	if (en.found)
 	{
 		bucket_get(&(a->bucket), en.it.bucket_id, out_key, out_val);
 		bucket_delete(&(a->bucket), en.it.bucket_id);
@@ -172,15 +196,15 @@ int				pma_insert(t_pma *a, const void *key, const void *val)
 	t_pma_en	en;
 
 	en = pma_search(a, key);
-	if (en.key == NULL)
+	if (en.found)
 	{
-		return (bucket_insert(&(a->bucket), en.it.bucket_id, key, val));
+		bucket_set(&(a->bucket), en.it.bucket_id, key, val);
+		return (OK);
 	}
 	else
 	{
-		bucket_set(&(a->bucket), en.it.bucket_id, key, val);
+		return (bucket_insert(&(a->bucket), en.it.bucket_id, key, val));
 	}
-	return (OK);
 }
 
 int				pma_replace(t_pma *a, void *key, void *val)
@@ -189,25 +213,20 @@ int				pma_replace(t_pma *a, void *key, void *val)
 	void		*ptr;
 
 	en = pma_search(a, key);
-	if (en.key == NULL)
+	if (en.found)
+	{
+		ptr = pma_at(a, en.it.bucket_id);
+		ft_memswap(ptr, key, a->sizes.key);
+		ft_memswap(ptr + a->sizes.key, val, a->sizes.val);
+	}
+	else
 	{
 		if (bucket_insert(&(a->bucket), en.it.bucket_id, key, val))
 			return (ERR_ALLOC);
 		ft_bzero(key, a->sizes.key);
 		ft_bzero(val, a->sizes.val);
 	}
-	else
-	{
-		ptr = pma_at(a, en.it.bucket_id);
-		ft_memswap(ptr, key, a->sizes.key);
-		ft_memswap(ptr + a->sizes.key, val, a->sizes.val);
-	}
 	return (OK);
-}
-
-size_t			pma_len(const t_pma *a)
-{
-	return (a->count);
 }
 
 bool			pmait_get(t_pma_it *i, void *key, void *val)
@@ -268,7 +287,7 @@ bool			pmait_delete(t_pma_it *i, void *key, void *val)
 
 int				pma_ensure(t_pma_en *en, const void *data)
 {
-	if (en->key != NULL)
+	if (en->found == false)
 	{
 		if (bucket_insert(
 			&(en->it.pma->bucket),
