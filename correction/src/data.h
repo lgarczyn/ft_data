@@ -67,7 +67,7 @@ typedef struct		s_sizes
 
 typedef struct		s_bucket
 {
-	t_bitmap		occ;
+	t_bitmap		flags;
 	t_array			values;
 	t_sizes			sizes;
 	size_t			count;
@@ -79,13 +79,12 @@ typedef struct		s_pma
 	size_t			count;
 	t_predicate		predicate;
 	t_bucket		bucket;
-	//t_array			data;
 }					t_pma;
 
 typedef struct		s_pma_it
 {
 	t_pma			*pma;
-	size_t			bucket_id;
+	size_t			id;
 //	size_t			data_id;
 }					t_pma_it;
 
@@ -153,7 +152,6 @@ t_pma_en			pma_search(const t_pma *a, const void *key);
 t_pma_en			pma_delete(t_pma *a, const void *key,
 	void *out_key, void *out_val);
 int					pma_insert(t_pma *a, const void *key, const void *val);
-int					pma_replace(t_pma *a, void *key, void *val);
 size_t				pma_len(const t_pma *a);
 bool				pmait_get(t_pma_it *i, void *key, void *val);
 bool				pmait_next(t_pma_it *i, void *key, void *val);

@@ -298,10 +298,10 @@ void			pma_display(t_pma *a)
 	char		c;
 
 	printf("\n%lu==%lu: [",
-		bitmap_len(&(a->bucket.occ)),
+		bitmap_len(&(a->bucket.flags)),
 		array_len(&(a->bucket.values), a->sizes.key + a->sizes.val));
 	i = 0;
-	while (bitmap_get_safe(&(a->bucket.occ), i, &b))
+	while (bitmap_get_safe(&(a->bucket.flags), i, &b))
 	{
 		printf("%c", b ? 'X' : '_');
 		i++;
@@ -344,7 +344,7 @@ void			test_pma(void)
 			case 'f': pma_free(&a); break;
 			case 's':
 				scanf ("%d",&n);
-				printf("a[%lu] == %i\n", pma_search(&a, &n).it.bucket_id, n);
+				printf("a[%lu] == %i\n", pma_search(&a, &n).it.id, n);
 				to_update = false;
 				break;
 			case 'd': scanf ("%d",&n); pma_delete(&a, &n, &out_key, &out_val); break;
