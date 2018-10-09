@@ -15,6 +15,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <time.h>
 
 #define PRINT_ERR(a, b) do { printf("%s:%i (i=%i): %lu != %lu\n",\
 	__FILE__, __LINE__, i, (size_t)a, (size_t)b);} while (0)
@@ -317,6 +319,7 @@ void			pma_display(t_pma *a)
 	printf("}\n");
 }
 
+
 void			test_pma(void)
 {
 	//reproduce test_sorted
@@ -330,6 +333,7 @@ void			test_pma(void)
 	bool		to_update;
 
 	a = pma(&lt, sizeof(int), sizeof(char));
+	srand(clock());
 	to_update = true;
 	while (1) {
 		if (to_update)
@@ -345,9 +349,26 @@ void			test_pma(void)
 				break;
 			case 'd': scanf ("%d",&n); pma_delete(&a, &n, &out_key, &out_val); break;
 			case 'i': scanf ("%d%c",&n,&s); pma_insert(&a, &n, &s); break;
-			case 'r': bucket_rebalance(&(a.bucket)); break;
-			default : to_update = false;
+			case 'r': 
+				n = rand();
+				s = rand() % 26 + 'A';
+				pma_insert(&a, &n, &s);
+				to_update = false;
+				break;
+			case 'm':
+				for (int i = 0; i < 1000000; i++)
+				{	
+					n = rand();
+					s = rand() % 26 + 'A';
+					if (rand() % 13 == 0)
+						pma_delete(&a, &n, &n, &s);
+					else
+						pma_insert(&a, &n, &s);
 
+				}
+
+				break;
+			default : to_update = false;
 
 			// pma_replace(&a, void *key, void *val);
 			// size_t				pma_len(const &a);
@@ -364,10 +385,10 @@ void			test_pma(void)
 
 int		main(void)
 {
-	test_array();
-	test_bitmap();
-	test_queue();
-	test_sorted();
+// 	test_array();
+// 	test_bitmap();
+// 	test_queue();
+// 	test_sorted();
 	test_pma();
 	printf("All checks done, press enter after checking for leaks\n");
 	getchar();

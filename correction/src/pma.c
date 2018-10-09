@@ -142,42 +142,8 @@ static void		bucket_get(t_bucket *b, size_t id, void *key, void *val)
 	ft_memmove(val, ptr + b->sizes.key, b->sizes.val);
 }
 
-static void		bucket_delete(t_bucket *b, size_t id)
-{
-	void		*value;
-
-	value = bucket_at(b, id);
-	ft_bzero(value, b->sizes.val + b->sizes.key);
-	bitmap_set(&(b->occ), id, false);
-	b->count--;
-}
-
-static int		bucket_insert(t_bucket *b, size_t id, const void *key, const void *val)
-{
-	size_t		move_len;
-	size_t		size;
-	int			r;
-
-	move_len = 0;
-	while (id + move_len < b->occ.pos && bitmap_get(&(b->occ), id + move_len))
-	{
-		move_len++;
-	}
-	size = b->sizes.key + b->sizes.val;
-	r = array_move(&(b->values), id * size, (id + 1) * size, move_len * size);
-	if (r)
-		return (r);
-	if (id + move_len == b->occ.pos)
-		r = bitmap_push(&(b->occ), true);
-	else
-		bitmap_set(&(b->occ), id + move_len, true);
-	//Find a way to not advance before memory availability has been confirmed
-	if (r)
-		return (r);
-	bucket_set(b, id, key, val);
-	b->count++;
-	return (OK);
-}
+#define MAGIC 4
+#define MAGIC_2 100
 
 int				bucket_rebalance(t_bucket *b)
 {
@@ -188,16 +154,16 @@ int				bucket_rebalance(t_bucket *b)
 	size_t		new_size;
 
 	size = b->sizes.key + (size_t)b->sizes.val;
-	if (b->count == 0)
-		return (OK);
-	new_size = b->count * 2 + 1;
+	new_size = b->count * MAGIC + (MAGIC - 1);
 	tmp = array();
 	if (bitmap_reserve(&(b->occ), new_size))
 	 	return (ERR_ALLOC);
+	b->occ.pos = new_size;
 	if (array_reserve(&tmp, new_size * size))
 		return (ERR_ALLOC);
+	tmp.pos = new_size;
 	b_i = 0;
-	tmp_i = 1;
+	tmp_i = MAGIC - 1;
 	while (b_i < bitmap_len(&(b->occ)))
 	{
 		if (bitmap_get(&(b->occ), b_i))
@@ -207,21 +173,100 @@ int				bucket_rebalance(t_bucket *b)
 				tmp.data + (tmp_i * size),
 				b->values.data + (b_i * size), size);
 			ft_bzero(tmp.data + ((tmp_i + 1) * size), size);
-			tmp_i += 2;
+			tmp_i += MAGIC;
 		}
 		b_i++;
 	}
 	tmp.pos = tmp.size;
 	array_free(&(b->values));
 	b->values = tmp;
-	b->occ.pos = b->count * 2 + 1;
 	b_i = 0;
 	while (b_i < bitmap_len(&(b->occ)))
 	{
-		bitmap_set(&(b->occ), b_i, b_i % 2);
+		bitmap_set(&(b->occ), b_i, b_i % MAGIC == MAGIC - 1);
 		b_i++;
 	}
 	return (OK);
+}
+
+static size_t	count_moves(t_bitmap *b, size_t id, bool *forward)
+{
+	size_t		r;
+
+	r = 0;
+	while (id + r < bitmap_len(b) && bitmap_get(b, id + r))
+		r++;
+	if (id + r < bitmap_len(b))
+	{
+		*forward = true;
+		return (r);
+	}
+	*forward = false;
+	r = 0;
+	while (r < id && bitmap_get(b, id - r))
+		r++;
+	if (r >= id)
+	{
+		ft_perror("room wasn't made");
+		ft_putchar('\n');
+		exit(1);
+	}
+	return (r);
+}
+
+static int		bucket_insert(t_bucket *b, size_t id, const void *key, const void *val)
+{
+	size_t		move_len;
+	size_t		size;
+	bool		forward;
+
+	if (b->count * 2 + 1 > bitmap_len(&(b->occ)))
+	{
+		ft_putendl("rebalancing for count");
+		if (bucket_rebalance(b))
+		{
+			b->count--;
+			return (ERR_ALLOC);
+		}
+	}
+	if (id == bitmap_len(&(b->occ)))
+		id--;
+	move_len = count_moves(&(b->occ), id, &forward);
+
+	if (move_len > MAGIC_2)
+	{
+		ft_putendl("rebalancing for move_len");
+		if (bucket_rebalance(b))
+			return (ERR_ALLOC);
+		move_len = count_moves(&(b->occ), id, &forward);
+	} 
+
+	size = b->sizes.key + b->sizes.val;
+	if (forward)
+	{
+		array_move(&(b->values), id * size, (id + 1) * size, move_len * size);
+		bitmap_set(&(b->occ), id + move_len, true);
+	}
+	else
+	{
+		array_move(&(b->values), (id - move_len) * size, (id - move_len - 1) * size, move_len * size);
+		bitmap_set(&(b->occ), id - move_len - 1, true);
+	}
+	bucket_set(b, id, key, val);
+	b->count++;
+	return (OK);
+}
+
+static void		bucket_delete(t_bucket *b, size_t id)
+{
+	void		*value;
+
+	value = bucket_at(b, id);
+	ft_bzero(value, b->sizes.val + b->sizes.key);
+	bitmap_set(&(b->occ), id, false);
+	b->count--;
+	if (b->count * MAGIC * MAGIC < bitmap_len(&(b->occ)))
+		bucket_rebalance(b);
 }
 
 t_pma_en		pma_delete(t_pma *a, const void *key,

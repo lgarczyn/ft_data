@@ -115,6 +115,7 @@ int				array_reserve(t_array *a, size_t s)
 	{
 		if (ft_realloc(&a->data, a->pos, s))
 			return (ERR_ALLOC);
+		a->size = s;
 	}
 	return (OK);
 }
