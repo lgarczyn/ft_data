@@ -20,7 +20,7 @@ OBJ = $(addprefix obj/, $(addsuffix .o, $(basename $(SRC))))
 
 LIB = -L libft -lft -L printf -lftprintf
 
-DEB = -g -g3 -fsanitize=address 
+DEB = -g -g3 #-fsanitize=address 
 
 OPT = -O0 #-O3
 

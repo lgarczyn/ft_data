@@ -24,7 +24,7 @@ OBJ = $(addprefix obj/, $(addsuffix .o, $(basename $(SRC))))
 
 LIB = -L ../libft/ -lft
 
-DEB =  -g -g3 -fsanitize=address
+DEB =  -g -g3 #-fsanitize=address
 
 OPT = -O3
 

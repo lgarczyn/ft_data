@@ -6,13 +6,13 @@
 #    By: lgarczyn <lgarczyn@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/05/06 14:07:52 by lgarczyn          #+#    #+#              #
-#    Updated: 2018/03/28 20:20:10 by lgarczyn         ###   ########.fr        #
+#    Updated: 2018/10/09 21:24:46 by lgarczyn         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = libft.a
 
-DEB = -g -g3 -fsanitize=address
+DEB = -g -g3 #-fsanitize=address
 
 OPT = -O3
 

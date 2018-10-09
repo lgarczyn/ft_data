@@ -360,9 +360,9 @@ void			test_pma(void)
 				{	
 					n = rand();
 					s = rand() % 26 + 'A';
-					if (rand() % 13 == 0)
-						pma_delete(&a, &n, &n, &s);
-					else
+					// if (rand() % 13 == 0)
+					// 	pma_delete(&a, &n, &n, &s);
+					// else
 						pma_insert(&a, &n, &s);
 
 				}

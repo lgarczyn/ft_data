@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   data.h                                             :+:      :+:    :+:   */
+/*   pma.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lgarczyn <lgarczyn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/07 16:18:53 by lgarczyn          #+#    #+#             */
-/*   Updated: 2018/03/28 23:47:55 by lgarczyn         ###   ########.fr       */
+/*   Updated: 2018/10/09 21:52:37 by lgarczyn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ t_pma_en		pma_search_range(const t_pma *a, const void *key, size_t start, size_t
 	size_t		i;
 
 	res.key = (void*)key;
+	res.it.pma = (t_pma*)a;
 	//WHILE SEARCH RANGE IS VALID
 	i = start + (end - start) / 2;
 	while (start < end)
@@ -157,10 +158,10 @@ int				bucket_rebalance(t_bucket *b)
 	tmp = array();
 	if (bitmap_reserve(&(b->flags), new_size))
 	 	return (ERR_ALLOC);
-	b->flags.pos = new_size;
 	if (array_reserve(&tmp, new_size * size))
 		return (ERR_ALLOC);
-	tmp.pos = new_size;
+	b->flags.pos = new_size;
+	tmp.pos = new_size * size;
 	b_i = 0;
 	tmp_i = MAGIC - 1;
 	while (b_i < bucket_size(b))
