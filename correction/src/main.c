@@ -6,7 +6,7 @@
 /*   By: lgarczyn <lgarczyn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/20 12:12:22 by lgarczyn          #+#    #+#             */
-/*   Updated: 2018/10/10 04:10:54 by lgarczyn         ###   ########.fr       */
+/*   Updated: 2018/10/10 22:49:53 by lgarczyn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,16 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define PRINT_ERR(a, b) do { printf("%s:%i (i=%i): %lu != %lu\n",\
-	__FILE__, __LINE__, i, (size_t)a, (size_t)b);} while (0)
+#define PRINT_ERR(a, b) do { printf("line:%i i:%i %lu!=%lu\n",\
+	__LINE__, i, (size_t)a, (size_t)b);} while (0)
+
+// #define TEST_ARRAY
+// #define TEST_BITMAP
+// #define TEST_QUEUE
+#define TEST_SORTED
+#define TEST_PMA
+
+#ifdef TEST_ARRAY
 
 void			test_array(void)
 {
@@ -82,6 +90,10 @@ void			test_array(void)
 	}
 }
 
+#endif
+
+#ifdef TEST_BITMAP
+
 void			test_bitmap(void)
 {
 	t_bitmap	b;
@@ -128,6 +140,10 @@ void			test_bitmap(void)
 	bitmap_free(&b);
 }
 
+#endif
+
+#ifdef			TEST_QUEUE
+
 void			test_queue_spe(bool push_back, bool pop_back)
 {
 	t_queue		a;
@@ -164,6 +180,8 @@ void			test_queue(void)
 	test_queue_spe(true, true);
 }
 
+#endif
+
 int				lt(const void *a, const void *b)
 {
 	return (*((int*)a) < *((int*)b));
@@ -174,17 +192,39 @@ int				gt(const void *a, const void *b)
 	return (*((int *)a) > *((int *)b));
 }
 
+int				lt_str(const void *a, const void *b)
+{
+	size_t		strla = strlen(a);
+	size_t		strlb = strlen(b);
+	
+	if (strla != strlb)
+		return (strla < strlb);
+	return (strcmp(a, b) < 0);
+}
+
+int				gt_str(const void *a, const void *b)
+{
+	size_t		strla = strlen(a);
+	size_t		strlb = strlen(b);
+	
+	if (strla != strlb)
+		return (strla > strlb);
+	return (strcmp(a, b) > 0);
+}
+
 typedef void	(*t_order)(char *buffer, int i, int max);
 
 void			asc(char *buffer, int i, int max)
 {
 	*(int*)buffer = i;
+	buffer[sizeof(int)] = '\0';
 	(void)max;
 }
 
 void			desc(char *buffer, int i, int max)
 {
 	*(int*)buffer = max - 1 - i;
+	buffer[sizeof(int)] = '\0';
 }
 
 void			gray(char *buffer, int i, int max)
@@ -192,6 +232,7 @@ void			gray(char *buffer, int i, int max)
 	if ((max & (max - 1)) != 0)
 		printf("max is not a power of 2\n");
 	*(int*)buffer = i ^ (i >> 1);
+	buffer[sizeof(int)] = '\0';
 }
 
 void			asc_str(char *buffer, int i, int max)
@@ -212,45 +253,70 @@ void			gray_str(char *buffer, int i, int max)
 	sprintf(buffer, "%i", i ^ (i >> 1));
 }
 
+typedef int		(*t_reverse)(const char *buffer);
+
+int				reverse_int(const char *buffer)
+{
+	return (*(int*)buffer);
+}
+
+int				reverse_str(const char *buffer)
+{
+	return (atoi(buffer));
+}
+
 #define TEST_NUM (1 << 11)
 #define TEST_NUM_INC (TEST_NUM - 1)
 
-void			check(t_sorted *a, bool reversed)
+#ifdef TEST_SORTED
+
+
+void			check(t_sorted *a, t_reverse r, bool reversed)
 {
 	for (int i = 0; i < TEST_NUM; i++)
 	{
 		int j = reversed ? TEST_NUM_INC - i : i;
-		if (*(int*)sorted_cget(a, i) != j)
-			printf("error check %i!=%i\n", j, *(int*)sorted_cget(a, i));
+		
+		int got = r(sorted_cget(a, i));
+		if (got != j)
+			PRINT_ERR(j, got);
 	}
 }
 
-void			check_pop(t_sorted *a, bool reversed)
+void			check_pop(t_sorted *a, t_reverse r, bool reversed)
 {
-	int			ret;
+	char		buffer[12];
 
 	for (int i = 0; i < TEST_NUM; i++)
 	{
 		int j = reversed ? i : TEST_NUM_INC - i;
-		if (sorted_pop(a, &ret))
+		if (sorted_pop(a, &buffer))
 			printf("pop returned non-zero\n");
-		if (ret != j)
-			printf("error check_sorted 1 %i!=%i\n", j, ret);
+		int got = r(buffer);
+		if (got != j)
+			PRINT_ERR(j, got);
 	}
 	if (sorted_len(a) != 0)
-		printf("error check_sorted 2 %lu!=0\n", sorted_len(a));
+		printf("check pop non-empty\n");
 }
 
-void			check_delete(t_sorted *a, t_order o)
+void			check_delete(t_sorted *a, t_order o, t_reverse r)
 {
-	int			ret;
+	char		buffer1[12];
+	char		buffer2[12];
 
 	for (int i = 0; i < TEST_NUM; i++)
 	{
-		int j = o(i, TEST_NUM);
-		sorted_delete(a, &j, &ret);
-		if (ret != j)
-			printf("error check_delete 1 %i!=%i\n", ret, j);
+		o(buffer1, i, TEST_NUM);
+		if (sorted_delete(a, &buffer1, &buffer2).found == false)
+		{
+			PRINT_ERR(0, 1);
+			continue;
+		}
+		int a = r(buffer1);
+		int b = r(buffer2);
+		if (a != b)
+			PRINT_ERR(a, b);
 	}
 	if (sorted_len(a) != 0)
 		printf("error check_delete 2 %lu!=0\n", sorted_len(a));
@@ -258,65 +324,93 @@ void			check_delete(t_sorted *a, t_order o)
 
 void			fill(t_sorted *a, t_order o)
 {
+	char		buffer[12];
+
 	for (int i = 0; i < TEST_NUM; i++)
 	{
-		int j = o(i, TEST_NUM);
-		if (sorted_insert(a, &j))
+		o(buffer, i, TEST_NUM);
+		if (sorted_insert(a, &buffer))
 			printf("sorted returned non-zero\n");
 	}
 }
 
-void			fill_delete(t_sorted *a, t_order o)
+void			fill_delete(t_sorted *a, t_order o, t_reverse r)
 {
-	int			r;
+	char		buffer1[12];
+	char		buffer2[12];
 
 	for (int i = 0; i < TEST_NUM_INC; i++)
 	{
-		int j = o(i, TEST_NUM);
-		if (sorted_insert(a, &j))
+		o(buffer1, i, TEST_NUM);
+		if (sorted_insert(a, &buffer1))
 			printf("sorted insert returned non-zero\n");
-		j = o(i + 1, TEST_NUM);
-		if (sorted_insert(a, &j))
+		o(buffer1, i + 1, TEST_NUM);
+		if (sorted_insert(a, &buffer1))
 			printf("sorted insert returned non-zero\n");
-		sorted_delete(a, &j, NULL);
-		if (sorted_insert(a, &j))
+		sorted_delete(a, &buffer1, NULL);
+		if (sorted_insert(a, &buffer1))
 			printf("sorted insert returned non-zero\n");
-		sorted_delete(a, &j, &r);
-		if (r != j)
-			printf("delete doesnt return correct value\n");
+		sorted_delete(a, &buffer1, &buffer2);
+		int a = r(buffer1);
+		int b = r(buffer2);
+		if (a != b)
+			PRINT_ERR(a, b);
 	}
-	int j = o(TEST_NUM_INC, TEST_NUM);
-	if (sorted_insert(a, &j))
+	o(buffer1, TEST_NUM_INC, TEST_NUM);
+	if (sorted_insert(a, &buffer1))
 		printf("sorted insert returned non-zero\n");
 }
 
-void			test_sorted_spe(bool less_pred, t_order o)
+void			test_sorted_spe(bool less_pred, bool str, t_order o)
 {
 	t_sorted	a;
+	t_uint		size;
+	t_predicate	pred;
+	t_reverse	rev;
 
 	a = sorted(&lt, sizeof(int));
 	sorted_free(&a);
-	if (less_pred)
-		a = sorted(&lt, sizeof(int));
+	if (str)
+	{
+		size = sizeof(char) * 12;
+		pred = less_pred ? &lt_str : &gt_str;
+		rev = &reverse_str;
+	}
 	else
-		a = sorted(&gt, sizeof(int));
+	{
+		size = sizeof(int);
+		pred = less_pred ? &lt : &gt;
+		rev = &reverse_int;
+	}
+	a = sorted(pred, size);
 	fill(&a, o);
-	fill_delete(&a, o);
-	check(&a, less_pred == false);
-	check_delete(&a, o);
-	fill(&a, o);
-	check_pop(&a, less_pred == false);
+	fill_delete(&a, o, rev);
+	check(&a, rev, less_pred == false);
+	check_delete(&a, o, rev);
+	fill_delete(&a, o, rev);
+	check_pop(&a, rev, less_pred == false);
 }
 
 void			test_sorted(void)
 {
-	test_sorted_spe(false, asc);
-	test_sorted_spe(false, desc);
-	test_sorted_spe(false, gray);
-	test_sorted_spe(true, asc);
-	test_sorted_spe(true, desc);
-	test_sorted_spe(true, gray);
+	test_sorted_spe(false, false, asc);
+	test_sorted_spe(false, false, desc);
+	test_sorted_spe(false, false, gray);
+	test_sorted_spe(true, false, asc);
+	test_sorted_spe(true, false, desc);
+	test_sorted_spe(true, false, gray);
+
+	test_sorted_spe(false, true, asc_str);
+	test_sorted_spe(false, true, desc_str);
+	test_sorted_spe(false, true, gray_str);
+	test_sorted_spe(true, true, asc_str);
+	test_sorted_spe(true, true, desc_str);
+	test_sorted_spe(true, true, gray_str);
 }
+
+#endif
+
+#ifdef TEST_PMA
 
 void			pma_display(t_pma *a)
 {
@@ -350,9 +444,6 @@ void			pma_display(t_pma *a)
 
 void			test_pma(void)
 {
-	//reproduce test_sorted
-	//reproduce test_queue
-
 	t_pma		a;
 	int			n;
 	char		s;
@@ -410,13 +501,44 @@ void			test_pma(void)
 	}
 }
 
-int		main(void)
+#endif
+
+bool		check_test(char *str)
 {
-// 	test_array();
-// 	test_bitmap();
-// 	test_queue();
- 	test_sorted();
-	test_pma();
+	char	c;
+	printf("check %s? [y/n]\n", str);
+	while (1)
+	{
+		c = getchar();
+		if (c == 'y')
+			return (true);
+		if (c == 'n')
+			return (false);
+	}
+}
+
+int			main(void)
+{
+	#ifdef TEST_ARRAY
+	if (check_test("array"))
+	 	test_array();
+	#endif
+	#ifdef TEST_BITMAP
+	if (check_test("bitmap"))
+		test_bitmap();
+	#endif
+	#ifdef TEST_QUEUE
+	if (check_test("queue"))
+		test_queue();
+	#endif
+	#ifdef TEST_SORTED
+ 	if (check_test("sorted"))
+ 		test_sorted();
+	#endif
+	#ifdef TEST_PMA
+	if (check_test("pma"))
+		test_pma();
+	#endif
 	printf("All checks done, press enter after checking for leaks\n");
 	getchar();
 	return (0);
