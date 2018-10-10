@@ -6,7 +6,7 @@
 /*   By: lgarczyn <lgarczyn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/07 16:18:53 by lgarczyn          #+#    #+#             */
-/*   Updated: 2018/10/10 22:47:58 by lgarczyn         ###   ########.fr       */
+/*   Updated: 2018/10/10 23:48:46 by lgarczyn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,7 +150,7 @@ void				queue_free(t_queue *a);
 size_t				queue_len(const t_queue *a);
 int					queue_push_back(t_queue *a, const void *data);
 int					queue_push_front(t_queue *a, const void *data);
-int					queue_pop_back(t_queue *a, void *data);
+int					queue_pop_back(t_queue *a, void *data);//CHANGE TO BOOL
 int					queue_pop_front(t_queue *a, void *data);
 int					queue_reserve(t_queue *a, size_t s);
 
@@ -174,13 +174,15 @@ size_t				sorted_len(const t_sorted *a);
 t_pma				pma(t_predicate predicate, t_uint key, t_uint value);
 void				pma_free(t_pma *a);
 t_pma_en			pma_search(const t_pma *a, const void *key);
+int					pma_insert(t_pma *a, const void *key, const void *val);
 t_pma_en			pma_delete(t_pma *a, const void *key,
 	void *out_key, void *out_val);
-int					pma_insert(t_pma *a, const void *key, const void *val);
+bool				pma_get(const t_pma *a, const void *key,
+	void *out_key, void *out_val);
 size_t				pma_len(const t_pma *a);
 
-int					pma_pop_back(t_pma *a, void *key, void *val);
-int					pma_pop_front(t_pma *a, void *key, void *val);
+bool				pma_pop_back(t_pma *a, void *key, void *val);
+bool				pma_pop_front(t_pma *a, void *key, void *val);
 
 bool				pmait_get(t_pma_it *i, void *key, void *val);
 bool				pmait_next(t_pma_it *i, void *key, void *val);

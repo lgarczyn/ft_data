@@ -6,7 +6,7 @@
 /*   By: lgarczyn <lgarczyn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/07 16:18:53 by lgarczyn          #+#    #+#             */
-/*   Updated: 2018/10/09 21:52:37 by lgarczyn         ###   ########.fr       */
+/*   Updated: 2018/10/11 00:29:19 by lgarczyn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -326,17 +326,24 @@ bool			pmait_next(t_pma_it *i, void *key, void *val)
 
 bool			pmait_prev(t_pma_it *i, void *key, void *val)
 {
-	bool		b;
+	t_pma		*a;
 	t_bitmap	*bmp;
 
-	bmp = &(i->pma->bucket.flags);
-	b = true;
-	if (pmait_get(i, key, val))
-	{
-		while (bitmap_get_safe(bmp, i->id, &b) && b == false)
-			i->id--;
-		return (true);
-	}
+	a = i->pma;
+	bmp = &(a->bucket.flags);
+
+	if (i->id == 0)
+		return (false);
+	i->id --;
+	while (i->id > 0 && bitmap_get(bmp, i->id) == false)
+		i->id--;
+	if (bitmap_get(bmp, i->id) == false)
+		return (false);
+	
+	if (key)
+		ft_memmove(key, pma_cat(a, i->id), a->sizes.key);
+	if (val)
+		ft_memmove(val, pma_cat(a, i->id) + a->sizes.key, a->sizes.val);
 	return (false);
 }
 
@@ -382,5 +389,39 @@ t_pma_it		pmait_last(t_pma *a)
 
 	it.id = bitmap_len(&(a->bucket.flags));
 	it.pma = a;
+	pmait_prev(&it, NULL, NULL);
 	return (it);
+}
+
+bool			pma_get(const t_pma *a, const void *key,
+	void *out_key, void *out_val)
+{
+	t_pma_en	en;
+
+	en = pma_search(a, key);
+	if (en.found)
+		pmait_get(&(en.it), out_key, out_val);
+	return (en.found);
+}
+
+bool			pma_pop_back(t_pma *a, void *key, void *val)
+{
+	t_pma_it		it;
+
+	it = pmait_last(a);
+	if (pmait_get(&it, key, val) == false)
+		return (false);
+	pmait_delete(&it, NULL, NULL);
+	return (true);
+}
+
+bool			pma_pop_front(t_pma *a, void *key, void *val)
+{
+	t_pma_it		it;
+
+	it = pmait_first(a);
+	if (pmait_get(&it, key, val) == false)
+		return (false);
+	pmait_delete(&it, NULL, NULL);
+	return (true);
 }
