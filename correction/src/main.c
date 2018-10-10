@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lgarczyn <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: lgarczyn <lgarczyn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/20 12:12:22 by lgarczyn          #+#    #+#             */
-/*   Updated: 2018/09/20 12:12:23 by lgarczyn         ###   ########.fr       */
+/*   Updated: 2018/10/10 04:10:54 by lgarczyn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,124 +171,152 @@ int				lt(const void *a, const void *b)
 
 int				gt(const void *a, const void *b)
 {
-	return (*((int *)a)> *((int *)b));
+	return (*((int *)a) > *((int *)b));
 }
 
-void			test_sorted_spe(bool less_pred, bool asc, bool split)
+typedef void	(*t_order)(char *buffer, int i, int max);
+
+void			asc(char *buffer, int i, int max)
+{
+	*(int*)buffer = i;
+	(void)max;
+}
+
+void			desc(char *buffer, int i, int max)
+{
+	*(int*)buffer = max - 1 - i;
+}
+
+void			gray(char *buffer, int i, int max)
+{
+	if ((max & (max - 1)) != 0)
+		printf("max is not a power of 2\n");
+	*(int*)buffer = i ^ (i >> 1);
+}
+
+void			asc_str(char *buffer, int i, int max)
+{
+	sprintf(buffer, "%i", i);
+	(void)max;
+}
+
+void			desc_str(char *buffer, int i, int max)
+{
+	sprintf(buffer, "%i", max - 1 - i);
+}
+
+void			gray_str(char *buffer, int i, int max)
+{
+	if ((max & (max - 1)) != 0)
+		printf("max is not a power of 2\n");
+	sprintf(buffer, "%i", i ^ (i >> 1));
+}
+
+#define TEST_NUM (1 << 11)
+#define TEST_NUM_INC (TEST_NUM - 1)
+
+void			check(t_sorted *a, bool reversed)
+{
+	for (int i = 0; i < TEST_NUM; i++)
+	{
+		int j = reversed ? TEST_NUM_INC - i : i;
+		if (*(int*)sorted_cget(a, i) != j)
+			printf("error check %i!=%i\n", j, *(int*)sorted_cget(a, i));
+	}
+}
+
+void			check_pop(t_sorted *a, bool reversed)
+{
+	int			ret;
+
+	for (int i = 0; i < TEST_NUM; i++)
+	{
+		int j = reversed ? i : TEST_NUM_INC - i;
+		if (sorted_pop(a, &ret))
+			printf("pop returned non-zero\n");
+		if (ret != j)
+			printf("error check_sorted 1 %i!=%i\n", j, ret);
+	}
+	if (sorted_len(a) != 0)
+		printf("error check_sorted 2 %lu!=0\n", sorted_len(a));
+}
+
+void			check_delete(t_sorted *a, t_order o)
+{
+	int			ret;
+
+	for (int i = 0; i < TEST_NUM; i++)
+	{
+		int j = o(i, TEST_NUM);
+		sorted_delete(a, &j, &ret);
+		if (ret != j)
+			printf("error check_delete 1 %i!=%i\n", ret, j);
+	}
+	if (sorted_len(a) != 0)
+		printf("error check_delete 2 %lu!=0\n", sorted_len(a));
+}
+
+void			fill(t_sorted *a, t_order o)
+{
+	for (int i = 0; i < TEST_NUM; i++)
+	{
+		int j = o(i, TEST_NUM);
+		if (sorted_insert(a, &j))
+			printf("sorted returned non-zero\n");
+	}
+}
+
+void			fill_delete(t_sorted *a, t_order o)
+{
+	int			r;
+
+	for (int i = 0; i < TEST_NUM_INC; i++)
+	{
+		int j = o(i, TEST_NUM);
+		if (sorted_insert(a, &j))
+			printf("sorted insert returned non-zero\n");
+		j = o(i + 1, TEST_NUM);
+		if (sorted_insert(a, &j))
+			printf("sorted insert returned non-zero\n");
+		sorted_delete(a, &j, NULL);
+		if (sorted_insert(a, &j))
+			printf("sorted insert returned non-zero\n");
+		sorted_delete(a, &j, &r);
+		if (r != j)
+			printf("delete doesnt return correct value\n");
+	}
+	int j = o(TEST_NUM_INC, TEST_NUM);
+	if (sorted_insert(a, &j))
+		printf("sorted insert returned non-zero\n");
+}
+
+void			test_sorted_spe(bool less_pred, t_order o)
 {
 	t_sorted	a;
-	t_searchres	res;
-	int			i;
-	int			j;
-	int			k;
-	int			ret;
-	int			max;
-
-	max = 20000;
 
 	a = sorted(&lt, sizeof(int));
 	sorted_free(&a);
 	if (less_pred)
-	{
 		a = sorted(&lt, sizeof(int));
-		max = 20000;
-	}
 	else
-	{
 		a = sorted(&gt, sizeof(int));
-		max = -20000;
-	}
-	sorted_free(&a);
-	for (i = 0; i < 10000; i++)
-	{
-		j = 9999 - i;
-		k = i + 1;
-
-		if (split)
-			if (asc)
-			{
-				sorted_insert(&a, &j);
-				sorted_insert(&a, &i);
-			}
-			else
-			{
-				sorted_insert(&a, &i);
-				sorted_insert(&a, &j);
-			}
-		else
-		{
-			if (asc)
-				sorted_insert(&a, &i);
-			else
-				sorted_insert(&a, &j);
-		}
-		res = sorted_search(&a, &i);
-		//printf("i: %i\n", i);
-		// for (size_t i = 0; i < sorted_len(&a); i++)
-		// 	printf("%i ", *(int*)sorted_cget(&a, i));
-		// printf("\n");
-		if (asc == false && split == false && less_pred)
-		{
-			if ((i < 5000 && res.index != 0 && res.found) ||
-				(i >= 5000 && res.index != (size_t)i - 5000 && res.found == false))
-				PRINT_ERR(0, res.index);
-		}
-		else if (less_pred)
-		{
-			if (res.index != (size_t)i || res.found != true)
-				PRINT_ERR(0, res.index);
-		}
-		if (asc && split == false)
-		{
-			res = sorted_search(&a, &k);
-			if (res.index != (size_t)k && res.index != false)
-				PRINT_ERR(k, res.index);
-		}
-		
-		res = sorted_search(&a, &max);
-		if (res.index != sorted_len(&a) || res.found != false)
-			PRINT_ERR(res.index, sorted_len(&a));
-
-		sorted_insert(&a, &max);
-		
-		res = sorted_search(&a, &max);
-		if (res.index != sorted_len(&a) - 1 || res.found != true)
-			PRINT_ERR(res.index, sorted_len(&a));
-		
-		sorted_pop(&a, &ret);
-		if (ret != max)
-			PRINT_ERR(ret, max);
-		
-		res = sorted_delete(&a, &max, NULL);
-		if (res.found != true && res.index != sorted_len(&a))
-			PRINT_ERR(res.index, sorted_len(&a));
-		
-		res = sorted_search(&a, &max);
-		if (res.index != sorted_len(&a) || res.found != false)
-			PRINT_ERR(res.index, sorted_len(&a));
-	}
-	for (i = 0; i < 10000; i++)
-	{
-		sorted_pop(&a, &ret);
-		if (ret != (less_pred ? 9999 - i : i))
-			PRINT_ERR(i, ret);
-	}
-	sorted_free(&a);
+	fill(&a, o);
+	fill_delete(&a, o);
+	check(&a, less_pred == false);
+	check_delete(&a, o);
+	fill(&a, o);
+	check_pop(&a, less_pred == false);
 }
 
 void			test_sorted(void)
 {
-	test_sorted_spe(false, false, false);
-	test_sorted_spe(false, true, false);
-	test_sorted_spe(true, false, false);
-	test_sorted_spe(true, true, false);
-	test_sorted_spe(false, false, true);
-	test_sorted_spe(false, true, true);
-	test_sorted_spe(true, false, true);
-	test_sorted_spe(true, true, true);
+	test_sorted_spe(false, asc);
+	test_sorted_spe(false, desc);
+	test_sorted_spe(false, gray);
+	test_sorted_spe(true, asc);
+	test_sorted_spe(true, desc);
+	test_sorted_spe(true, gray);
 }
-
-int				bucket_rebalance(t_bucket *b);
 
 void			pma_display(t_pma *a)
 {
@@ -335,7 +363,8 @@ void			test_pma(void)
 	a = pma(&lt, sizeof(int), sizeof(char));
 	srand(clock());
 	to_update = true;
-	while (1) {
+	while (1)
+	{
 		if (to_update)
 			pma_display(&a);
 		to_update = true;
@@ -360,9 +389,9 @@ void			test_pma(void)
 				{	
 					n = rand();
 					s = rand() % 26 + 'A';
-					// if (rand() % 13 == 0)
-					// 	pma_delete(&a, &n, &n, &s);
-					// else
+					if (rand() % 13 == 0)
+						pma_delete(&a, &n, &n, &s);
+					else
 						pma_insert(&a, &n, &s);
 
 				}
@@ -370,8 +399,6 @@ void			test_pma(void)
 				break;
 			default : to_update = false;
 
-			// pma_replace(&a, void *key, void *val);
-			// size_t				pma_len(const &a);
 			// pmait_get(t_pma_it *i, void *key, void *val);
 			// pmait_next(t_pma_it *i, void *key, void *val);
 			// pmait_prev(t_pma_it *i, void *key, void *val);
@@ -388,7 +415,7 @@ int		main(void)
 // 	test_array();
 // 	test_bitmap();
 // 	test_queue();
-// 	test_sorted();
+ 	test_sorted();
 	test_pma();
 	printf("All checks done, press enter after checking for leaks\n");
 	getchar();

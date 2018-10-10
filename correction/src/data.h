@@ -6,7 +6,7 @@
 /*   By: lgarczyn <lgarczyn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/07 16:18:53 by lgarczyn          #+#    #+#             */
-/*   Updated: 2018/03/28 23:47:55 by lgarczyn         ###   ########.fr       */
+/*   Updated: 2018/10/10 03:41:40 by lgarczyn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,32 @@
 # include <stdbool.h>
 
 typedef uint32_t	t_uint;
+
+typedef enum		e_res
+{
+	ok = 0,
+	err_arg = 1,
+	err_alloc = 2,
+	err_file = 3
+}					t_res;
+
+# ifdef MALLOC_EXIT
+
+#  define MALLOC(x) xmalloc(x)
+
+#  define MEM_RES void
+#  define MEM_ERR {}
+#  define MEM_OK {}
+
+# else
+
+#  define MALLOC(x) malloc(x)
+
+#  define MEM_RES t_res
+#  define MEM_ERR err_alloc
+#  define MEM_OK ok
+
+# endif
 
 typedef struct		s_array
 {
@@ -95,7 +121,6 @@ typedef struct		s_pma_en
 	bool			found;
 }					t_pma_en;
 
-
 t_array				array(void);
 void				array_free(t_array *a);
 size_t				array_len(const t_array *a, size_t word);
@@ -153,6 +178,10 @@ t_pma_en			pma_delete(t_pma *a, const void *key,
 	void *out_key, void *out_val);
 int					pma_insert(t_pma *a, const void *key, const void *val);
 size_t				pma_len(const t_pma *a);
+
+int					pma_pop_back(t_pma *a, void *key, void *val);
+int					pma_pop_front(t_pma *a, void *key, void *val);
+
 bool				pmait_get(t_pma_it *i, void *key, void *val);
 bool				pmait_next(t_pma_it *i, void *key, void *val);
 bool				pmait_prev(t_pma_it *i, void *key, void *val);
