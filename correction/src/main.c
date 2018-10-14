@@ -21,10 +21,10 @@
 #define PRINT_ERR(a, b) do { printf("line:%i i:%i %lu!=%lu\n",\
 	__LINE__, i, (size_t)a, (size_t)b);} while (0)
 
-// #define TEST_ARRAY
+#define TEST_ARRAY
 // #define TEST_BITMAP
 // #define TEST_QUEUE
-#define TEST_SORTED
+// #define TEST_SORTED
 #define TEST_PMA
 
 #ifdef TEST_ARRAY
@@ -265,7 +265,7 @@ int				reverse_str(const char *buffer)
 	return (atoi(buffer));
 }
 
-#define TEST_NUM (1 << 11)
+#define TEST_NUM (1 << 9)
 #define TEST_NUM_INC (TEST_NUM - 1)
 
 #ifdef TEST_SORTED
@@ -421,11 +421,13 @@ void			pma_check(t_pma *a, t_reverse r, bool reversed)
 	int			i;
 
 	i = 0;
-	it = pmait_first(a);
+	it = pmait(a);
 	while (pmait_next(&it, buffer, &val))
 	{
 		int j = reversed ? TEST_NUM_INC - i : i;
 		int got = r(buffer);
+		if (got == 0)
+			PRINT_ERR(j, got);
 		if (got != j)
 			PRINT_ERR(j, got);
 		i++;
@@ -474,7 +476,7 @@ void			pma_check_delete(t_pma *a, t_order o, t_reverse r)
 	for (int i = 0; i < TEST_NUM; i++)
 	{
 		o(buf_search, i, TEST_NUM);
-		if (pma_delete(a, buf_search, buf_key, &val).found == false)
+		if (pma_delete(a, buf_search, buf_key, &val) == false)
 		{
 			PRINT_ERR(0, 1);
 			continue;
@@ -524,6 +526,7 @@ void			pma_fill_delete(t_pma *a, t_order o, t_reverse r)
 		if (pma_insert(a, buf_key, &val))
 			printf("pma insert returned non-zero\n");
 		pma_delete(a, buf_key, buf_out_key, &out_val);
+		pma_len(a);
 		int a = r(buf_key);
 		int b = r(buf_out_key);
 		int c = out_val;
@@ -561,36 +564,42 @@ void			test_pma_spe(bool less_pred, bool str, t_order o)
 	}
 	a = pma(pred, size, sizeof(int));
 	pma_fill(&a, o);
+		pma_len(&a);
 	pma_fill_delete(&a, o, rev);
+		pma_len(&a);
 	pma_check(&a, rev, less_pred == false);
+		pma_len(&a);
 	pma_check_delete(&a, o, rev);
+		pma_len(&a);
 	pma_fill_delete(&a, o, rev);
+		pma_len(&a);
 	pma_check_pop(&a, rev, less_pred == false);
+		pma_len(&a);
 }
 
 void			test_pma_sort(void)
 {
-	test_pma_spe(false, false, asc);
-	test_pma_spe(false, false, desc);
-	test_pma_spe(false, false, gray);
 	test_pma_spe(true, false, asc);
 	test_pma_spe(true, false, desc);
 	test_pma_spe(true, false, gray);
+	test_pma_spe(false, false, asc);
+	test_pma_spe(false, false, desc);
+	test_pma_spe(false, false, gray);
 
-	test_pma_spe(false, true, asc_str);
-	test_pma_spe(false, true, desc_str);
-	test_pma_spe(false, true, gray_str);
 	test_pma_spe(true, true, asc_str);
 	test_pma_spe(true, true, desc_str);
 	test_pma_spe(true, true, gray_str);
+	test_pma_spe(false, true, asc_str);
+	test_pma_spe(false, true, desc_str);
+	test_pma_spe(false, true, gray_str);
 }
 
 void			pma_display(t_pma *a)
 {
 	size_t		i;
 	bool		b;
-	int			n;
-	char		c;
+	char		key[12];
+	int			val;
 
 	printf("\n%lu==%lu: [",
 		bitmap_len(&(a->bucket.flags)),
@@ -606,9 +615,15 @@ void			pma_display(t_pma *a)
 
 	t_pma_it	it;
 
-	it = pmait_first(a);
-	while (pmait_next(&it, &n, &c)) {
-		printf("%i:%c ", n, c);
+	it = pmait(a);
+	while (pmait_next(&it, &key, &val)) {
+
+		if (a->sizes.key == 4)
+			printf("%i:", *(int*)key);
+		else
+			printf("%s:", key);
+		printf("%i ", val);
+		
 		i++;
 	}
 	printf("}\n");
@@ -692,6 +707,7 @@ bool		check_test(char *str)
 
 int			main(void)
 {
+	test_pma_sort();
 	#ifdef TEST_ARRAY
 	if (check_test("array"))
 	 	test_array();

@@ -12,6 +12,7 @@
 
 #include "libft.h"
 #include "data.h"
+#include <stdlib.h>
 
 t_pma			pma(t_predicate predicate, t_uint key, t_uint value)
 {
@@ -22,6 +23,7 @@ t_pma			pma(t_predicate predicate, t_uint key, t_uint value)
 	out.sizes.key = key;
 	out.sizes.val = value;
 	out.bucket.sizes = out.sizes;
+	out.canary = random();
 	return (out);
 }
 
@@ -54,6 +56,17 @@ const void		*pma_cat(const t_pma *a, size_t index)
 
 size_t			pma_len(const t_pma *a)
 {
+	size_t		i;
+	size_t		count;
+	bool		b;
+
+	i = 0;
+	count = 0;
+	while (bitmap_get_safe(&(a->bucket.flags), i++, &b))
+		if (b)
+			count++;
+	if (count != a->bucket.count || count != a->count)
+		ft_putendl_fd("CORRUPTED PMA: count do no match flags", STDERR);
 	return (a->count);
 }
 
@@ -114,6 +127,7 @@ t_pma_en		pma_search_range(const t_pma *a, const void *key, size_t start, size_t
 		i = start + (end - start) / 2;
 	}
 	res.it.id = i;
+	res.it.end = pma_size(a);
 	res.found = res.key == NULL;
 	return (res);
 }
@@ -145,7 +159,7 @@ static void		bucket_get(t_bucket *b, size_t id, void *key, void *val)
 #define MAGIC 4
 #define MAGIC_2 100
 
-int				bucket_rebalance(t_bucket *b)
+int				bucket_rebalance(t_bucket *b, size_t *id)
 {
 	size_t		b_i;
 	size_t		tmp_i;
@@ -154,7 +168,9 @@ int				bucket_rebalance(t_bucket *b)
 	size_t		new_size;
 
 	size = b->sizes.key + (size_t)b->sizes.val;
-	new_size = b->count * MAGIC + (MAGIC - 1);
+	//SHOULDNT NEED + 1
+	//SHOULDNT NEED - MAGIC
+	new_size = (b->count + 1) * MAGIC + (MAGIC - 1);
 	tmp = array();
 	if (bitmap_reserve(&(b->flags), new_size))
 	 	return (ERR_ALLOC);
@@ -166,13 +182,16 @@ int				bucket_rebalance(t_bucket *b)
 	tmp_i = MAGIC - 1;
 	while (b_i < bucket_size(b))
 	{
+		if (id && *id == b_i)
+		{
+			*id = tmp_i;
+			id = NULL;
+		}
 		if (bitmap_get(&(b->flags), b_i))
 		{
-			ft_bzero(tmp.data + (tmp_i * size), size);
 			ft_memmove(
 				tmp.data + (tmp_i * size),
 				b->values.data + (b_i * size), size);
-			ft_bzero(tmp.data + ((tmp_i + 1) * size), size);
 			tmp_i += MAGIC;
 		}
 		b_i++;
@@ -180,7 +199,7 @@ int				bucket_rebalance(t_bucket *b)
 	array_free(&(b->values));
 	b->values = tmp;
 	b_i = 0;
-	while (b_i < bucket_size(b))
+	while (b_i < bucket_size(b) - MAGIC)
 	{
 		bitmap_set(&(b->flags), b_i, b_i % MAGIC == MAGIC - 1);
 		b_i++;
@@ -202,6 +221,7 @@ static size_t	count_moves(t_bitmap *b, size_t id, bool *forward)
 	}
 	*forward = false;
 	r = 0;
+	id--;
 	while (r < id && bitmap_get(b, id - r))
 		r++;
 	if (r >= id)
@@ -220,28 +240,31 @@ static int		bucket_insert(t_bucket *b, size_t id, const void *key, const void *v
 	bool		forward;
 
 	if (b->count * 2 + 1 > bucket_size(b))
-		if (bucket_rebalance(b))
+		if (bucket_rebalance(b, &id))
 			return (ERR_ALLOC);
-	if (id == bucket_size(b))
-		id--;
+	//is there a risk of updating id twice?
+	//also check count moves again because that's likely NOT ok
 	move_len = count_moves(&(b->flags), id, &forward);
 	if (move_len > MAGIC_2)
 	{
-		if (bucket_rebalance(b))
+		if (bucket_rebalance(b, &id))
 			return (ERR_ALLOC);
 		move_len = count_moves(&(b->flags), id, &forward);
 	}
 	size = b->sizes.key + b->sizes.val;
-	if (forward)
+	if (forward && move_len)
 	{
 		array_move(&(b->values), id * size, (id + 1) * size, move_len * size);
 		bitmap_set(&(b->flags), id + move_len, true);
 	}
-	else
+	else if (move_len)
 	{
-		array_move(&(b->values), (id - move_len) * size, (id - move_len - 1) * size, move_len * size);
-		bitmap_set(&(b->flags), id - move_len - 1, true);
+		id--;
+		array_move(&(b->values), (id - move_len + 1) * size, (id - move_len) * size, move_len * size);
+		bitmap_set(&(b->flags), id - move_len, true);
 	}
+	if (move_len == 0 && bitmap_get(&(b->flags), id))
+		ft_putendl_fd("WTF2", STDERR);
 	bucket_set(b, id, key, val);
 	b->count++;
 	return (OK);
@@ -256,14 +279,15 @@ static void		bucket_delete(t_bucket *b, size_t id)
 	bitmap_set(&(b->flags), id, false);
 	b->count--;
 	if (b->count * MAGIC * MAGIC < bucket_size(b))
-		bucket_rebalance(b);
+		bucket_rebalance(b, NULL);
 }
 
-t_pma_en		pma_delete(t_pma *a, const void *key,
+bool		pma_delete(t_pma *a, const void *key,
 	void *out_key, void *out_val)
 {
 	t_pma_en	en;
 
+	a->canary++;
 	en = pma_search(a, key);
 	if (en.found)
 	{
@@ -272,13 +296,14 @@ t_pma_en		pma_delete(t_pma *a, const void *key,
 		a->count--;
 	}
 	en.key = (void*)key;
-	return (en);
+	return (en.found);
 }
 
 int				pma_insert(t_pma *a, const void *key, const void *val)
 {
 	t_pma_en	en;
 
+	a->canary++;
 	en = pma_search(a, key);
 	if (en.found)
 	{
@@ -296,16 +321,16 @@ int				pma_insert(t_pma *a, const void *key, const void *val)
 
 bool			pmait_get(t_pma_it *i, void *key, void *val)
 {
-	bool		b;
 	t_pma		*a;
 	t_bitmap	*bmp;
 
 	a = i->pma;
+	if (a->canary != i->canary)
+		ft_putendl_fd("USING INVALID ITERATOR", STDERR);
 	bmp = &(a->bucket.flags);
-	b = true;
-	while (bitmap_get_safe(bmp, i->id, &b) && b == false)
+	while (i->id < i->end && bitmap_get(bmp, i->id) == false)
 		i->id++;
-	if (i->id >= bitmap_len(bmp))
+	if (i->id >= i->end)
 		return (false);
 	if (key)
 		ft_memmove(key, pma_cat(a, i->id), a->sizes.key);
@@ -314,8 +339,30 @@ bool			pmait_get(t_pma_it *i, void *key, void *val)
 	return (true);
 }
 
+bool			pmait_get_back(t_pma_it *i, void *key, void *val)
+{
+	t_pma		*a;
+	t_bitmap	*bmp;
+
+	a = i->pma;
+	if (a->canary != i->canary)
+		ft_putendl_fd("USING INVALID ITERATOR", STDERR);
+	bmp = &(a->bucket.flags);
+	while (i->end > i->id && bitmap_get(bmp, i->end - 1) == false)
+		i->end--;
+	if (i->end <= i->id)
+		return (false);
+	if (key)
+		ft_memmove(key, pma_cat(a, i->end - 1), a->sizes.key);
+	if (val)
+		ft_memmove(val, pma_cat(a, i->end - 1) + a->sizes.key, a->sizes.val);
+	return (true);
+}
+
 bool			pmait_next(t_pma_it *i, void *key, void *val)
 {
+	if (i->pma->canary != i->canary)
+		ft_putendl_fd("USING INVALID ITERATOR", STDERR);
 	if (pmait_get(i, key, val))
 	{
 		i->id++;
@@ -324,35 +371,43 @@ bool			pmait_next(t_pma_it *i, void *key, void *val)
 	return (false);
 }
 
-bool			pmait_prev(t_pma_it *i, void *key, void *val)
+bool			pmait_next_back(t_pma_it *i, void *key, void *val)
 {
-	t_pma		*a;
-	t_bitmap	*bmp;
-
-	a = i->pma;
-	bmp = &(a->bucket.flags);
-
-	if (i->id == 0)
-		return (false);
-	i->id --;
-	while (i->id > 0 && bitmap_get(bmp, i->id) == false)
-		i->id--;
-	if (bitmap_get(bmp, i->id) == false)
-		return (false);
-	
-	if (key)
-		ft_memmove(key, pma_cat(a, i->id), a->sizes.key);
-	if (val)
-		ft_memmove(val, pma_cat(a, i->id) + a->sizes.key, a->sizes.val);
+	if (i->pma->canary != i->canary)
+		ft_putendl_fd("USING INVALID ITERATOR", STDERR);
+	if (pmait_get_back(i, key, val))
+	{
+		i->end--;
+		return (true);
+	}
 	return (false);
 }
 
 bool			pmait_delete(t_pma_it *i, void *key, void *val)
 {
+	if (i->pma->canary != i->canary)
+		ft_putendl_fd("USING INVALID ITERATOR", STDERR);
 	if (pmait_get(i, key, val))
 	{
 		bucket_delete(&(i->pma->bucket), i->id);
 		i->pma->count--;
+		i->pma->canary++;
+		//learn to update iterators
+		return (true);
+	}
+	return (false);
+}
+
+bool			pmait_delete_back(t_pma_it *i, void *key, void *val)
+{
+	if (i->pma->canary != i->canary)
+		ft_putendl_fd("USING INVALID ITERATOR", STDERR);
+	if (pmait_get_back(i, key, val))
+	{
+		bucket_delete(&(i->pma->bucket), i->end - 1);
+		i->pma->count--;
+		i->pma->canary++;
+		//learn to update iterators
 		return (true);
 	}
 	return (false);
@@ -360,6 +415,8 @@ bool			pmait_delete(t_pma_it *i, void *key, void *val)
 
 int				pma_ensure(t_pma_en *en, const void *data)
 {
+	if (en->it.pma->canary != en->it.canary)
+		ft_putendl_fd("USING INVALID ITERATOR", STDERR);
 	if (en->found == false)
 	{
 		if (bucket_insert(
@@ -368,28 +425,21 @@ int				pma_ensure(t_pma_en *en, const void *data)
 			en->key, data))
 			return (ERR_ALLOC);
 		en->it.pma->count--;
+		en->it.pma->canary++;
 		en->key = NULL;
 		en->found = true;
 	}
 	return (OK);
 }
 
-t_pma_it		pmait_first(t_pma *a)
+t_pma_it		pmait(const t_pma *a)
 {
 	t_pma_it	it;
 
 	it.id = 0;
-	it.pma = a;
-	return (it);
-}
-
-t_pma_it		pmait_last(t_pma *a)
-{
-	t_pma_it	it;
-
-	it.id = bitmap_len(&(a->bucket.flags));
-	it.pma = a;
-	pmait_prev(&it, NULL, NULL);
+	it.end = pma_size(a);
+	it.pma = (t_pma*)a;
+	it.canary = a->canary;
 	return (it);
 }
 
@@ -408,10 +458,11 @@ bool			pma_pop_back(t_pma *a, void *key, void *val)
 {
 	t_pma_it		it;
 
-	it = pmait_last(a);
-	if (pmait_get(&it, key, val) == false)
+	it = pmait(a);
+	if (pmait_get_back(&it, key, val) == false)
 		return (false);
-	pmait_delete(&it, NULL, NULL);
+	pmait_delete_back(&it, NULL, NULL);
+	a->canary++;
 	return (true);
 }
 
@@ -419,9 +470,10 @@ bool			pma_pop_front(t_pma *a, void *key, void *val)
 {
 	t_pma_it		it;
 
-	it = pmait_first(a);
+	it = pmait(a);
 	if (pmait_get(&it, key, val) == false)
 		return (false);
 	pmait_delete(&it, NULL, NULL);
+	a->canary++;
 	return (true);
 }
