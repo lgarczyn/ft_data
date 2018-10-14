@@ -14,9 +14,14 @@
 #include "data.h"
 #include "stdio.h"
 
-#define CHECK(a) if (a->warning || a->pos > a->size || (!a->size != !a->data)) \
-	printf("CORRUPTED ARRAY %s() %s:%i\n", __FUNCTION__, __FILE__, __LINE__), \
-	printf("w:%lu, %lu/%lu, %p\n", a->warning, a->pos, a->size, a->data);
+void			check_array(const t_array *a)
+{
+	if (a->warning || a->pos > a->size || (!a->size != !a->data))
+	{
+		printf("CORRUPTED ARRAY\n");
+		printf("w:%lu, %lu/%lu, %p\n", a->warning, a->pos, a->size, a->data);
+	}
+}
 
 t_array			array(void)
 {
@@ -28,7 +33,7 @@ t_array			array(void)
 
 void			array_free(t_array *a)
 {
-	CHECK(a);
+	check_array(a);
 	free(a->data);
 	*a = array();
 }
@@ -37,7 +42,7 @@ int				array_move(t_array *a, size_t from, size_t to, size_t size)
 {
 	size_t		new_pos;
 
-	CHECK(a);
+	check_array(a);
 	if (from == to)
 		return (OK);
 	if (from + size > a->pos)
@@ -60,7 +65,7 @@ int				array_insert(t_array *a, const void *data,
 	size_t		next_len;
 	int			r;
 
-	CHECK(a);
+	check_array(a);
 	next_len = a->pos - i;
 	if ((r = array_move(a, i, i + size, next_len)))
 		return (r);
@@ -75,7 +80,7 @@ int				array_remove(t_array *a, void *data,
 	size_t		new_pos;
 	size_t		next_len;
 
-	CHECK(a);
+	check_array(a);
 	if (i + size > a->pos)
 		return (ERR_ARG);
 	new_pos = a->pos - size;
@@ -96,13 +101,13 @@ int				array_remove(t_array *a, void *data,
 
 int				array_push(t_array *a, const void *data, size_t size)
 {
-	CHECK(a);
+	check_array(a);
 	return (array_insert(a, data, a->pos, size));
 }
 
 int				array_pop(t_array *a, void *data, size_t size)
 {
-	CHECK(a);
+	check_array(a);
 	if (size > a->pos)
 		return (ERR_ARG);
 	return (array_remove(a, data, a->pos - size, size));
@@ -110,7 +115,7 @@ int				array_pop(t_array *a, void *data, size_t size)
 
 int				array_reserve(t_array *a, size_t s)
 {
-	CHECK(a);
+	check_array(a);
 	if (s > a->size)
 	{
 		if (ft_realloc(&a->data, a->pos, s))
@@ -122,6 +127,6 @@ int				array_reserve(t_array *a, size_t s)
 
 size_t			array_len(const t_array *a, size_t word)
 {
-	CHECK(a);
+	check_array(a);
 	return (a->pos / word);
 }
