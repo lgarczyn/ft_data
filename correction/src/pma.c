@@ -156,7 +156,7 @@ static void		bucket_get(t_bucket *b, size_t id, void *key, void *val)
 	ft_memmove(val, ptr + b->sizes.key, b->sizes.val);
 }
 
-#define GROWTH_FACTOR 4
+#define GROWTH_FACTOR 3
 #define MAX_HAMMER_INSERT_LEN 100
 
 /*
@@ -356,7 +356,7 @@ int				bucket_rebalance(t_bucket *b, size_t *it_a, size_t *it_b, size_t *add)
 	array_reserve(&(tmp.values), new_size * size);
 	tmp.values.pos = new_size * size;
 	i_from = 0;
-	i_to = GROWTH_FACTOR;
+	i_to = GROWTH_FACTOR - 1;
 	while (i_from < bucket_size(b))
 	{
 		if (add && *add == i_from)
@@ -387,7 +387,7 @@ int				bucket_rebalance(t_bucket *b, size_t *it_a, size_t *it_b, size_t *add)
 	}
 	if (add && *add == bucket_size(b))
 	{
-		*add = new_size;
+		*add = i_to;
 		add = NULL;
 	}
 	if (it_a && *it_a == bucket_size(b))
@@ -400,12 +400,8 @@ int				bucket_rebalance(t_bucket *b, size_t *it_a, size_t *it_b, size_t *add)
 		*it_b = new_size;
 		it_b = NULL;
 	}
-	if (add != NULL)
-		printf("wtf add\n");
-	if (it_a != NULL)
-		printf("wtf it_a\n");
-	if (it_b != NULL)
-		printf("wtf it_b\n");
+	if (add || it_a || it_b)
+		printf("wtf\n");
 	array_free(&(b->values));
 	bitmap_free(&(b->flags));
 	*b = tmp;
@@ -483,18 +479,10 @@ static int		bucket_insert(t_bucket *b, size_t id, const void *key, const void *v
 }
 
 static void		bucket_delete(t_bucket *b, size_t id, size_t *it_a, size_t *it_b)
-//static void		bucket_delete(t_bucket *b, size_t id)
 {
 	void		*value;
 
 	value = bucket_at(b, id);
-	/*if ((b->count - 1) * (GROWTH_FACTOR * 2) < bucket_size(b))
-		bucket_rebalance(b, it_a, it_b, &id, NULL);
-	else
-	{
-		ft_bzero(value, b->sizes.val + b->sizes.key);
-		bitmap_set(&(b->flags), id, false);
-	}*/
 	ft_bzero(value, b->sizes.val + b->sizes.key);
 	bitmap_set(&(b->flags), id, false);
 	b->count--;
@@ -513,7 +501,6 @@ bool		pma_delete(t_pma *a, const void *key,
 	{
 		bucket_get(&(a->bucket), en.it.id, out_key, out_val);
 		bucket_delete(&(a->bucket), en.it.id, NULL, NULL);
-		//bucket_delete(&(a->bucket), en.it.id);
 		a->count--;
 	}
 	en.key = (void*)key;
@@ -534,10 +521,8 @@ int				pma_insert(t_pma *a, const void *key, const void *val)
 	else
 	{
 		if (bucket_insert(&(a->bucket), en.it.id, key, val))
-			//if (bucket_rebalance(&(a->bucket), NULL, NULL, &en.it.id))
 			return (ERR_ALLOC);
 		a->count++;
-		pma_len(a);
 		return (OK);
 	}
 }
@@ -612,13 +597,9 @@ bool			pmait_delete(t_pma_it *i, void *key, void *val)
 		ft_putendl_fd("USING INVALID ITERATOR", STDERR);
 	if (pmait_get(i, key, val))
 	{
-		//bucket_delete(&(i->pma->bucket), i->id);
 		bucket_delete(&(i->pma->bucket), i->id, &(i->id), &(i->end));
 		i->pma->count--;
 		i->pma->canary++;
-		//i->canary++;
-		//learn to update iterators
-		pma_len(i->pma);
 		return (true);
 	}
 	return (false);
@@ -631,11 +612,8 @@ bool			pmait_delete_back(t_pma_it *i, void *key, void *val)
 	if (pmait_get_back(i, key, val))
 	{
 		bucket_delete(&(i->pma->bucket), i->end - 1, &(i->id), &(i->end));
-		//bucket_delete(&(i->pma->bucket), i->end - 1);
 		i->pma->count--;
 		i->pma->canary++;
-		//i->canary++;
-		//learn to update iterators
 		pma_len(i->pma);
 		return (true);
 	}

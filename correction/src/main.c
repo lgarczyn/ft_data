@@ -721,7 +721,6 @@ void			test_pma(void)
 				n = rand();
 				s = rand() % 26 + 'A';
 				pma_insert(&a, &n, &s);
-				to_update = false;
 				break;
 			case 'm':
 				for (int i = 0; i < 1000000; i++)
