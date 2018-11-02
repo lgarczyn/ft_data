@@ -23,7 +23,7 @@
 
 // #define TEST_ARRAY
 // #define TEST_BITMAP
-// #define TEST_QUEUE
+#define TEST_QUEUE
 // #define TEST_SORTED
 #define TEST_PMA
 
@@ -172,12 +172,39 @@ void			test_queue_spe(bool push_back, bool pop_back)
 	queue_free(&a);
 }
 
+void			test_queue_perf()
+{
+	t_queue		a;
+	int			ret;
+
+	a = queue(sizeof(int));
+	queue_free(&a);
+	a = queue(sizeof(int));
+	queue_free(&a);
+	for (int i = 0; i < 1000; i++)
+		if (queue_push_back(&a, &i) != 0)
+			PRINT_ERR(0, 1);
+	
+	for (int i = 0; i < 1000 * 100; i++)
+	{
+		queue_pop_back(&a, &ret);
+		queue_push_front(&a, &ret);
+	}
+
+	for (int i = 0; i < 1000; i++)
+		if (queue_pop_front(&a, &ret) != 0 || ret != i)
+			PRINT_ERR(ret, i);
+		
+	queue_free(&a);
+}
+
 void			test_queue(void)
 {
 	test_queue_spe(false, false);
 	test_queue_spe(false, true);
 	test_queue_spe(true, false);
 	test_queue_spe(true, true);
+	test_queue_perf();
 }
 
 #endif
@@ -433,6 +460,29 @@ void			pma_check(t_pma *a, t_reverse r, bool reversed)
 		PRINT_ERR(i, TEST_NUM);
 }
 
+
+void			pma_check_ordering(t_pma *a, t_reverse r, bool reversed)
+{
+	char		key_found_buf[12];
+	int			val_found;
+	t_pma_it	it;
+
+	it = pmait(a);
+	int old_key;
+	int key;
+	if (pmait_next(&it, key_found_buf, &val_found))
+	{
+		old_key = r(key_found_buf);
+	}
+	while (pmait_next(&it, key_found_buf, &val_found))
+	{
+		key = r(key_found_buf);
+		if ((old_key >= key && reversed == false) || (old_key <= key && reversed))
+			printf("iterator is not ordered\n");
+		old_key = key;
+	}
+}
+
 void			pma_check_pop(t_pma *a, t_reverse r, bool reversed)
 {
 	char		buf_key[12];
@@ -489,21 +539,7 @@ void			pma_check_delete(t_pma *a, t_order o, t_reverse r, bool reversed)
 		if (i != val_found)
 			PRINT_ERR(i, val_found);
 		
-		t_pma_it it;
-		it = pmait(a);
-		int old_key;
-		int key;
-		if (pmait_next(&it, key_found_buf, &val_found))
-		{
-			old_key = r(key_found_buf);
-		}
-		while (pmait_next(&it, key_found_buf, &val_found))
-		{
-			key = r(key_found_buf);
-			if ((old_key >= key && reversed == false) || (old_key <= key && reversed))
-				printf("iterator is not ordered\n");
-			old_key = key;
-		}
+		pma_check_ordering(a, r, reversed);
 	}
 	if (pma_len(a) != 0)
 		printf("error check_delete 2 %lu!=0\n", pma_len(a));
@@ -520,21 +556,7 @@ void			pma_fill(t_pma *a, t_order o, t_reverse r, bool reversed)
 		if (pma_insert(a, buffer, &i))
 			printf("pma returned non-zero\n");
 		
-		t_pma_it it;
-		it = pmait(a);
-		int old_key;
-		int key;
-		if (pmait_next(&it, buffer, NULL))
-		{
-			old_key = r(buffer);
-		}
-		while (pmait_next(&it, buffer, NULL))
-		{
-			key = r(buffer);
-			if ((old_key >= key && reversed == false) || (old_key <= key && reversed))
-				printf("iterator is not ordered\n");
-			old_key = key;
-		}
+		pma_check_ordering(a, r, reversed);
 	}
 }
 
@@ -567,21 +589,7 @@ void			pma_fill_delete(t_pma *a, t_order o, t_reverse r, bool reversed)
 		if (val_inserted != val_found)
 			PRINT_ERR(val_found, val_inserted);
 
-		t_pma_it it;
-		it = pmait(a);
-		int old_key;
-		int key;
-		if (pmait_next(&it, key_found_buf, &val_found))
-		{
-			old_key = r(key_found_buf);
-		}
-		while (pmait_next(&it, key_found_buf, &val_found))
-		{
-			key = r(key_found_buf);
-			if ((old_key >= key && reversed == false) || (old_key <= key && reversed))
-			 	printf("iterator is not ordered\n");
-			old_key = key;
-		}
+		pma_check_ordering(a, r, reversed);
 	}
 	o(key_inserted_buf, TEST_NUM_INC, TEST_NUM);
 	val_inserted = TEST_NUM_INC;
@@ -612,6 +620,7 @@ void			test_pma_spe(bool reversed, bool str, t_order o)
 	}
 	a = pma(pred, size, sizeof(int));
 	pma_fill(&a, o, rev, reversed);
+	//to delete
 		pma_len(&a);
 	pma_check(&a, rev, reversed);
 		pma_len(&a);
@@ -780,6 +789,7 @@ int			main(void)
 		test_pma();
 	#endif
 	printf("All checks done, press enter after checking for leaks\n");
+	getchar();
 	getchar();
 	return (0);
 }
