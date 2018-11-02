@@ -21,7 +21,7 @@
 #define PRINT_ERR(a, b) do { printf("line:%i i:%i %lu!=%lu\n",\
 	__LINE__, i, (size_t)a, (size_t)b);} while (0)
 
-#define TEST_ARRAY
+// #define TEST_ARRAY
 // #define TEST_BITMAP
 // #define TEST_QUEUE
 // #define TEST_SORTED
@@ -706,7 +706,8 @@ void			test_pma(void)
 				to_update = false;
 				break;
 			case 'd': scanf ("%d",&n); pma_delete(&a, &n, &out_key, &out_val); break;
-			case 'i': scanf ("%d%c",&n,&s); pma_insert(&a, &n, &s); break;
+			case 'i': scanf ("%d",&n); s = rand() / ((1 << 5) - 1); pma_insert(&a, &n, &s); break;
+			case 'j': scanf ("%d%c",&n,&s); pma_insert(&a, &n, &s); break;
 			case 'r': 
 				n = rand();
 				s = rand() % 26 + 'A';
