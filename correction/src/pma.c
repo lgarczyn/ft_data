@@ -156,8 +156,8 @@ static void		bucket_get(t_bucket *b, size_t id, void *key, void *val)
 	ft_memmove(val, ptr + b->sizes.key, b->sizes.val);
 }
 
-#define MAGIC 4
-#define MAGIC_2 100
+#define GROWTH_FACTOR 4
+#define MAX_HAMMER_INSERT_LEN 100
 
 /*
 int				bucket_rebalance(t_bucket *b)
@@ -171,7 +171,7 @@ int				bucket_rebalance(t_bucket *b)
 
 
 	size = b->sizes.key + (size_t)b->sizes.val;
-	new_size = (b->count + 1) * MAGIC + (MAGIC - 1);
+	new_size = (b->count + 1) * GROWTH_FACTOR + (GROWTH_FACTOR - 1);
 	tmp_data = array();
 	tmp_flags = bitmap();
 
@@ -182,7 +182,7 @@ int				bucket_rebalance(t_bucket *b)
 	tmp_flags.pos = new_size;
 	tmp_data.pos = new_size * size;
 	b_i = 0;
-	tmp_i = MAGIC - 1;
+	tmp_i = GROWTH_FACTOR - 1;
 
 	while (b_i < bucket_size(b))
 	{
@@ -192,7 +192,7 @@ int				bucket_rebalance(t_bucket *b)
 				tmp_data.data + (tmp_i * size),
 				b->values.data + (b_i * size), size);
 			bitmap_set(&tmp_flags, tmp_i, true);
-			tmp_i += MAGIC;
+			tmp_i += GROWTH_FACTOR;
 		}
 		b_i++;
 	}
@@ -215,7 +215,7 @@ int				bucket_rebalance(t_bucket *b)
 
 
 	size = b->sizes.key + (size_t)b->sizes.val;
-	new_size = (b->count + (id != NULL)) * MAGIC + (MAGIC - 1);
+	new_size = (b->count + (id != NULL)) * GROWTH_FACTOR + (GROWTH_FACTOR - 1);
 	tmp_data = array();
 	tmp_flags = bitmap();
 
@@ -226,11 +226,11 @@ int				bucket_rebalance(t_bucket *b)
 	tmp_flags.pos = new_size;
 	tmp_data.pos = new_size * size;
 	b_i = 0;
-	tmp_i = MAGIC - 1;
+	tmp_i = GROWTH_FACTOR - 1;
 	
 	if (id && *id == bucket_size)
 	{
-		*id = new_size - (MAGIC - 1);
+		*id = new_size - (GROWTH_FACTOR - 1);
 		id = NULL;
 	}
 	while (b_i < bucket_size(b))
@@ -239,7 +239,7 @@ int				bucket_rebalance(t_bucket *b)
 		{
 			*id = tmp_i;
 			id = NULL;
-			tmp_i += MAGIC;
+			tmp_i += GROWTH_FACTOR;
 			//tip: DOESN'T FUCKING WORK
 		}
 		if (bitmap_get(&(b->flags), b_i))
@@ -248,7 +248,7 @@ int				bucket_rebalance(t_bucket *b)
 				tmp_data.data + (tmp_i * size),
 				b->values.data + (b_i * size), size);
 			bitmap_set(&tmp_flags, tmp_i, true);
-			tmp_i += MAGIC;
+			tmp_i += GROWTH_FACTOR;
 		}
 		b_i++;
 	}
@@ -291,9 +291,9 @@ int				bucket_rebalance(t_bucket *b)
 
 	size = b->sizes.key + (size_t)b->sizes.val;
 	//SHOULDNT NEED + 1
-	//SHOULDNT NEED - MAGIC
+	//SHOULDNT NEED - GROWTH_FACTOR
 	old_len = bucket_size(b);
-	new_len = (b->count + 1) * MAGIC + (MAGIC - 1);
+	new_len = (b->count + 1) * GROWTH_FACTOR + (GROWTH_FACTOR - 1);
 	tmp = array();
 	if (old_len < new_len)
 	{
@@ -304,7 +304,7 @@ int				bucket_rebalance(t_bucket *b)
 	}
 	tmp.pos = new_len * size;
 	b_i = 0;
-	tmp_i = MAGIC - 1;
+	tmp_i = GROWTH_FACTOR - 1;
 	while (b_i < old_len)
 	{
 		if (id && *id == b_i)
@@ -317,16 +317,16 @@ int				bucket_rebalance(t_bucket *b)
 			ft_memmove(
 				tmp.data + (tmp_i * size),
 				b->values.data + (b_i * size), size);
-			tmp_i += MAGIC;
+			tmp_i += GROWTH_FACTOR;
 		}
 		b_i++;
 	}
 	array_free(&(b->values));
 	b->values = tmp;
 	b_i = 0;
-	while (b_i + MAGIC < new_len)
+	while (b_i + GROWTH_FACTOR < new_len)
 	{
-		bitmap_set(&(b->flags), b_i, b_i % MAGIC == MAGIC - 1);
+		bitmap_set(&(b->flags), b_i, b_i % GROWTH_FACTOR == GROWTH_FACTOR - 1);
 		b_i++;
 	}
 	while (b_i < new_len)
@@ -349,19 +349,20 @@ int				bucket_rebalance(t_bucket *b, size_t *it_a, size_t *it_b, size_t *add)
 	tmp = *b;
 	tmp.flags = bitmap();
 	tmp.values = array();
-	new_size = (b->count + (add != NULL)) * MAGIC + (MAGIC - 1);
+	new_size = (b->count + (add != NULL)) * GROWTH_FACTOR + (GROWTH_FACTOR - 1);
 	//printf("rebalancing c:%lu %lu->%lu\n", b->count, bucket_size(b), new_size);
 	bitmap_set_size(&(tmp.flags), new_size);
 	tmp.flags.pos = new_size;
 	array_reserve(&(tmp.values), new_size * size);
 	tmp.values.pos = new_size * size;
 	i_from = 0;
-	i_to = MAGIC;
+	i_to = GROWTH_FACTOR;
 	while (i_from < bucket_size(b))
 	{
 		if (add && *add == i_from)
 		{
 			*add = i_to;
+			i_to += GROWTH_FACTOR;
 			add = NULL;
 		}
 		if (it_a && *it_a == i_from)
@@ -380,7 +381,7 @@ int				bucket_rebalance(t_bucket *b, size_t *it_a, size_t *it_b, size_t *add)
 				tmp.values.data + (i_to * size),
 				b->values.data + (i_from * size), size);
 			bitmap_set(&(tmp.flags), i_to, true);
-			i_to += MAGIC;
+			i_to += GROWTH_FACTOR;
 		}
 		i_from++;
 	}
@@ -456,7 +457,7 @@ static int		bucket_insert(t_bucket *b, size_t id, const void *key, const void *v
 	else 
 	{
 		move_len = count_moves(&(b->flags), id, &forward);
-		if (move_len > MAGIC_2)
+		if (move_len > MAX_HAMMER_INSERT_LEN)
 			if (bucket_rebalance(b, NULL, NULL, &id))
 				return (ERR_ALLOC);
 		move_len = count_moves(&(b->flags), id, &forward);
@@ -487,7 +488,7 @@ static void		bucket_delete(t_bucket *b, size_t id, size_t *it_a, size_t *it_b)
 	void		*value;
 
 	value = bucket_at(b, id);
-	/*if ((b->count - 1) * (MAGIC * 2) < bucket_size(b))
+	/*if ((b->count - 1) * (GROWTH_FACTOR * 2) < bucket_size(b))
 		bucket_rebalance(b, it_a, it_b, &id, NULL);
 	else
 	{
@@ -497,7 +498,7 @@ static void		bucket_delete(t_bucket *b, size_t id, size_t *it_a, size_t *it_b)
 	ft_bzero(value, b->sizes.val + b->sizes.key);
 	bitmap_set(&(b->flags), id, false);
 	b->count--;
-	if (b->count * (MAGIC * 2) < bucket_size(b))
+	if (b->count * (GROWTH_FACTOR * 2) < bucket_size(b))
 		bucket_rebalance(b, it_a, it_b, NULL);
 }
 
