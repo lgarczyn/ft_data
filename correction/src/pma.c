@@ -159,28 +159,110 @@ static void		bucket_get(t_bucket *b, size_t id, void *key, void *val)
 #define MAGIC 4
 #define MAGIC_2 100
 
+
 int				bucket_rebalance(t_bucket *b, size_t *id)
 {
 	size_t		b_i;
 	size_t		tmp_i;
 	size_t		size;
-	t_array		tmp;
+	t_array		tmp_data;
+	t_bitmap	tmp_flags;
 	size_t		new_size;
+
+
+	size = b->sizes.key + (size_t)b->sizes.val;
+	new_size = (b->count + (id != NULL)) * MAGIC + (MAGIC - 1);
+	tmp_data = array();
+	tmp_flags = bitmap();
+
+	//printf("rebalancing c:%lu %lu->%lu\n", b->count, bucket_size(b), new_size);
+	if (bitmap_reserve(&tmp_flags, new_size))
+	 	return (ERR_ALLOC);
+	if (array_reserve(&tmp_data, new_size * size))
+		return (ERR_ALLOC);
+	tmp_flags.pos = new_size;
+	tmp_data.pos = new_size * size;
+	b_i = 0;
+	tmp_i = MAGIC - 1;
+	
+	if (id && *id == bucket_size)
+	{
+		*id = new_size - (MAGIC - 1);
+		id = NULL;
+	}
+	while (b_i < bucket_size(b))
+	{
+		if (id && *id == b_i)
+		{
+			*id = tmp_i;
+			id = NULL;
+			tmp_i += MAGIC;
+			//tip: DOESN'T FUCKING WORK
+		}
+		if (bitmap_get(&(b->flags), b_i))
+		{
+			ft_memmove(
+				tmp_data.data + (tmp_i * size),
+				b->values.data + (b_i * size), size);
+			bitmap_set(&tmp_flags, tmp_i, true);
+			tmp_i += MAGIC;
+		}
+		b_i++;
+	}
+
+	size_t	i = 0;
+	size_t	j = 0;
+	bool	bo;
+
+	while (1) {
+		while (bitmap_get_safe(&(b->flags), i, &bo) && bo == false)
+			i++;
+		while (bitmap_get_safe(&tmp_flags, j, &bo) && bo == false)
+			j++;
+		if (i == bucket_size(b) && j == new_size)
+			break;
+		else if (i == bucket_size(b) || j == new_size)
+			printf("WTF DIFF ENDS %lu %lu\n", i, j);
+		if (ft_memcmp(tmp_data.data + (j * size), b->values.data + (i * size), size))
+			printf("WTF DIFF %lu %lu\n", i, j);
+		i++;
+		j++;
+	}
+
+
+	array_free(&(b->values));
+	bitmap_free(&(b->flags));
+	b->values = tmp_data;
+	b->flags = tmp_flags;
+	return (OK);
+}
+
+/*int				bucket_rebalance(t_bucket *b, size_t *id)
+{
+	size_t		b_i;
+	size_t		tmp_i;
+	size_t		size;
+	t_array		tmp;
+	size_t		old_len;
+	size_t		new_len;
 
 	size = b->sizes.key + (size_t)b->sizes.val;
 	//SHOULDNT NEED + 1
 	//SHOULDNT NEED - MAGIC
-	new_size = (b->count + 1) * MAGIC + (MAGIC - 1);
+	old_len = bucket_size(b);
+	new_len = (b->count + 1) * MAGIC + (MAGIC - 1);
 	tmp = array();
-	if (bitmap_reserve(&(b->flags), new_size))
-	 	return (ERR_ALLOC);
-	if (array_reserve(&tmp, new_size * size))
-		return (ERR_ALLOC);
-	b->flags.pos = new_size;
-	tmp.pos = new_size * size;
+	if (old_len < new_len)
+	{
+		if (bitmap_set_size(&(b->flags), new_len))
+			return (ERR_ALLOC);	
+		if (array_reserve(&tmp, new_len * size))
+			return (ERR_ALLOC);
+	}
+	tmp.pos = new_len * size;
 	b_i = 0;
 	tmp_i = MAGIC - 1;
-	while (b_i < bucket_size(b))
+	while (b_i < old_len)
 	{
 		if (id && *id == b_i)
 		{
@@ -199,13 +281,79 @@ int				bucket_rebalance(t_bucket *b, size_t *id)
 	array_free(&(b->values));
 	b->values = tmp;
 	b_i = 0;
-	while (b_i < bucket_size(b) - MAGIC)
+	while (b_i + MAGIC < new_len)
 	{
 		bitmap_set(&(b->flags), b_i, b_i % MAGIC == MAGIC - 1);
 		b_i++;
 	}
+	while (b_i < new_len)
+	{
+		bitmap_set(&(b->flags), b_i, false);
+		b_i++;
+	}
 	return (OK);
-}
+}*/
+/*
+int				bucket_rebalance(t_bucket *b, size_t *it_a, size_t *it_b, size_t *del, size_t *add)
+{
+	t_bucket	tmp;
+	size_t		new_size;
+	size_t		i_from;
+	size_t		i_to;
+	size_t		size;
+
+	size = b->sizes.key + (size_t)b->sizes.val;
+	tmp = *b;
+	tmp.flags = bitmap();
+	tmp.values = array();
+	if (bucket_size(b) == 0 && del)
+		printf("WTF\n");
+	new_size = (bucket_size(b) - (!!del) + (!!add)) * MAGIC + (MAGIC - 1);
+	bitmap_set_size(&(tmp.flags), new_size);
+	//tmp.flags.pos = new_size;
+	array_reserve(&(tmp.values), new_size * size);
+	tmp.values.pos = new_size;
+	i_from = 0;
+	i_to = MAGIC;
+	while (i_from < bucket_size(b))
+	{
+		if (add && *add == i_from)
+		{
+			*add = i_to;
+			i_to += MAGIC;
+		}
+		if (it_a && *it_a == i_from)
+		{
+			*it_a = i_to;
+			it_a = NULL;
+		}
+		if (it_b && *it_b == i_from)
+		{
+			*it_b = i_to;
+			it_b = NULL;
+		}
+		if (del && *del == i_from)
+		{
+			i_from++;
+			del = NULL;
+			continue;
+		}
+		if (bitmap_get(&(b->flags), i_from))
+		{
+			ft_memmove(
+				tmp.values.data + (i_to * size),
+				b->values.data + (i_from * size), size);
+			bitmap_set(&(tmp.flags), i_to, true);
+			i_to += MAGIC;
+		}
+		i_from++;
+	}
+	array_free(&(b->values));
+	bitmap_free(&(b->flags));
+	*b = tmp;
+
+	return (OK);
+}*/
 
 static size_t	count_moves(t_bitmap *b, size_t id, bool *forward)
 {
@@ -221,7 +369,11 @@ static size_t	count_moves(t_bitmap *b, size_t id, bool *forward)
 	}
 	*forward = false;
 	r = 0;
-	id--;
+	//pretend you
+	if (id)
+		id--;
+	else
+		printf("please don't happen\n");
 	while (r < id && bitmap_get(b, id - r))
 		r++;
 	if (r >= id)
@@ -233,24 +385,17 @@ static size_t	count_moves(t_bitmap *b, size_t id, bool *forward)
 	return (r);
 }
 
-static int		bucket_insert(t_bucket *b, size_t id, const void *key, const void *val)
+static bool		bucket_insert(t_bucket *b, size_t id, const void *key, const void *val)
 {
 	size_t		move_len;
 	size_t		size;
 	bool		forward;
 
 	if (b->count * 2 + 1 > bucket_size(b))
-		if (bucket_rebalance(b, &id))
-			return (ERR_ALLOC);
-	//is there a risk of updating id twice?
-	//also check count moves again because that's likely NOT ok
+		return (true);
 	move_len = count_moves(&(b->flags), id, &forward);
 	if (move_len > MAGIC_2)
-	{
-		if (bucket_rebalance(b, &id))
-			return (ERR_ALLOC);
-		move_len = count_moves(&(b->flags), id, &forward);
-	}
+		return (true);
 	size = b->sizes.key + b->sizes.val;
 	if (forward && move_len)
 	{
@@ -267,18 +412,26 @@ static int		bucket_insert(t_bucket *b, size_t id, const void *key, const void *v
 		ft_putendl_fd("WTF2", STDERR);
 	bucket_set(b, id, key, val);
 	b->count++;
-	return (OK);
+	return (false);
 }
 
+//static void		bucket_delete(t_bucket *b, size_t id, size_t *it_a, size_t *it_b)
 static void		bucket_delete(t_bucket *b, size_t id)
 {
 	void		*value;
 
 	value = bucket_at(b, id);
+	/*if ((b->count - 1) * (MAGIC * 2) < bucket_size(b))
+		bucket_rebalance(b, it_a, it_b, &id, NULL);
+	else
+	{
+		ft_bzero(value, b->sizes.val + b->sizes.key);
+		bitmap_set(&(b->flags), id, false);
+	}*/
 	ft_bzero(value, b->sizes.val + b->sizes.key);
 	bitmap_set(&(b->flags), id, false);
 	b->count--;
-	if (b->count * MAGIC * MAGIC < bucket_size(b))
+	if (b->count * (MAGIC * 2) < bucket_size(b))
 		bucket_rebalance(b, NULL);
 }
 
@@ -292,6 +445,7 @@ bool		pma_delete(t_pma *a, const void *key,
 	if (en.found)
 	{
 		bucket_get(&(a->bucket), en.it.id, out_key, out_val);
+		// bucket_delete(&(a->bucket), en.it.id, NULL, NULL);
 		bucket_delete(&(a->bucket), en.it.id);
 		a->count--;
 	}
@@ -313,7 +467,15 @@ int				pma_insert(t_pma *a, const void *key, const void *val)
 	else
 	{
 		if (bucket_insert(&(a->bucket), en.it.id, key, val))
-			return (ERR_ALLOC);
+		{
+			if (bucket_rebalance(&(a->bucket), NULL))
+				return (ERR_ALLOC);
+			en = pma_search(a, key);
+			if (en.found == true)
+				printf("wtf\n");
+			if (bucket_insert(&(a->bucket), en.it.id, key, val))
+				printf("wtf\n");
+		}
 		a->count++;
 		return (OK);
 	}
@@ -390,8 +552,10 @@ bool			pmait_delete(t_pma_it *i, void *key, void *val)
 	if (pmait_get(i, key, val))
 	{
 		bucket_delete(&(i->pma->bucket), i->id);
+		// bucket_delete(&(i->pma->bucket), i->id, &(i->id), &(i->end));
 		i->pma->count--;
 		i->pma->canary++;
+		//i->canary++;
 		//learn to update iterators
 		return (true);
 	}
@@ -404,15 +568,17 @@ bool			pmait_delete_back(t_pma_it *i, void *key, void *val)
 		ft_putendl_fd("USING INVALID ITERATOR", STDERR);
 	if (pmait_get_back(i, key, val))
 	{
+		//bucket_delete(&(i->pma->bucket), i->end - 1, &(i->id), &(i->end));
 		bucket_delete(&(i->pma->bucket), i->end - 1);
 		i->pma->count--;
 		i->pma->canary++;
+		//i->canary++;
 		//learn to update iterators
 		return (true);
 	}
 	return (false);
 }
-
+/*
 int				pma_ensure(t_pma_en *en, const void *data)
 {
 	if (en->it.pma->canary != en->it.canary)
@@ -424,13 +590,25 @@ int				pma_ensure(t_pma_en *en, const void *data)
 			en->it.id,
 			en->key, data))
 			return (ERR_ALLOC);
-		en->it.pma->count--;
+		if (bucket_insert(&(a->bucket), en.it.id, key, val))
+		{
+			if (bucket_rebalance(&(a->bucket), NULL))
+				return (ERR_ALLOC);
+			en = pma_search(a, key);
+			if (en.found == true)
+				printf("wtf\n");
+			if (bucket_insert(&(a->bucket), en.it.id, key, val))
+				printf("wtf\n");
+		}
+
+
+		en->it.pma->count++;//WTF am I doing here ?
 		en->it.pma->canary++;
 		en->key = NULL;
 		en->found = true;
 	}
 	return (OK);
-}
+}*/
 
 t_pma_it		pmait(const t_pma *a)
 {
