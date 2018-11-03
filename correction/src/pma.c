@@ -79,17 +79,33 @@ size_t			pma_size(const t_pma *a)
 	return (bucket_size(&(a->bucket)));
 }
 
+/*
+int binsearch_2( arr_t array[], size_t size, arr_t key, size_t *index ){
+if( !array || !size ) return 0;
+arr_t *p=array;
+while( size > 0 ){
+	size_t w=size/2;
+	if( p[w+1] <= key )
+	{
+			p+=w+1; size-=w+1;
+	} 
+	else
+		size =w;
+}
+*index=p-array; return p[0]==key;
+}
+*/
+
 t_pma_it		pma_search_pos(const t_pma *a, const void *key)
 {
 	size_t		i;
 	t_pma_it	it;
-	bool		start_affected = false;
 
 	it = pmait(a);
 	//WHILE SEARCH RANGE IS VALID
-	i = it.id + (it.end - it.id) / 2;
 	while (it.id < it.end)
 	{
+		i = it.id + (it.end - it.id) / 2;
 		//while i is in range, and is not a valid target
 		while (i < it.end && bitmap_get(&(a->bucket.flags), i) == false)
 			i++;
@@ -100,24 +116,17 @@ t_pma_it		pma_search_pos(const t_pma *a, const void *key)
 		else if (it.end == it.id + 1)
 		{
 			//if pos fits, set key to NULL (meaning found)
-			if (start_affected || a->predicate(key, pma_cat(a, i)) == 0)
-			{
-				if (a->predicate(pma_cat(a, i), key) == 0)
-					;
-				//if current pos is too small, take next place
-				else
-					it.id++;
-			}
-			else
+			if (it.id == 0 && a->predicate(key, pma_cat(a, i)))
 				it.end--;
+			else if (a->predicate(pma_cat(a, i), key))
+				it.id++;
 			break;
 		}
 		//if key is smaller than i, reduce end, else increase start
 		else if (a->predicate(key, pma_cat(a, i)))
 			it.end = i;
 		else
-			it.id = i;//, start_affected = true;
-		i = it.id + (it.end - it.id) / 2;
+			it.id = i;
 	}
 	return (it);
 }

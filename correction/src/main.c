@@ -292,7 +292,7 @@ int				reverse_str(const char *buffer)
 	return (atoi(buffer));
 }
 
-#define TEST_NUM (1 << 9)
+#define TEST_NUM (1 << 10)
 #define TEST_NUM_INC (TEST_NUM - 1)
 
 #ifdef TEST_SORTED
