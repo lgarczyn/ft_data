@@ -101,8 +101,6 @@ typedef struct		s_bucket
 
 typedef struct		s_pma
 {
-	t_sizes			sizes;
-	size_t			count;
 	t_predicate		predicate;
 	t_bucket		bucket;
 	size_t			canary;
@@ -113,7 +111,6 @@ typedef struct		s_pma_it
 	t_pma			*pma;
 	size_t			id;
 	size_t			end;
-//	size_t			data_id;
 	size_t			canary;
 }					t_pma_it;
 

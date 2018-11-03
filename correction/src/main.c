@@ -662,7 +662,7 @@ void			pma_display(t_pma *a)
 
 	printf("\n%lu==%lu: [",
 		bitmap_len(&(a->bucket.flags)),
-		array_len(&(a->bucket.values), a->sizes.key + a->sizes.val));
+		array_len(&(a->bucket.values), a->bucket.sizes.key + a->bucket.sizes.val));
 	i = 0;
 	while (bitmap_get_safe(&(a->bucket.flags), i, &b))
 	{
@@ -677,7 +677,7 @@ void			pma_display(t_pma *a)
 	it = pmait(a);
 	while (pmait_next(&it, &key, &val)) {
 
-		if (a->sizes.key == 4)
+		if (a->bucket.sizes.key == 4)
 			printf("%i:", *(int*)key);
 		else
 			printf("%s:", key);
