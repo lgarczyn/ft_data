@@ -14,6 +14,7 @@
 #include "data.h"
 #include "stdio.h"
 
+//remove probably
 void			check_array(const t_array *a)
 {
 	if (a->warning || a->pos > a->size || (!a->size != !a->data))
