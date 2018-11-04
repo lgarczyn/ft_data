@@ -11,31 +11,49 @@
 /* ************************************************************************** */
 
 #include "libft.h"
-#include "data.h"
-#include <stdlib.h>
+#include "pma_int.h"
 
 t_pma			pma(t_predicate predicate, t_uint key, t_uint value)
 {
 	t_pma		out;
+	static u64	global_canary = 1337;
 
 	ft_bzero(&out, sizeof(t_pma));
 	out.predicate = predicate;
 	out.bucket.sizes.key = key;
 	out.bucket.sizes.val = value;
-	out.canary = random();
+	out.canary = global_canary;
+	global_canary += CANARY_STEP;
 	return (out);
-}
-
-void			bucket_free(t_bucket *b)
-{
-	bitmap_free(&(b->flags));
-	array_free(&(b->values));
 }
 
 void			pma_free(t_pma *a)
 {
 	bucket_free(&(a->bucket));
 	*a = pma(a->predicate, a->bucket.sizes.key, a->bucket.sizes.val);
+}
+
+size_t			pma_size(const t_pma *a)
+{
+	return (bucket_size(&(a->bucket)));
+}
+
+size_t			pma_len(const t_pma *a)
+{
+	return (a->bucket.count);
+}
+
+//bucket_tools.c
+
+void			bucket_free(t_bucket *b)
+{
+	t_sizes		sizes;
+
+	bitmap_free(&(b->flags));
+	array_free(&(b->values));
+	sizes = b->sizes;
+	ft_bzero(b, sizeof(t_bucket));
+	b->sizes = sizes;
 }
 
 void			*bucket_at(t_bucket *b, size_t index)
@@ -48,32 +66,6 @@ const void		*bucket_cat(const t_bucket *b, size_t index)
 	return (b->values.data + (index * (b->sizes.key + b->sizes.val)));
 }
 
-void			*pma_at(t_pma *a, size_t index)
-{
-	return (bucket_at(&(a->bucket), index));
-}
-
-const void		*pma_cat(const t_pma *a, size_t index)
-{
-	return (bucket_cat(&(a->bucket), index));
-}
-
-size_t			pma_len(const t_pma *a)
-{
-	size_t		i;
-	size_t		count;
-	bool		b;
-
-	i = 0;
-	count = 0;
-	while (bitmap_get_safe(&(a->bucket.flags), i++, &b))
-		if (b)
-			count++;
-	if (count != a->bucket.count)
-		ft_putendl_fd("CORRUPTED PMA: count does no match flags", STDERR);
-	return (a->bucket.count);
-}
-
 size_t			bucket_word(const t_bucket *b)
 {
 	return (b->sizes.key + b->sizes.val);
@@ -84,38 +76,41 @@ size_t			bucket_size(const t_bucket *b)
 	return (bitmap_len(&(b->flags)));
 }
 
-size_t			pma_size(const t_pma *a)
+//pma_tools.c
+
+void			*pma_at(t_pma *a, size_t index)
 {
-	return (bucket_size(&(a->bucket)));
+	return (bucket_at(&(a->bucket), index));
 }
 
-t_pma_it		pma_search_pos(const t_pma *a, const void *key)
+const void		*pma_cat(const t_pma *a, size_t index)
+{
+	return (bucket_cat(&(a->bucket), index));
+}
+
+//pma_search.c
+
+static t_pma_it	pma_search_pos(const t_pma *a, const void *key)
 {
 	size_t		i;
 	t_pma_it	it;
 
 	it = pmait(a);
-	//WHILE SEARCH RANGE IS VALID
 	while (it.id < it.end)
 	{
 		i = it.id + (it.end - it.id) / 2;
-		//while i is in range, and is not a valid target
 		while (i < it.end && bitmap_get(&(a->bucket.flags), i) == false)
 			i++;
-		//if i reached end, change range
 		if (i == it.end)
 			it.end = it.id + (it.end - it.id) / 2;
-		//if there's only one pos left
 		else if (it.end == it.id + 1)
 		{
-			//if pos fits, set key to NULL (meaning found)
 			if (it.id == 0 && a->predicate(key, pma_cat(a, i)))
 				it.end--;
 			else if (a->predicate(pma_cat(a, i), key))
 				it.id++;
 			break;
 		}
-		//if key is smaller than i, reduce end, else increase start
 		else if (a->predicate(key, pma_cat(a, i)))
 			it.end = i;
 		else
@@ -147,7 +142,9 @@ t_pma_it		pma_search_range(const t_pma *a,
 	return (it);
 }
 
-static void		bucket_set(t_bucket *b, size_t id,
+//bucket_accesors.c
+
+void			bucket_set(t_bucket *b, size_t id,
 	const void *key, const void *val)
 {
 	void		*ptr;
@@ -158,7 +155,7 @@ static void		bucket_set(t_bucket *b, size_t id,
 	bitmap_set(&(b->flags), id, true);
 }
 
-static void		bucket_get(t_bucket *b, size_t id,
+void			bucket_get(t_bucket *b, size_t id,
 	void *key, void *val)
 {
 	void		*ptr;
@@ -170,18 +167,15 @@ static void		bucket_get(t_bucket *b, size_t id,
 		ft_memmove(val, ptr + b->sizes.key, b->sizes.val);
 }
 
-#define GROWTH_FACTOR 3
-//PADDING CANT BE LESS THAN GROWTH_FACTOR - 1
-#define PADDING 6
-#define MAX_HAMMER_INSERT_LEN 100
+//bucket_rebalance.c
 
-void			set_clear(size_t **to, size_t val)
+static void		set_clear(size_t **to, size_t val)
 {
 	**to = val;
 	*to = NULL;
 }
 
-void			update_its(t_bucket *b,
+static void		update_its(t_bucket *b,
 	size_t *it_a, size_t *it_b, size_t *add)
 {
 	size_t		i_from;
@@ -207,7 +201,7 @@ void			update_its(t_bucket *b,
 	}
 }
 
-int				bucket_clone(const t_bucket *b, t_bucket *tmp, bool adding)
+static int		bucket_clone(const t_bucket *b, t_bucket *tmp, bool adding)
 {
 	size_t		new_size;
 
@@ -253,6 +247,8 @@ int				bucket_rebalance(t_bucket *b,
 	*b = tmp;
 	return (OK);
 }
+
+//bucket_modify.c
 
 static size_t	count_moves(t_bitmap *b, size_t id, bool *forward)
 {
@@ -303,7 +299,7 @@ static void		make_space(t_bucket *b, size_t id, bool forward, size_t len)
 	}
 }
 
-static int		bucket_insert(t_bucket *b, size_t id,
+int				bucket_insert(t_bucket *b, size_t id,
 	const void *key, const void *val)
 {
 	size_t		move_len;
@@ -331,7 +327,7 @@ static int		bucket_insert(t_bucket *b, size_t id,
 	return (OK);
 }
 
-static void		bucket_delete(t_bucket *b, size_t id,
+void			bucket_delete(t_bucket *b, size_t id,
 	size_t *it_a, size_t *it_b)
 {
 	void		*value;
@@ -344,7 +340,9 @@ static void		bucket_delete(t_bucket *b, size_t id,
 		bucket_rebalance(b, it_a, it_b, NULL);
 }
 
-bool		pma_delete(t_pma *a, const void *key,
+//pma_modify.c
+
+bool			pma_delete(t_pma *a, const void *key,
 	void *out_key, void *out_val)
 {
 	t_pma_en	en;
@@ -377,6 +375,19 @@ int				pma_insert(t_pma *a, const void *key, const void *val)
 			return (ERR_ALLOC);
 		return (OK);
 	}
+}
+
+//pmait.c
+
+t_pma_it		pmait(const t_pma *a)
+{
+	t_pma_it	it;
+
+	it.id = 0;
+	it.end = pma_size(a);
+	it.pma = (t_pma*)a;
+	it.canary = a->canary;
+	return (it);
 }
 
 bool			pmait_get(t_pma_it *i, void *key, void *val)
@@ -437,6 +448,8 @@ bool			pmait_next_back(t_pma_it *i, void *key, void *val)
 	return (false);
 }
 
+//pmait_delete.c
+
 bool			pmait_delete(t_pma_it *i, void *key, void *val)
 {
 	if (i->pma->canary != i->canary)
@@ -465,6 +478,8 @@ bool			pmait_delete_back(t_pma_it *i, void *key, void *val)
 	return (false);
 }
 
+//pma_wrappers.c
+
 int				pma_ensure(t_pma_en *en, const void *data)
 {
 	if (en->it.pma->canary != en->it.canary)
@@ -482,17 +497,6 @@ int				pma_ensure(t_pma_en *en, const void *data)
 		en->found = true;
 	}
 	return (OK);
-}
-
-t_pma_it		pmait(const t_pma *a)
-{
-	t_pma_it	it;
-
-	it.id = 0;
-	it.end = pma_size(a);
-	it.pma = (t_pma*)a;
-	it.canary = a->canary;
-	return (it);
 }
 
 bool			pma_get(const t_pma *a, const void *key,

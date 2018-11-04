@@ -4,5 +4,9 @@
 			"path": "correction"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.associations": {
+			"pma_int.h": "c"
+		}
+	}
 }
