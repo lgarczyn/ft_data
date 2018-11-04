@@ -441,7 +441,7 @@ void			test_sorted(void)
 
 void			pma_check(t_pma *a, t_reverse r, bool reversed)
 {
-	t_pma_it	it;
+	t_pmait	it;
 	char		buffer[12];
 	int			val;
 	int			i;
@@ -465,7 +465,7 @@ void			pma_check_ordering(t_pma *a, t_reverse r, bool reversed)
 {
 	char		key_found_buf[12];
 	int			val_found;
-	t_pma_it	it;
+	t_pmait	it;
 
 	it = pmait(a);
 	int old_key;
@@ -672,7 +672,7 @@ void			pma_display(t_pma *a)
 	
 	printf("]\n%lu==%lu: {", pma_len(a), a->bucket.count);
 
-	t_pma_it	it;
+	t_pmait	it;
 
 	it = pmait(a);
 	while (pmait_next(&it, &key, &val)) {
@@ -737,11 +737,11 @@ void			test_pma(void)
 			case 't': test_pma_sort(); break;
 			default : to_update = false;
 
-			// pmait_get(t_pma_it *i, void *key, void *val);
-			// pmait_next(t_pma_it *i, void *key, void *val);
-			// pmait_prev(t_pma_it *i, void *key, void *val);
-			// pmait_delete(t_pma_it *i, void *key, void *val);
-			// pma_ensure(t_pma_en *en, const void *data);
+			// pmait_get(t_pmait *i, void *key, void *val);
+			// pmait_next(t_pmait *i, void *key, void *val);
+			// pmait_prev(t_pmait *i, void *key, void *val);
+			// pmait_delete(t_pmait *i, void *key, void *val);
+			// pma_ensure(t_pmaen *en, const void *data);
 			// pmait_first(&a);
 			// pmait_last(&a);
 		}

@@ -90,10 +90,10 @@ const void		*pma_cat(const t_pma *a, size_t index)
 
 //pma_search.c
 
-static t_pma_it	pma_search_pos(const t_pma *a, const void *key)
+static t_pmait	pma_search_pos(const t_pma *a, const void *key)
 {
 	size_t		i;
-	t_pma_it	it;
+	t_pmait	it;
 
 	it = pmait(a);
 	while (it.id < it.end)
@@ -119,9 +119,9 @@ static t_pma_it	pma_search_pos(const t_pma *a, const void *key)
 	return (it);
 }
 
-t_pma_en		pma_search(const t_pma *a, const void *key)
+t_pmaen		pma_search(const t_pma *a, const void *key)
 {
-	t_pma_en	res;
+	t_pmaen	res;
 
 	res.it = pma_search_pos(a, key);
 	res.key = (void*)key;
@@ -129,10 +129,10 @@ t_pma_en		pma_search(const t_pma *a, const void *key)
 	return (res);
 }
 
-t_pma_it		pma_search_range(const t_pma *a,
+t_pmait		pma_search_range(const t_pma *a,
 	const void *start, const void *end)
 {
-	t_pma_it	it;
+	t_pmait	it;
 
 	it = pmait(a);
 	if (start)
@@ -345,7 +345,7 @@ void			bucket_delete(t_bucket *b, size_t id,
 bool			pma_delete(t_pma *a, const void *key,
 	void *out_key, void *out_val)
 {
-	t_pma_en	en;
+	t_pmaen	en;
 
 	a->canary++;
 	en = pma_search(a, key);
@@ -360,7 +360,7 @@ bool			pma_delete(t_pma *a, const void *key,
 
 int				pma_insert(t_pma *a, const void *key, const void *val)
 {
-	t_pma_en	en;
+	t_pmaen	en;
 
 	a->canary++;
 	en = pma_search(a, key);
@@ -379,9 +379,9 @@ int				pma_insert(t_pma *a, const void *key, const void *val)
 
 //pmait.c
 
-t_pma_it		pmait(const t_pma *a)
+t_pmait		pmait(const t_pma *a)
 {
-	t_pma_it	it;
+	t_pmait	it;
 
 	it.id = 0;
 	it.end = pma_size(a);
@@ -390,7 +390,7 @@ t_pma_it		pmait(const t_pma *a)
 	return (it);
 }
 
-bool			pmait_get(t_pma_it *i, void *key, void *val)
+bool			pmait_get(t_pmait *i, void *key, void *val)
 {
 	t_pma		*a;
 	t_bitmap	*bmp;
@@ -407,7 +407,7 @@ bool			pmait_get(t_pma_it *i, void *key, void *val)
 	return (true);
 }
 
-bool			pmait_get_back(t_pma_it *i, void *key, void *val)
+bool			pmait_get_back(t_pmait *i, void *key, void *val)
 {
 	t_pma		*a;
 	t_bitmap	*bmp;
@@ -424,7 +424,7 @@ bool			pmait_get_back(t_pma_it *i, void *key, void *val)
 	return (true);
 }
 
-bool			pmait_next(t_pma_it *i, void *key, void *val)
+bool			pmait_next(t_pmait *i, void *key, void *val)
 {
 	if (i->pma->canary != i->canary)
 		ft_putendl_fd("USING INVALID ITERATOR", STDERR);
@@ -436,7 +436,7 @@ bool			pmait_next(t_pma_it *i, void *key, void *val)
 	return (false);
 }
 
-bool			pmait_next_back(t_pma_it *i, void *key, void *val)
+bool			pmait_next_back(t_pmait *i, void *key, void *val)
 {
 	if (i->pma->canary != i->canary)
 		ft_putendl_fd("USING INVALID ITERATOR", STDERR);
@@ -450,7 +450,7 @@ bool			pmait_next_back(t_pma_it *i, void *key, void *val)
 
 //pmait_delete.c
 
-bool			pmait_delete(t_pma_it *i, void *key, void *val)
+bool			pmait_delete(t_pmait *i, void *key, void *val)
 {
 	if (i->pma->canary != i->canary)
 		ft_putendl_fd("USING INVALID ITERATOR", STDERR);
@@ -464,7 +464,7 @@ bool			pmait_delete(t_pma_it *i, void *key, void *val)
 	return (false);
 }
 
-bool			pmait_delete_back(t_pma_it *i, void *key, void *val)
+bool			pmait_delete_back(t_pmait *i, void *key, void *val)
 {
 	if (i->pma->canary != i->canary)
 		ft_putendl_fd("USING INVALID ITERATOR", STDERR);
@@ -480,7 +480,7 @@ bool			pmait_delete_back(t_pma_it *i, void *key, void *val)
 
 //pma_wrappers.c
 
-int				pma_ensure(t_pma_en *en, const void *data)
+int				pma_ensure(t_pmaen *en, const void *data)
 {
 	if (en->it.pma->canary != en->it.canary)
 		ft_putendl_fd("USING INVALID ITERATOR", STDERR);
@@ -502,7 +502,7 @@ int				pma_ensure(t_pma_en *en, const void *data)
 bool			pma_get(const t_pma *a, const void *key,
 	void *out_key, void *out_val)
 {
-	t_pma_en	en;
+	t_pmaen	en;
 
 	en = pma_search(a, key);
 	if (en.found)
@@ -512,7 +512,7 @@ bool			pma_get(const t_pma *a, const void *key,
 
 bool			pma_pop_back(t_pma *a, void *key, void *val)
 {
-	t_pma_it		it;
+	t_pmait		it;
 
 	it = pmait(a);
 	if (pmait_get_back(&it, key, val) == false)
@@ -524,7 +524,7 @@ bool			pma_pop_back(t_pma *a, void *key, void *val)
 
 bool			pma_pop_front(t_pma *a, void *key, void *val)
 {
-	t_pma_it		it;
+	t_pmait		it;
 
 	it = pmait(a);
 	if (pmait_get(&it, key, val) == false)

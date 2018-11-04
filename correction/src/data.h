@@ -112,14 +112,14 @@ typedef struct		s_pma_it
 	size_t			id;
 	size_t			end;
 	size_t			canary;
-}					t_pma_it;
+}					t_pmait;
 
 typedef struct		s_pma_en
 {
-	t_pma_it		it;
+	t_pmait		it;
 	void			*key;
 	bool			found;
-}					t_pma_en;
+}					t_pmaen;
 
 t_array				array(void);
 void				array_free(t_array *a);
@@ -175,7 +175,7 @@ void				sorted_delete_index(t_sorted *a, size_t index, void *out);
 t_pma				pma(t_predicate predicate, t_uint key, t_uint value);
 void				pma_free(t_pma *a);
 size_t				pma_len(const t_pma *a);
-t_pma_en			pma_search(const t_pma *a, const void *key);
+t_pmaen			pma_search(const t_pma *a, const void *key);
 int					pma_insert(t_pma *a, const void *key, const void *val);
 bool				pma_delete(t_pma *a, const void *key,
 	void *out_key, void *out_val);
@@ -185,15 +185,15 @@ bool				pma_get(const t_pma *a, const void *key,
 bool				pma_pop_back(t_pma *a, void *key, void *val);
 bool				pma_pop_front(t_pma *a, void *key, void *val);
 
-t_pma_it			pmait(const t_pma *a);
-bool				pmait_next(t_pma_it *i, void *key, void *val);
-bool				pmait_delete(t_pma_it *i, void *key, void *val);
+t_pmait			pmait(const t_pma *a);
+bool				pmait_next(t_pmait *i, void *key, void *val);
+bool				pmait_delete(t_pmait *i, void *key, void *val);
 
-t_pma_it			pma_range(const t_pma *a, void *key_a, void *key_b);
-bool				pmait_next_back(t_pma_it *i, void *key, void *val);
-bool				pmait_delete_back(t_pma_it *i, void *key, void *val);
+t_pmait			pma_range(const t_pma *a, void *key_a, void *key_b);
+bool				pmait_next_back(t_pmait *i, void *key, void *val);
+bool				pmait_delete_back(t_pmait *i, void *key, void *val);
 
-int					pma_ensure(t_pma_en *en, const void *data);
+int					pma_ensure(t_pmaen *en, const void *data);
 void				pma_display(t_pma *a);
 
 #endif
