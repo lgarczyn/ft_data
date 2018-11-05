@@ -10,17 +10,39 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME = libftprintf.a
+NAME = libftdata.a
 
-SRC =	printf.c \
-		display.c \
-		display_text.c \
-		display_int.c \
-		wrappers.c
+NAMES = \
+	array/array \
+	array/array_modifiers \
+	array/array_wrappers \
+	bitmap/bitmap \
+	bitmap/bitmap_accessors \
+	bitmap/bitmap_stack \
+	pma/pma \
+	pma/pma_modify \
+	pma/pma_search \
+	pma/pma_tools \
+	pma/pma_wrappers \
+	pma/bucket_accessors \
+	pma/bucket_modify \
+	pma/bucket_rebalance \
+	pma/bucket_tools \
+	pma/pmait \
+	pma/pmait_delete \
+	queue/queue \
+	queue/queue_modifiers \
+	sorted/sorted \
+	sorted/sorted_accessors \
+	sorted/sorted_delete \
+	sorted/sorted_insert \
+	sorted/sorted_search
 
-OBJ = $(addprefix obj/, $(addsuffix .o, $(basename $(SRC))))
 
-INC = -I../libft/includes
+OBJ = $(addprefix obj/, $(addsuffix .o, $(NAMES)))
+SRC = $(addprefix src/, $(addsuffix .c, $(NAMES)))
+
+INC = -I../libft/includes -Iincludes
 
 LIB = -L ../libft/ -lft
 
@@ -33,10 +55,10 @@ FLG = -Wall -Wextra -Werror -funsigned-char $(DEB)
 all: $(NAME)
 
 $(NAME):$(OBJ)
-	ar rcs $(NAME) $(OBJ)
-	
+	ar rcs  $(NAME) $(OBJ)
+
 obj/%.o: src/%.c
-	@mkdir -p obj
+	mkdir -p `dirname $@`
 	gcc -o $@ -c $< $(INC) $(FLG)
 
 clean:

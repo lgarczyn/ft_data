@@ -12,15 +12,16 @@
 
 NAME = ft_data
 
-SRC = main.c array.c sorted.c queue.c bitmap.c pma.c
+SRC = main.c
 
-INC = -Ilibft/includes -Iprintf/includes
+INC = -Ilibft/includes -Iprintf/includes -Idata/includes
 		
 OBJ = $(addprefix obj/, $(addsuffix .o, $(basename $(SRC))))
 
-LIB = -L libft -lft -L printf -lftprintf
+LIB = -L libft -lft -L printf -lftprintf -L unwrap -ltest
+#LIB = -L libft -lft -L printf -lftprintf -L data -lftdata
 
-DEB = -g -g3 -fsanitize=address 
+DEB = -g -g3 #-fsanitize=address 
 
 OPT = -O0 #-O3
 
@@ -31,6 +32,9 @@ all: $(NAME)
 $(NAME):$(OBJ)
 	cd libft && make
 	cd printf && make
+	cd data && make
+	# get rid of this shit
+	mkdir -p unwrap && cd unwrap && ar -x ../libft/libft.a && ar -x ../data/libftdata.a && ar -rcs libtest.a *.o
 	gcc -o ft_data $(OBJ) $(INC) $(FLG) $(LIB)
 	
 obj/%.o: src/%.c
@@ -43,15 +47,18 @@ lib:
 	rm -rf *.dSYM
 
 clean:
-	rm -rf $(OBJ)
+	rm -r $(OBJ)
+	rm -r $(unwrap)
 	cd libft && make clean
 	cd printf && make clean
+	cd data && make clean
 
 fclean: lib
 	rm -f ft_data
 	rm -rf *.dSYM
 	cd libft && make fclean
 	cd printf && make fclean
+	cd data && make fclean
 
 re: fclean all
 
