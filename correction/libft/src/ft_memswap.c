@@ -19,7 +19,6 @@ void			*ft_memswap(void *dst, void *src, size_t len)
 	char		*destin;
 	char		tmp;
 
-
 	if (dst == NULL || src == NULL)
 		return (dst);
 	source = (char*)src;

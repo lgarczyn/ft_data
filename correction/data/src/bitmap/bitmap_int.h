@@ -16,7 +16,6 @@
 # include "libft.h"
 # include "data.h"
 
-
 /*
 ** bitmap.c
 */

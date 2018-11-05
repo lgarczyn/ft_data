@@ -36,6 +36,7 @@ NAMES = \
 	sorted/sorted_accessors \
 	sorted/sorted_delete \
 	sorted/sorted_insert \
+	sorted/sorted_replace \
 	sorted/sorted_search
 
 

@@ -297,7 +297,6 @@ int				reverse_str(const char *buffer)
 
 #ifdef TEST_SORTED
 
-
 void			check(t_sorted *a, t_reverse r, bool reversed)
 {
 	for (int i = 0; i < TEST_NUM; i++)
@@ -459,7 +458,6 @@ void			pma_check(t_pma *a, t_reverse r, bool reversed)
 	if (i != TEST_NUM)
 		PRINT_ERR(i, TEST_NUM);
 }
-
 
 void			pma_check_ordering(t_pma *a, t_reverse r, bool reversed)
 {
@@ -687,7 +685,6 @@ void			pma_display(t_pma *a)
 	}
 	printf("}\n");
 }
-
 
 void			test_pma(void)
 {
