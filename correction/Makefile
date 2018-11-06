@@ -18,8 +18,7 @@ INC = -Ilibft/includes -Iprintf/includes -Idata/includes
 		
 OBJ = $(addprefix obj/, $(addsuffix .o, $(basename $(SRC))))
 
-LIB = -L libft -lft -L printf -lftprintf -L unwrap -ltest
-#LIB = -L libft -lft -L printf -lftprintf -L data -lftdata
+LIB = -L libft -lft -L printf -lftprintf -L data -lftdata
 
 DEB = -g -g3 #-fsanitize=address 
 
@@ -33,8 +32,6 @@ $(NAME):$(OBJ)
 	cd libft && make
 	cd printf && make
 	cd data && make
-	# get rid of this shit
-	mkdir -p unwrap && cd unwrap && ar -x ../libft/libft.a && ar -x ../data/libftdata.a && ar -rcs libtest.a *.o
 	gcc -o ft_data $(OBJ) $(INC) $(FLG) $(LIB)
 	
 obj/%.o: src/%.c

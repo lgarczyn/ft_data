@@ -56,7 +56,7 @@ FLG = -Wall -Wextra -Werror -funsigned-char $(DEB)
 all: $(NAME)
 
 $(NAME):$(OBJ)
-	ar rcs  $(NAME) $(OBJ)
+	ar -rcsT  $(NAME) ../libft/libft.a $(OBJ)
 
 obj/%.o: src/%.c
 	mkdir -p `dirname $@`
