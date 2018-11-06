@@ -142,8 +142,6 @@ void				*ft_memcpy(void *dst, const void *src, size_t n);
 void				*ft_memmove(void *dst, const void *src, size_t n);
 void				*ft_memswap(void *dst, void *src, size_t len);
 void				*ft_memset(void *b, int c, size_t len);
-int					ft_realloc(void **ptr, size_t old_size, size_t new_size);
-int					ft_realloc_double(void **ptr, size_t *old_size);
 void				ft_bzero(void *s, size_t n);
 void				ft_lstadd(t_list **alst, t_list *n);
 void				ft_lstdel(t_list **alst, void (*del)(void *, size_t));
@@ -166,4 +164,11 @@ void				ft_strdel(char **as);
 void				ft_striter(char *s, void (*f)(char *));
 void				ft_striteri(char *s, void (*f)(unsigned int, char *));
 
+#define REALLOC_GROWTH_FACTOR 2
+
+size_t				ft_min_alloc(size_t size);
+int					ft_realloc(void **ptr, size_t old_size, size_t new_size);
+int					ft_realloc_double(void **ptr, size_t *old_size);
+int					ft_realloc_array(void **ptr, size_t pos, size_t *size);
+int					ft_realloc_down(void **ptr, size_t pos, size_t *size);
 #endif

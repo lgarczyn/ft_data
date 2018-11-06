@@ -13,6 +13,12 @@
 #include "libft.h"
 #include <stdlib.h>
 
+
+size_t		ft_min_alloc(size_t size)
+{
+	return (((size - 24) + 15) / 16 * 16 + 24);
+}
+
 /*
 ** if *ptr is null, it will always be allocated to new size
 ** if not, its data will be transfered, and freed
@@ -21,7 +27,7 @@
 ** if malloc should fail, the data is unaffected, a non-zero value is returned
 */
 
-int				ft_realloc(void **ptr, size_t old_size, size_t new_size)
+int			ft_realloc(void **ptr, size_t old_size, size_t new_size)
 {
 	void		*mem;
 
@@ -41,20 +47,54 @@ int				ft_realloc(void **ptr, size_t old_size, size_t new_size)
 }
 
 /*
-** if *ptr is null, it will always be allocated to old_size * 2
-** if old_size is null or negative, it will set to 2;
+** if *ptr is null, it will always be allocated to at least *old_size * 2
+** if *old_size is 0 it will be set to at least 24
 ** if malloc should fail, the data is unaffected, a non-zero value is returned
 */
 
-int				ft_realloc_double(void **ptr, size_t *old_size)
+int			ft_realloc_double(void **ptr, size_t *old_size)
 {
-	size_t		new_size;
+	size_t	new_size;
 
-	if (*old_size <= 0)
-		*old_size = 0;
-	new_size = *old_size == 0 ? 32 : *old_size * 2;
+	new_size = ft_min_alloc(*old_size * REALLOC_GROWTH_FACTOR);
 	if (ft_realloc(ptr, *old_size, new_size))
 		return (ERR_ALLOC);
 	*old_size = new_size;
+	return (0);
+}
+
+/*
+** if *ptr is null, it will always be allocated to at least *size * 2
+** if *size is 0 it will be set to at least 24
+** if malloc should fail, the data is unaffected, a non-zero value is returned
+*/
+
+int			ft_realloc_array(void **ptr, size_t pos, size_t *size)
+{
+	size_t	new_size;
+
+	new_size = ft_min_alloc(*size * REALLOC_GROWTH_FACTOR);
+	if (ft_realloc(ptr, pos, new_size))
+		return (ERR_ALLOC);
+	*size = new_size;
+	return (0);
+}
+
+/*
+** if *ptr is null, it will always be allocated to at least *size * 2
+** if *size is 0 it will be set to at least 24
+** if malloc should fail, the data is unaffected, a non-zero value is returned
+*/
+
+int			ft_realloc_down(void **ptr, size_t pos, size_t *size)
+{
+	size_t	new_size;
+
+	new_size = ft_min_alloc(pos);
+	if (new_size >= *size)
+		return (0);
+	if (ft_realloc(ptr, pos, new_size))
+		return (ERR_ALLOC);
+	*size = new_size;
 	return (0);
 }

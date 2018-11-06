@@ -29,8 +29,7 @@ void			sorted_delete_index(t_sorted *a, size_t index, void *out)
 	if (next_len)
 		ft_memmove(array_data, array_data + a->word, next_len);
 	if (a->pos <= a->size / 4)
-		if (ft_realloc(&a->data, a->size, a->pos) == OK)
-			a->size = a->pos;
+		ft_realloc_down(&a->data, a->pos, &a->size);
 	a->pos = new_pos;
 }
 

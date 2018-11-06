@@ -24,11 +24,8 @@ int				array_move(t_array *a, size_t from, size_t to, size_t size)
 		return (ERR_ARG);
 	new_pos = MAX(to + size, a->pos);
 	if (new_pos > a->size)
-	{
-		if (ft_realloc(&a->data, a->pos, new_pos * 2))
+		if (ft_realloc_array(&a->data, a->pos, &a->size))
 			return (ERR_ALLOC);
-		a->size = new_pos * 2;
-	}
 	ft_memmove(a->data + to, a->data + from, size);
 	a->pos = new_pos;
 	return (OK);
@@ -64,12 +61,7 @@ int				array_remove(t_array *a, void *data,
 	next_len = a->pos - (i + size);
 	ft_memmove(a->data + i, a->data + i + size, next_len);
 	if (new_pos <= a->size / 4)
-	{
-		if (ft_realloc(&a->data, a->pos, a->size / 4) == OK)
-		{
-			a->size = a->size / 4;
-		}
-	}
+		ft_realloc_down(&a->data, a->pos, &a->size);
 	a->pos = new_pos;
 	return (OK);
 }

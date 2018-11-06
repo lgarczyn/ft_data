@@ -41,6 +41,7 @@ int				sorted_reserve(t_sorted *a, size_t s)
 	{
 		if (ft_realloc(&a->data, a->size, s))
 			return (ERR_ALLOC);
+		a->size = s;
 	}
 	return (OK);
 }

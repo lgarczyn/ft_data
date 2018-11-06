@@ -21,10 +21,10 @@
 #define PRINT_ERR(a, b) do { printf("line:%i i:%i %lu!=%lu\n",\
 	__LINE__, i, (size_t)a, (size_t)b);} while (0)
 
-// #define TEST_ARRAY
-// #define TEST_BITMAP
+#define TEST_ARRAY
+#define TEST_BITMAP
 #define TEST_QUEUE
-// #define TEST_SORTED
+#define TEST_SORTED
 #define TEST_PMA
 
 #ifdef TEST_ARRAY
@@ -761,9 +761,28 @@ bool		check_test(char *str)
 	}
 }
 
+#include <malloc.h>
+
 int			main(void)
 {
-	test_pma_sort();
+	/*size_t	prev;
+
+	prev = 0;
+	for (int i = 136435; i < 137438; i++)
+	{
+		void *ptr = malloc(i);
+		size_t size = malloc_usable_size(ptr);
+		free(ptr);
+
+		if (i)
+			prev = ((i - 24) + 15) / 16 * 16 + 24;
+		else
+			prev = 0;
+
+		if (prev != size)
+			printf("%i %lu %lu %lx\n", i, prev, size, size);
+		//prev = size;
+	}*/
 	#ifdef TEST_ARRAY
 	if (check_test("array"))
 	 	test_array();
@@ -782,7 +801,10 @@ int			main(void)
 	#endif
 	#ifdef TEST_PMA
 	if (check_test("pma"))
+	{
+		test_pma_sort();
 		test_pma();
+	}
 	#endif
 	printf("All checks done, press enter after checking for leaks\n");
 	getchar();
