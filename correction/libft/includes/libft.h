@@ -16,6 +16,7 @@
 # include <string.h>
 # include <errno.h>
 # include <stdlib.h>
+# include <sys/types.h>
 
 # include "types.h"
 
@@ -100,6 +101,8 @@ char				*ft_strtrim(char const *s);
 int					ft_atoi(const char *str);
 unsigned int		ft_pure_atoi(const char *str);
 int					ft_intlen(int num);
+int					ft_unumlen(ssize_t i);
+int					ft_numlen(size_t i);
 int					ft_isalnum(int c);
 int					ft_isalpha(int c);
 int					ft_isascii(int c);
@@ -140,6 +143,7 @@ void				ft_putendl(char const *s);
 void				ft_putendl_fd(char const *s, int fd);
 void				ft_putnbr(int n);
 void				ft_putnbr_fd(int n, int fd);
+void				ft_putnbr_64(size_t n);
 void				ft_putnstr(char const *s, int n);
 void				ft_putnstr_fd(char const *s, int fd, int n);
 void				ft_putspace(int n);

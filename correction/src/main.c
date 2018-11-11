@@ -18,8 +18,13 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define PRINT_ERR(a, b) do { printf("line:%i i:%i %lu!=%lu\n",\
-	__LINE__, i, (size_t)a, (size_t)b);} while (0)
+#define PRINT_ERR(a, b) do {\
+	printf("line:%i i:%i %lu!=%lu\n", __LINE__, i, (size_t)a, (size_t)b);\
+} while (0)
+
+#define CHECK_EQ(a, b) do {\
+	if (a != b) PRINT_ERR(a, b);\
+} while(0)
 
 #define TEST_ARRAY
 #define TEST_BITMAP
@@ -34,12 +39,13 @@ void			test_array(void)
 	t_array		a;
 	char		*str;
 	char		ret[10];
+	int			i;
 
 	a = array();
 	array_free(&a);
 	a = array();
 	array_free(&a);
-	for (int i = 0; i < 10000; i++)
+	for (i = 0; i < 10000; i++)
 	{
 		str = ft_itoa(i);
 		array_push(&a, str, ft_intlen(i) + 1);
@@ -58,7 +64,7 @@ void			test_array(void)
 		}
 		free(str);
 	}
-	for (int i = 9999; i >= 0; i--)
+	for (i = 9999; i >= 0; i--)
 	{
 		str = ft_itoa(i);
 		array_pop(&a, ret, ft_intlen(i) + 1);
@@ -69,8 +75,11 @@ void			test_array(void)
 		}
 		free(str);
 	}
+	CHECK_EQ(array_len(&a, 1), 0);
 	array_free(&a);
-	for (int i = 0; i < 10000; i++)
+	CHECK_EQ(array_len(&a, 1), 0);
+	CHECK_EQ(array_reserve(&a, 10000 * 11), OK);
+	for (i = 0; i < 10000; i++)
 	{
 		str = ft_itoa(i);
 		array_insert(&a, str, 0, ft_intlen(i) + 1);
@@ -81,13 +90,20 @@ void			test_array(void)
 	}
 	for (int j = 9999; j >= 0; j--)
 	{
-		int i = 9999 - j;
+		i = 9999 - j;
 		str = ft_itoa(i);
 		array_pop(&a, ret, ft_intlen(i) + 1);
 		if (ft_strcmp(str, ret))
 			PRINT_ERR(i, ft_strcmp(str, ret));
 		free(str);
 	}
+	CHECK_EQ(array_len(&a, 1), 0);
+	for (i = 1; i < 10000; i++)
+	{
+		array_push(&a, &i, sizeof(int));
+		CHECK_EQ(array_len(&a, sizeof(int)), (t_uint)i);
+	}
+	CHECK_EQ(array_reserve(&a, (size_t)-1), ERR_ALLOC);
 }
 
 #endif
@@ -97,53 +113,42 @@ void			test_array(void)
 void			test_bitmap(void)
 {
 	t_bitmap	b;
+	int			i = 0;
 
 	b = bitmap();
+	CHECK_EQ(bitmap_len(&b), 0);
 	bitmap_free(&b);
+	CHECK_EQ(bitmap_len(&b), 0);
 	bitmap_push(&b, true);
+	CHECK_EQ(bitmap_len(&b), 1);
 	bitmap_free(&b);
 	b = bitmap();
 	bitmap_free(&b);
-	for (int i = 0; i < 10000; i++)
+	for (i = 0; i < 10000; i++)
 	{
 		bitmap_push(&b, i % 2);
 		bitmap_push(&b, i % 3);
 		bitmap_push(&b, i % 4);
 		bitmap_push(&b, i % 5);
 	}
-	for (int i = 0; i < 10000; i++)
+	for (i = 0; i < 10000; i++)
 	{
-		if (bitmap_get(&b, i * 4 + 0) != !!(i % 2) ||
-			bitmap_get(&b, i * 4 + 1) != !!(i % 3) ||
-			bitmap_get(&b, i * 4 + 2) != !!(i % 4) ||
-			bitmap_get(&b, i * 4 + 3) != !!(i % 5))
-		{
-			PRINT_ERR(!!(i % 2), bitmap_get(&b, i * 4));
-			PRINT_ERR(!!(i % 3), bitmap_get(&b, i * 4 + 1));
-			PRINT_ERR(!!(i % 4), bitmap_get(&b, i * 4 + 2));
-			PRINT_ERR(!!(i % 5), bitmap_get(&b, i * 4 + 3));
-		}
+		CHECK_EQ(bitmap_get(&b, i * 4 + 0), !!(i % 2));
+		CHECK_EQ(bitmap_get(&b, i * 4 + 1), !!(i % 3));
+		CHECK_EQ(bitmap_get(&b, i * 4 + 2), !!(i % 4));
+		CHECK_EQ(bitmap_get(&b, i * 4 + 3), !!(i % 5));
 	}
 	bool o_b;
-	int i;
 	for (i = 10000 - 1; i >= 0; i--)
 	{
-		if (bitmap_pop(&b, &o_b) != OK)
-			PRINT_ERR(0, 1);
-		if (o_b != !!(i % 5))
-			PRINT_ERR(o_b, !!(i % 5));
-		if (bitmap_pop(&b, &o_b) != OK)
-			PRINT_ERR(0, 1);
-		if (o_b != !!(i % 4))
-			PRINT_ERR(o_b, !!(i % 4));
-		if (bitmap_pop(&b, &o_b) != OK)
-			PRINT_ERR(0, 1);
-		if (o_b != !!(i % 3))
-			PRINT_ERR(o_b, !!(i % 3));
-		if (bitmap_pop(&b, &o_b) != OK)
-			PRINT_ERR(0, 1);
-		if (o_b != !!(i % 2))
-			PRINT_ERR(o_b, !!(i % 2));
+		CHECK_EQ(bitmap_pop(&b, &o_b), OK);
+		CHECK_EQ(o_b, !!(i % 5));
+		CHECK_EQ(bitmap_pop(&b, &o_b), OK);
+		CHECK_EQ(o_b, !!(i % 4));
+		CHECK_EQ(bitmap_pop(&b, &o_b), OK);
+		CHECK_EQ(o_b, !!(i % 3));
+		CHECK_EQ(bitmap_pop(&b, &o_b), OK);
+		CHECK_EQ(o_b, !!(i % 2));
 	}
 	if (bitmap_pop(&b, &o_b) != ERR_SIZE)
 		PRINT_ERR(1, 0);
@@ -662,39 +667,13 @@ void			test_pma_sort(void)
 	test_pma_spe(true, true, gray_str);
 }
 
-void			pma_display(t_pma *a)
+void			print_int(int *i)
 {
-	size_t		i;
-	bool		b;
-	char		key[12];
-	int			val;
-
-	printf("\n%lu==%lu: [",
-		bitmap_len(&(a->bucket.flags)),
-		array_len(&(a->bucket.values), a->bucket.sizes.key + a->bucket.sizes.val));
-	i = 0;
-	while (bitmap_get_safe(&(a->bucket.flags), i, &b) == OK)
-	{
-		printf("%c", b ? 'X' : '_');
-		i++;
-	}
-	
-	printf("]\n%lu==%lu: {", pma_len(a), a->bucket.count);
-
-	t_pmait	it;
-
-	it = pmait(a);
-	while (pmait_next(&it, &key, &val)) {
-
-		if (a->bucket.sizes.key == 4)
-			printf("%i:", *(int*)key);
-		else
-			printf("%s:", key);
-		printf("%i ", val);
-		
-		i++;
-	}
-	printf("}\n");
+	ft_putnbr(*i);
+}
+void			print_char(char *i)
+{
+	ft_putnbr(*i);
 }
 
 void			test_pma(void)
@@ -712,7 +691,7 @@ void			test_pma(void)
 	while (1)
 	{
 		if (to_update)
-			pma_display(&a);
+			pma_display(&a, (t_printer)print_int, (t_printer)print_char);
 		to_update = true;
 		switch (getchar()) {
 			case 'q': return ;

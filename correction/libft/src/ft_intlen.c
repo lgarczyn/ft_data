@@ -10,6 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <unistd.h>
+
 int					ft_intlen(int num)
 {
 	int				sign;
@@ -36,4 +38,39 @@ int					ft_intlen(int num)
 	if (num <= -10)
 		return (2 + sign);
 	return (1 + sign);
+}
+
+int					ft_unumlen(ssize_t i)
+{
+	int			c;
+
+	if (i >= 0)
+	{
+		i = -i;
+		c = 1;
+	}
+	else
+	{
+		c = 2;
+	}
+	while (i < -9)
+	{
+		i /= 10;
+		c++;
+	}
+	return (c);
+}
+
+
+int					ft_numlen(size_t i)
+{
+	int			c;
+
+	c = 1;
+	while (i > 9)
+	{
+		i /= 10;
+		c++;
+	}
+	return (c);
 }

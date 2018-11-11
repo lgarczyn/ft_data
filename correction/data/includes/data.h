@@ -72,6 +72,7 @@ t_pmaen		pma_search(const t_pma *a, const void *key);
 int			pma_insert(t_pma *a, const void *key, const void *val);
 int			pma_delete(t_pma *a, const void *key, void *o_key, void *o_val);
 int			pma_get(const t_pma *a, const void *key, void *o_key, void *o_val);
+void		pma_display(t_pma *a, t_printer print_key, t_printer print_char);
 
 int			pma_pop_back(t_pma *a, void *key, void *val);
 int			pma_pop_front(t_pma *a, void *key, void *val);
@@ -85,6 +86,5 @@ bool		pmait_next_back(t_pmait *i, void *key, void *val);
 bool		pmait_delete_back(t_pmait *i, void *key, void *val);
 
 int			pma_ensure(t_pmaen *en, const void *data);
-void		pma_display(t_pma *a);
 
 #endif

@@ -42,4 +42,3 @@ size_t					pma_len(const t_pma *a)
 {
 	return (a->bucket.count);
 }
-
