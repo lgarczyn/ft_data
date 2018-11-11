@@ -23,6 +23,6 @@ int				array_pop(t_array *a, void *data, size_t size)
 {
 	check_array(a);
 	if (size > a->pos)
-		return (ERR_ARG);
+		return (ERR_SIZE);
 	return (array_remove(a, data, a->pos - size, size));
 }

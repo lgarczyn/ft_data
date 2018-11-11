@@ -16,23 +16,8 @@
 # include <string.h>
 # include <errno.h>
 # include <stdlib.h>
-# include <stdint.h>
-# include <stddef.h>
-# include <stdbool.h>
 
-# define U8 typedef uint8_t u8;
-# define U16 typedef uint16_t u16;
-# define U32 typedef uint32_t u32;
-# define U64 typedef uint64_t u64;
-# define USIZE typedef size_t usize;
-# define I8 typedef int8_t i8;
-# define I16 typedef int16_t i16;
-# define I32 typedef int32_t i32;
-# define I64 typedef int64_t i64;
-# define ISIZE typedef ptrdiff_t isize;
-# define ILLEGAL {}; U8 U16 U32 U64 USIZE I8 I16 I32 I64 ISIZE
-
-static const int g_a[0] = ILLEGAL;
+# include "types.h"
 
 # define MIN(a,b)			(((a)<(b))?(a):(b))
 # define MAX(a,b)			(((a)>(b))?(a):(b))
@@ -44,8 +29,9 @@ static const int g_a[0] = ILLEGAL;
 # define STDERR				2
 
 # define OK					0
-# define ERR_ALLOC			1
-# define ERR_ARG			2
+# define ERR_ALLOC			-1
+# define ERR_SIZE			-2
+# define ERR_MISSING		-3
 
 typedef struct		s_list
 {

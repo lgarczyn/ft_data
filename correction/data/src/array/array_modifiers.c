@@ -21,7 +21,7 @@ int				array_move(t_array *a, size_t from, size_t to, size_t size)
 	if (from == to)
 		return (OK);
 	if (from + size > a->pos)
-		return (ERR_ARG);
+		return (ERR_SIZE);
 	new_pos = MAX(to + size, a->pos);
 	if (new_pos > a->size)
 		if (ft_realloc_array(&a->data, a->pos, &a->size))
@@ -54,7 +54,7 @@ int				array_remove(t_array *a, void *data,
 
 	check_array(a);
 	if (i + size > a->pos)
-		return (ERR_ARG);
+		return (ERR_SIZE);
 	new_pos = a->pos - size;
 	if (data)
 		ft_memcpy(data, a->data + i, size);

@@ -19,10 +19,10 @@
 /*
 ** array.c
 */
-void		check_array(const t_array *a);
-t_array		array(void);
-void		array_free(t_array *a);
-size_t		array_len(const t_array *a, size_t word);
+void	check_array(const t_array *a);
+t_array	array(void);
+void	array_free(t_array *a);
+size_t	array_len(const t_array *a, size_t word);
 /*
 ** array_modifiers.c
 */

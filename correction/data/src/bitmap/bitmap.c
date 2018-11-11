@@ -44,8 +44,6 @@ int				bitmap_set_size(t_bitmap *a, size_t new_size)
 
 int				bitmap_reserve(t_bitmap *a, size_t new_size)
 {
-	//WHAT THE HELL AM I EVEN DOING
-	new_size = MAX(new_size, a->pos);
 	if (new_size <= a->size)
 		return (OK);
 	bitmap_set_size(a, new_size);

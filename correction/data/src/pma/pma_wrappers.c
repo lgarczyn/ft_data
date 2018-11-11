@@ -33,26 +33,26 @@ int				pma_ensure(t_pmaen *en, const void *data)
 	return (OK);
 }
 
-bool			pma_pop_back(t_pma *a, void *key, void *val)
+int				pma_pop_back(t_pma *a, void *key, void *val)
 {
 	t_pmait		it;
 
 	it = pmait(a);
 	if (pmait_get_back(&it, key, val) == false)
-		return (false);
+		return (ERR_SIZE);
 	pmait_delete_back(&it, NULL, NULL);
 	a->canary++;
-	return (true);
+	return (OK);
 }
 
-bool			pma_pop_front(t_pma *a, void *key, void *val)
+int				pma_pop_front(t_pma *a, void *key, void *val)
 {
 	t_pmait		it;
 
 	it = pmait(a);
 	if (pmait_get(&it, key, val) == false)
-		return (false);
+		return (ERR_SIZE);
 	pmait_delete(&it, NULL, NULL);
 	a->canary++;
-	return (true);
+	return (OK);
 }

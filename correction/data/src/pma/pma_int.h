@@ -46,7 +46,7 @@ const void	*pma_cat(const t_pma *a, size_t index);
 */
 t_pmaen		pma_search(const t_pma *a, const void *key);
 t_pmait		pma_search_range(const t_pma *a, const void *start, const void *end);
-bool		pma_get(const t_pma *a, const void *key, void *out_key, void *out_val);
+int			pma_get(const t_pma *a, const void *key, void *out_key, void *out_val);
 /*
 ** bucket_accesors.c
 */
@@ -64,7 +64,7 @@ void		bucket_delete(t_bucket *b, size_t id, size_t *it_a, size_t *it_b);
 /*
 ** pma_modify.c
 */
-bool		pma_delete(t_pma *a, const void *key, void *out_key, void *out_val);
+int			pma_delete(t_pma *a, const void *key, void *out_key, void *out_val);
 int			pma_insert(t_pma *a, const void *key, const void *val);
 /*
 ** pmait.c
@@ -83,6 +83,6 @@ bool		pmait_delete_back(t_pmait *i, void *key, void *val);
 ** pma_wrappers.c
 */
 int			pma_ensure(t_pmaen *en, const void *data);
-bool		pma_pop_back(t_pma *a, void *key, void *val);
-bool		pma_pop_front(t_pma *a, void *key, void *val);
+int			pma_pop_back(t_pma *a, void *key, void *val);
+int			pma_pop_front(t_pma *a, void *key, void *val);
 #endif

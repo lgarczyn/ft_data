@@ -113,7 +113,7 @@ void			test_bitmap(void)
 	}
 	for (int i = 0; i < 10000; i++)
 	{
-		if (bitmap_get(&b, i * 4) != !!(i % 2) ||
+		if (bitmap_get(&b, i * 4 + 0) != !!(i % 2) ||
 			bitmap_get(&b, i * 4 + 1) != !!(i % 3) ||
 			bitmap_get(&b, i * 4 + 2) != !!(i % 4) ||
 			bitmap_get(&b, i * 4 + 3) != !!(i % 5))
@@ -124,18 +124,29 @@ void			test_bitmap(void)
 			PRINT_ERR(!!(i % 5), bitmap_get(&b, i * 4 + 3));
 		}
 	}
-	for (int i = (10000 * 4) - 1; i >= 0; i--)
+	bool o_b;
+	int i;
+	for (i = 10000 - 1; i >= 0; i--)
 	{
-		bool o_a;
-		bool o_b;
-
-		//o_a = bitmap_get(&b, i * 4);
-		o_a = bitmap_get(&b, b.pos - 1);
-		bitmap_pop(&b, &o_b);
-
-		if (o_a != o_b)
-			PRINT_ERR(i, (o_a << 1) | o_b);
+		if (bitmap_pop(&b, &o_b) != OK)
+			PRINT_ERR(0, 1);
+		if (o_b != !!(i % 5))
+			PRINT_ERR(o_b, !!(i % 5));
+		if (bitmap_pop(&b, &o_b) != OK)
+			PRINT_ERR(0, 1);
+		if (o_b != !!(i % 4))
+			PRINT_ERR(o_b, !!(i % 4));
+		if (bitmap_pop(&b, &o_b) != OK)
+			PRINT_ERR(0, 1);
+		if (o_b != !!(i % 3))
+			PRINT_ERR(o_b, !!(i % 3));
+		if (bitmap_pop(&b, &o_b) != OK)
+			PRINT_ERR(0, 1);
+		if (o_b != !!(i % 2))
+			PRINT_ERR(o_b, !!(i % 2));
 	}
+	if (bitmap_pop(&b, &o_b) != ERR_SIZE)
+		PRINT_ERR(1, 0);
 
 	bitmap_free(&b);
 }
@@ -489,8 +500,8 @@ void			pma_check_pop(t_pma *a, t_reverse r, bool reversed)
 	for (int i = 0; i < TEST_NUM / 2; i++)
 	{
 		int j = reversed ? i : TEST_NUM_INC - i;
-		if (pma_pop_back(a, buf_key, buf_val) == false)
-			printf("pop returned false before time\n");
+		if (pma_pop_back(a, buf_key, buf_val) != OK)
+			printf("pop returned err before time\n");
 		int got = r(buf_key);
 		if (got != j)
 			PRINT_ERR(j, got);
@@ -499,8 +510,8 @@ void			pma_check_pop(t_pma *a, t_reverse r, bool reversed)
 	for (int i = 0; i < TEST_NUM / 2; i++)
 	{
 		int j = reversed ? TEST_NUM_INC - i : i;
-		if (pma_pop_front(a, buf_key, buf_val) == false)
-			printf("pop returned false before time\n");
+		if (pma_pop_front(a, buf_key, buf_val) != OK)
+			printf("pop returned err before time\n");
 		int got = r(buf_key);
 		if (got != j)
 			PRINT_ERR(j, got);
@@ -508,10 +519,10 @@ void			pma_check_pop(t_pma *a, t_reverse r, bool reversed)
 
 	if (pma_len(a) != 0)
 		printf("check pop non-empty\n");
-	if (pma_pop_back(a, NULL, NULL))
-		printf("pop returned true when it should be empty\n");
-	if (pma_pop_front(a, NULL, NULL))
-		printf("pop returned true when it should be empty\n");
+	if (pma_pop_back(a, NULL, NULL) != ERR_SIZE)
+		printf("pop returned OK when it should be empty\n");
+	if (pma_pop_front(a, NULL, NULL) != ERR_SIZE)
+		printf("pop returned OK when it should be empty\n");
 }
 
 void			pma_check_delete(t_pma *a, t_order o, t_reverse r, bool reversed)
@@ -524,7 +535,7 @@ void			pma_check_delete(t_pma *a, t_order o, t_reverse r, bool reversed)
 	{
 		o(key_search_buf, i, TEST_NUM);
 		//val_inserted = reversed ? TEST_NUM_INC - i : i;
-		if (pma_delete(a, key_search_buf, key_found_buf, &val_found) == false)
+		if (pma_delete(a, key_search_buf, key_found_buf, &val_found) != OK)
 		{
 			printf("error: %i not found\n", i);
 			PRINT_ERR(TEST_NUM - i, pma_len(a));
@@ -662,7 +673,7 @@ void			pma_display(t_pma *a)
 		bitmap_len(&(a->bucket.flags)),
 		array_len(&(a->bucket.values), a->bucket.sizes.key + a->bucket.sizes.val));
 	i = 0;
-	while (bitmap_get_safe(&(a->bucket.flags), i, &b))
+	while (bitmap_get_safe(&(a->bucket.flags), i, &b) == OK)
 	{
 		printf("%c", b ? 'X' : '_');
 		i++;
@@ -783,24 +794,26 @@ int			main(void)
 			printf("%i %lu %lu %lx\n", i, prev, size, size);
 		//prev = size;
 	}*/
+	bool	all;
+	all = check_test("all");
 	#ifdef TEST_ARRAY
-	if (check_test("array"))
+	if (all || check_test("array"))
 	 	test_array();
 	#endif
 	#ifdef TEST_BITMAP
-	if (check_test("bitmap"))
+	if (all || check_test("bitmap"))
 		test_bitmap();
 	#endif
 	#ifdef TEST_QUEUE
-	if (check_test("queue"))
+	if (all || check_test("queue"))
 		test_queue();
 	#endif
 	#ifdef TEST_SORTED
- 	if (check_test("sorted"))
+ 	if (all || check_test("sorted"))
  		test_sorted();
 	#endif
 	#ifdef TEST_PMA
-	if (check_test("pma"))
+	if (all || check_test("pma"))
 	{
 		test_pma_sort();
 		test_pma();

@@ -66,7 +66,7 @@ t_pmait			pma_search_range(const t_pma *a,
 	return (it);
 }
 
-bool			pma_get(const t_pma *a, const void *key,
+int				pma_get(const t_pma *a, const void *key,
 	void *out_key, void *out_val)
 {
 	t_pmaen	en;
@@ -74,6 +74,6 @@ bool			pma_get(const t_pma *a, const void *key,
 	en = pma_search(a, key);
 	if (en.found)
 		pmait_get(&(en.it), out_key, out_val);
-	return (en.found);
+	return (en.found ? OK : ERR_MISSING);
 }
 

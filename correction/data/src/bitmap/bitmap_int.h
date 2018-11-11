@@ -27,10 +27,10 @@ size_t		bitmap_len(const t_bitmap *a);
 /*
 ** bitmap_accessors.c
 */
-bool	bitmap_get(const t_bitmap *a, size_t i);
-bool	bitmap_get_safe(const t_bitmap *a, size_t i, bool *out);
-void	bitmap_set(t_bitmap *a, size_t p, bool b);
-bool	bitmap_set_safe(t_bitmap *a, size_t i, bool b);
+bool		bitmap_get(const t_bitmap *a, size_t i);
+int			bitmap_get_safe(const t_bitmap *a, size_t i, bool *out);
+void		bitmap_set(t_bitmap *a, size_t p, bool b);
+int			bitmap_set_safe(t_bitmap *a, size_t i, bool b);
 /*
 ** bitmap_stack.c
 */

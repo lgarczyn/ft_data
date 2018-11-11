@@ -30,15 +30,14 @@ int					bitmap_pop(t_bitmap *a, bool *data)
 	size_t			new_pos;
 
 	if (a->pos <= 0)
-		return (ERR_ARG);
+		return (ERR_SIZE);
 
 	new_pos = a->pos - 1;
 
 	*data = bitmap_get(a, new_pos);
 
-	//put back when you figure out the min alloc
-	//if (new_pos <= a->size / 4)
-	//	bitmap_set_size(a, a->size / 8);
+	if (new_pos <= a->size / 4)
+		ft_realloc_down((void*)&a->data, a->pos, &a->size);
 
 	a->pos = new_pos;
 	return (OK);

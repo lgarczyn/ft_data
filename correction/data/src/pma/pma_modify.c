@@ -14,7 +14,7 @@
 
 #include "pma_int.h"
 
-bool			pma_delete(t_pma *a, const void *key,
+int				pma_delete(t_pma *a, const void *key,
 	void *out_key, void *out_val)
 {
 	t_pmaen	en;
@@ -27,7 +27,7 @@ bool			pma_delete(t_pma *a, const void *key,
 		bucket_delete(&(a->bucket), en.it.id, NULL, NULL);
 	}
 	en.key = (void*)key;
-	return (en.found);
+	return (en.found ? OK : ERR_MISSING);
 }
 
 int				pma_insert(t_pma *a, const void *key, const void *val)

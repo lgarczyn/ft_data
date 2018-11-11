@@ -19,7 +19,7 @@ int					queue_realloc(t_queue *a, size_t new_size)
 	size_t			first_half;
 
 	if (new_size < a->pos)
-		return (ERR_ARG);
+		return (ERR_SIZE);
 	new_data = ft_memalloc(new_size);
 	if (new_data == NULL)
 		return (1);
@@ -81,7 +81,7 @@ int					queue_pop_back(t_queue *a, void *data)
 	size_t			index;
 
 	if (a->pos < a->word)
-		return (ERR_ARG);
+		return (ERR_SIZE);
 	new_pos = a->pos - a->word;
 	index = a->start + new_pos;
 	if (index >= a->size)
@@ -98,7 +98,7 @@ int					queue_pop_back(t_queue *a, void *data)
 int					queue_pop_front(t_queue *a, void *data)
 {
 	if (a->pos < a->word)
-		return (ERR_ARG);
+		return (ERR_SIZE);
 	ft_memcpy(data, a->data + a->start, a->word);
 	a->start = a->start + a->word;
 	if (a->start >= a->size)

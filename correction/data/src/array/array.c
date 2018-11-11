@@ -13,15 +13,11 @@
 #include "libft.h"
 #include "array_int.h"
 
-//fix
-#include <stdio.h>
-
 void			check_array(const t_array *a)
 {
 	if (a->warning || a->pos > a->size || (!a->size != !a->data))
 	{
-		printf("CORRUPTED ARRAY\n");
-		printf("w:%lu, %lu/%lu, %p\n", a->warning, a->pos, a->size, a->data);
+		ft_perror("CORRUPTED ARRAY\n");
 	}
 }
 

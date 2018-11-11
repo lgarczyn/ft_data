@@ -26,7 +26,7 @@ const void		*sorted_cget(const t_sorted *a, size_t index)
 int				sorted_pop(t_sorted *a, void *data)
 {
 	if (sorted_len(a) <= 0)
-		return (ERR_ARG);
+		return (ERR_SIZE);
 	sorted_delete_index(a, sorted_len(a) - 1, data);
 	return (OK);
 }
