@@ -21,7 +21,7 @@
 */
 t_bitmap	bitmap(void);
 void		bitmap_free(t_bitmap *a);
-int			bitmap_set_size(t_bitmap *a, size_t new_size);
+int			bitmap_set_len(t_bitmap *a, size_t new_size);
 int			bitmap_reserve(t_bitmap *a, size_t new_size);
 size_t		bitmap_len(const t_bitmap *a);
 /*

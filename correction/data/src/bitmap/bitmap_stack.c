@@ -17,7 +17,7 @@ int					bitmap_push(t_bitmap *a, bool b)
 {
 	if (a->pos + 1 >= a->size)
 	{
-		if (bitmap_set_size(a, (a->pos + 1) * 2))
+		if (bitmap_set_len(a, (a->pos + 1) * 2))
 			return (ERR_ALLOC);
 	}
 	bitmap_set(a, a->pos, b);

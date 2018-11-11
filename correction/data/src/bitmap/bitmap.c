@@ -27,7 +27,7 @@ void			bitmap_free(t_bitmap *a)
 	*a = bitmap();
 }
 
-int				bitmap_set_size(t_bitmap *a, size_t new_size)
+int				bitmap_set_len(t_bitmap *a, size_t new_size)
 {
 	size_t		real_size;
 	size_t		real_pos;
@@ -46,7 +46,7 @@ int				bitmap_reserve(t_bitmap *a, size_t new_size)
 {
 	if (new_size <= a->size)
 		return (OK);
-	bitmap_set_size(a, new_size);
+	bitmap_set_len(a, new_size);
 	return (OK);
 }
 

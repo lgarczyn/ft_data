@@ -54,7 +54,7 @@ static int		bucket_clone(const t_bucket *b, t_bucket *tmp, bool adding)
 	*tmp = *b;
 	tmp->flags = bitmap();
 	tmp->values = array();
-	if (bitmap_set_size(&(tmp->flags), new_size))
+	if (bitmap_set_len(&(tmp->flags), new_size))
 		return(ERR_ALLOC);
 	tmp->flags.pos = new_size;
 	if (array_reserve(&(tmp->values), new_size * bucket_word(b)))
