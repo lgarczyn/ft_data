@@ -22,7 +22,7 @@ int					queue_realloc(t_queue *a, size_t new_size)
 		return (ERR_SIZE);
 	new_data = ft_memalloc(new_size);
 	if (new_data == NULL)
-		return (1);
+		return (ERR_ALLOC);
 	if (a->start + a->pos < a->size)
 		ft_memmove(new_data, a->data + a->start, a->pos);
 	else

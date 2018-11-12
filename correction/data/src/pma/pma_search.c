@@ -53,7 +53,7 @@ t_pmaen			pma_search(const t_pma *a, const void *key)
 	return (res);
 }
 
-t_pmait			pma_search_range(const t_pma *a,
+t_pmait			pma_range(const t_pma *a,
 	const void *start, const void *end)
 {
 	t_pmait	it;

@@ -28,3 +28,19 @@ void				queue_free(t_queue *a)
 	*a = queue(a->word);
 }
 
+size_t				queue_len(const t_queue *a)
+{
+	return (a->pos / a->word);
+}
+
+int					queue_reserve(t_queue *a, size_t new_size)
+{
+	new_size *= a->word;
+	if (new_size > a->size)
+	{
+		new_size = ft_min_alloc(new_size);
+		return (queue_realloc(a, new_size));
+	}
+	return (OK);
+}
+

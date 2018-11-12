@@ -30,6 +30,7 @@ int		array_move(t_array *a, size_t from, size_t to, size_t size);
 int		array_insert(t_array *a, const void *data, size_t i, size_t size);
 int		array_remove(t_array *a, void *data, size_t i, size_t size);
 int		array_reserve(t_array *a, size_t s);
+int		array_set_len(t_array *a, size_t len);
 /*
 ** array_wrappers.c
 */

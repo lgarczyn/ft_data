@@ -71,6 +71,8 @@ void		pmait_display(t_pmait *it, t_printer print_key, t_printer print_val)
 			ft_putchar('-');
 		else
 			ft_putchar(' ');
+		i++;
 	}
+	ft_putchar('\n');
 	pma_display(it->pma, print_key, print_val);
 }

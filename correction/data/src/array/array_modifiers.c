@@ -66,15 +66,31 @@ int				array_remove(t_array *a, void *data,
 	return (OK);
 }
 
-int				array_reserve(t_array *a, size_t s)
+int				array_reserve(t_array *a, size_t new_size)
 {
 	check_array(a);
-	if (s > a->size)
+	if (new_size > a->size)
 	{
-		if (ft_realloc(&a->data, a->pos, s))
+		new_size = ft_min_alloc(new_size);
+		if (ft_realloc(&a->data, a->pos, new_size))
 			return (ERR_ALLOC);
-		a->size = s;
+		a->size = new_size;
 	}
+	return (OK);
+}
+
+int				array_set_len(t_array *a, size_t len)
+{
+	size_t		new_size;
+
+	check_array(a);
+	new_size = ft_min_alloc(len);
+	if (ft_realloc(&a->data, a->pos, new_size))
+		return (ERR_ALLOC);
+	a->size = new_size;
+	if (len > a->pos)
+		ft_bzero(a->data + a->pos, len - a->pos);
+	a->pos = len;
 	return (OK);
 }
 

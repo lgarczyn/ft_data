@@ -21,6 +21,7 @@ t_array		array(void);
 void		array_free(t_array *a);
 size_t		array_len(const t_array *a, size_t word);
 int			array_reserve(t_array *a, size_t s);
+int			array_set_len(t_array *a, size_t len);
 int			array_insert(t_array *a, const void *data, size_t i, size_t size);
 int			array_remove(t_array *a, void *data, size_t i, size_t size);
 int			array_move(t_array *a, size_t from, size_t to, size_t len);
@@ -68,20 +69,21 @@ void		sorted_delete_index(t_sorted *a, size_t index, void *out);
 t_pma		pma(t_predicate predicate, t_uint key, t_uint value);
 void		pma_free(t_pma *a);
 size_t		pma_len(const t_pma *a);
-t_pmaen		pma_search(const t_pma *a, const void *key);
 int			pma_insert(t_pma *a, const void *key, const void *val);
 int			pma_delete(t_pma *a, const void *key, void *o_key, void *o_val);
 int			pma_get(const t_pma *a, const void *key, void *o_key, void *o_val);
-void		pma_display(t_pma *a, t_printer print_key, t_printer print_char);
+void		pma_display(t_pma *a, t_printer key, t_printer val);
 
 int			pma_pop_back(t_pma *a, void *key, void *val);
 int			pma_pop_front(t_pma *a, void *key, void *val);
 
 t_pmait		pmait(const t_pma *a);
+t_pmaen		pma_search(const t_pma *a, const void *key);
 bool		pmait_next(t_pmait *i, void *key, void *val);
 bool		pmait_delete(t_pmait *i, void *key, void *val);
+void		pmait_display(t_pmait *it, t_printer key, t_printer val);
 
-t_pmait		pma_range(const t_pma *a, void *key_a, void *key_b);
+t_pmait		pma_range(const t_pma *a, const void *key_a, const void *key_b);
 bool		pmait_next_back(t_pmait *i, void *key, void *val);
 bool		pmait_delete_back(t_pmait *i, void *key, void *val);
 

@@ -6,7 +6,8 @@
 	],
 	"settings": {
 		"files.associations": {
-			"pma_int.h": "c"
+			"pma_int.h": "c",
+			"libft.h": "c"
 		}
 	}
 }

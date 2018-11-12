@@ -41,11 +41,13 @@ size_t		bucket_size(const	t_bucket *b);
 */
 void		*pma_at(t_pma	*a, size_t index);
 const void	*pma_cat(const t_pma *a, size_t index);
+void		pma_display(t_pma *it, t_printer key, t_printer val);
+void		pmait_display(t_pmait *it, t_printer key, t_printer val);
 /*
 ** pma_search.c
 */
 t_pmaen		pma_search(const t_pma *a, const void *key);
-t_pmait		pma_search_range(const t_pma *a, const void *start, const void *end);
+t_pmait		pma_range(const t_pma *a, const void *start, const void *end);
 int			pma_get(const t_pma *a, const void *key, void *out_key, void *out_val);
 /*
 ** bucket_accesors.c

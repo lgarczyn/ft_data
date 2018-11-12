@@ -13,10 +13,11 @@
 #include "libft.h"
 #include <stdlib.h>
 
-
 size_t		ft_min_alloc(size_t size)
 {
-	return (((size - 24) + 15) / 16 * 16 + 24);
+	if (size > 0xFFFFFFFFFFFFFF)
+		return ((size_t)-1);
+	return (ROUND_UP(size - 24, 16) + 24);
 }
 
 /*
