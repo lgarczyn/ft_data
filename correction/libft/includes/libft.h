@@ -23,7 +23,7 @@
 # define MIN(a,b)			(((a)<(b))?(a):(b))
 # define MAX(a,b)			(((a)>(b))?(a):(b))
 # define CLAMP(x,lo,hi)		MIN(hi, MAX(lo,x))
-# define DIV_RDUP(x, y)		((x % y) ? x / y + 1 : x / y)
+# define DIV_RDUP(x, y)		(((x) % (y)) ? (x) / (y) + 1 : (x) / (y))
 # define ROUND_UP(a, b)		(DIV_RDUP(a, b) * b)
 # define STDIN				0
 # define STDOUT				1
