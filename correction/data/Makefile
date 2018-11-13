@@ -59,7 +59,7 @@ all: $(NAME)
 $(NAME):$(OBJ)
 	ar -rcsT  $(NAME) ../libft/libft.a $(OBJ)
 
-obj/%.o: src/%.c
+obj/%.o: src/%.c includes/data.h
 	mkdir -p `dirname $@`
 	gcc -o $@ -c $< $(INC) $(FLG)
 

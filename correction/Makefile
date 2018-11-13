@@ -28,15 +28,15 @@ FLG = -Wall -Wextra -funsigned-char -fno-signed-char -m64 $(OPT) $(DEB) -std=c11
 
 all: $(NAME)
 
-$(NAME):$(OBJ)
-	cd libft && make
-	cd printf && make
-	cd data && make
+$(NAME):$(OBJ) libft/libft.a printf/libprintf.a data/libdata.a
 	gcc -o ft_data $(OBJ) $(INC) $(FLG) $(LIB)
 	
 obj/%.o: src/%.c
 	@mkdir -p obj
 	gcc  -o $@ -c $< $(INC) $(FLG)
+
+%.a:
+	cd `dirname $@` && make
 
 lib:
 	rm -rf $(OBJ)
