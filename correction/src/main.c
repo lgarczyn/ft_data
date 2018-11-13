@@ -19,7 +19,7 @@
 #include "data.h"
 
 #define PRINT_ERR(a, b) do {\
-	printf("line:%i i:%i %lu!=%lu\n", __LINE__, i, (ssize_t)a, (ssize_t)b);\
+	printf("line:%i i:%i %li!=%li\n", __LINE__, i, (ssize_t)a, (ssize_t)b);\
 } while (0)
 
 #define CHECK_EQ(a, b) do {\
@@ -31,7 +31,6 @@
 #define			TEST_BITMAP
 #define			TEST_BITMAP_BONUS
 #define			TEST_QUEUE
-#define			TEST_QUEUE_BONUS
 #define			TEST_SORTED
 #define			TEST_SORTED_BONUS
 #define			TEST_PMA
@@ -102,6 +101,7 @@ void			test_array_bonus(void)
 	int			len;
 	int			i = 0;
 
+	a = array();
 	for (i = 0; i < 1000; i++)
 	{
 		len = sprintf(buf, "%d", i) + 1;
@@ -206,8 +206,8 @@ void			test_bitmap_bonus(void)
 		CHECK_EQ(bitmap_get_safe(&b, i * 4 + 3, &o_b), OK);
 		CHECK_EQ(o_b, !!(i % 6));
 	}
-	CHECK_EQ(bitmap_get_safe(&b, 10000, &o_b), ERR_SIZE);
-	CHECK_EQ(bitmap_set_safe(&b, 10000, false), ERR_SIZE);
+	CHECK_EQ(bitmap_get_safe(&b, 40000, &o_b), ERR_SIZE);
+	CHECK_EQ(bitmap_set_safe(&b, 40000, false), ERR_SIZE);
 	for (i = 10000 - 1; i >= 0; i--)
 	{
 		CHECK_EQ(bitmap_pop(&b, &o_b), OK);
@@ -531,47 +531,6 @@ void			test_sorted(void)
 
 #ifdef TEST_PMA
 
-void			pma_check(t_pma *a, t_reverse r, bool reversed)
-{
-	t_pmait	it;
-	char		buffer[12];
-	int			val;
-	int			i;
-
-	i = 0;
-	it = pmait(a);
-	while (pmait_next(&it, buffer, &val))
-	{
-		int j = reversed ? TEST_NUM_INC - i : i;
-		int got = r(buffer);
-		CHECK_EQ(j, got);
-		i++;
-	}
-	CHECK_EQ(i, TEST_NUM);
-}
-
-void			pma_check_ordering(t_pma *a, t_reverse r, bool reversed)
-{
-	char		key_found_buf[12];
-	int			val_found;
-	t_pmait	it;
-
-	it = pmait(a);
-	int old_key;
-	int key;
-	if (pmait_next(&it, key_found_buf, &val_found))
-	{
-		old_key = r(key_found_buf);
-	}
-	while (pmait_next(&it, key_found_buf, &val_found))
-	{
-		key = r(key_found_buf);
-		if ((old_key >= key && reversed == false) || (old_key <= key && reversed))
-			printf("iterator is not ordered\n");
-		old_key = key;
-	}
-}
-
 void			pma_check_pop(t_pma *a, t_reverse r, bool reversed)
 {
 	char		buf_key[12];
@@ -603,13 +562,15 @@ void			pma_check_pop(t_pma *a, t_reverse r, bool reversed)
 		printf("pop returned OK when it should be empty\n");
 }
 
-void			pma_check_delete(t_pma *a, t_order o, t_reverse r, bool reversed)
+void			pma_check_delete(t_pma *a, t_order o, t_reverse r)
 {
 	char		key_search_buf[12];
 	char		key_found_buf[12];
 	int			val_found;
+	int			i = 0;
 
-	for (int i = 0; i < TEST_NUM; i++)
+	CHECK_EQ(pma_len(a), TEST_NUM);
+	for (i = 0; i < TEST_NUM; i++)
 	{
 		o(key_search_buf, i, TEST_NUM);
 		//val_inserted = reversed ? TEST_NUM_INC - i : i;
@@ -623,14 +584,37 @@ void			pma_check_delete(t_pma *a, t_order o, t_reverse r, bool reversed)
 		int key_found = r(key_found_buf);
 		CHECK_EQ(key_inserted, key_found);
 		CHECK_EQ(i, val_found);
-		
-		pma_check_ordering(a, r, reversed);
 	}
-	if (pma_len(a) != 0)
-		printf("error check_delete 2 %lu!=0\n", pma_len(a));
+	CHECK_EQ(pma_len(a), 0);
 }
 
-void			pma_fill(t_pma *a, t_order o, t_reverse r, bool reversed)
+void			pma_check_get(t_pma *a, t_order o, t_reverse r)
+{
+	char		key_search_buf[12];
+	char		key_found_buf[12];
+	int			val_found;
+	int			i = 0;
+
+	CHECK_EQ(pma_len(a), TEST_NUM);
+	for (i = 0; i < TEST_NUM; i++)
+	{
+		o(key_search_buf, i, TEST_NUM);
+		//val_inserted = reversed ? TEST_NUM_INC - i : i;
+		if (pma_get(a, key_search_buf, key_found_buf, &val_found) != OK)
+		{
+			printf("error: %i not found\n", i);
+			PRINT_ERR(TEST_NUM - i, pma_len(a));
+			continue;
+		}
+		int key_inserted = r(key_search_buf);
+		int key_found = r(key_found_buf);
+		CHECK_EQ(key_inserted, key_found);
+		CHECK_EQ(i, val_found);
+	}
+	CHECK_EQ(pma_len(a), TEST_NUM);
+}
+
+void			pma_fill(t_pma *a, t_order o)
 {
 	char		buffer[12];
 
@@ -640,19 +624,18 @@ void			pma_fill(t_pma *a, t_order o, t_reverse r, bool reversed)
 
 		if (pma_insert(a, buffer, &i))
 			printf("pma returned non-zero\n");
-		
-		pma_check_ordering(a, r, reversed);
 	}
 }
 
-void			pma_fill_delete(t_pma *a, t_order o, t_reverse r, bool reversed)
+void			pma_fill_delete(t_pma *a, t_order o, t_reverse r)
 {
 	char		key_inserted_buf[12];
 	int			val_inserted;
 	char		key_found_buf[12];
 	int			val_found;
+	int			i = 0;
 
-	for (int i = 0; i < TEST_NUM_INC; i++)
+	for (i = 0; i < TEST_NUM_INC; i++)
 	{
 		o(key_inserted_buf, i, TEST_NUM);
 		val_inserted = i;
@@ -671,13 +654,10 @@ void			pma_fill_delete(t_pma *a, t_order o, t_reverse r, bool reversed)
 		int key_found = r(key_found_buf);
 		CHECK_EQ(key_inserted, key_found);
 		CHECK_EQ(val_inserted, val_found);
-
-		pma_check_ordering(a, r, reversed);
 	}
 	o(key_inserted_buf, TEST_NUM_INC, TEST_NUM);
 	val_inserted = TEST_NUM_INC;
-	if (pma_insert(a, key_inserted_buf, &val_inserted))
-		printf("pma insert returned non-zero\n");
+	CHECK_EQ(pma_insert(a, key_inserted_buf, &val_inserted), OK);
 }
 
 void			test_pma_spe(bool reversed, bool str, t_order o)
@@ -702,18 +682,15 @@ void			test_pma_spe(bool reversed, bool str, t_order o)
 		rev = &reverse_int;
 	}
 	a = pma(pred, size, sizeof(int));
-	pma_fill(&a, o, rev, reversed);
-	pma_check(&a, rev, reversed);
-	pma_fill_delete(&a, o, rev, reversed);
-	pma_check(&a, rev, reversed);
-	pma_check_delete(&a, o, rev, reversed);
-	pma_fill_delete(&a, o, rev, reversed);
-	#ifdef TEST_PMA_BONUS_STACK
-	pma_check_pop(&a, rev, reversed);
-	#endif // TEST_PMA_BONUS_STACK
+	pma_fill(&a, o);
+	pma_check_get(&a, o, rev);
+	pma_fill_delete(&a, o, rev);
+	pma_check_get(&a, o, rev);
+	pma_check_delete(&a, o, rev);
+	pma_free(&a);
 }
 
-void			test_pma_sort(void)
+void			test_pma(void)
 {
 	test_pma_spe(false, false, asc);
 	test_pma_spe(false, false, desc);
@@ -728,6 +705,174 @@ void			test_pma_sort(void)
 	test_pma_spe(true, true, asc_str);
 	test_pma_spe(true, true, desc_str);
 	test_pma_spe(true, true, gray_str);
+}
+
+void			pmait_check(t_pma *a, t_reverse r, bool reversed)
+{
+	t_pmait	it;
+	char		buffer[12];
+	int			val;
+	int			i;
+
+	i = 0;
+	it = pmait(a);
+	while (pmait_next(&it, buffer, &val))
+	{
+		int j = reversed ? TEST_NUM_INC - i : i;
+		int got = r(buffer);
+		CHECK_EQ(j, got);
+		i++;
+	}
+	CHECK_EQ(i, TEST_NUM);
+}
+
+void			pmait_check_delete(t_pma *a, t_reverse r, bool reversed)
+{
+	t_pmait	it;
+	char		buffer[12];
+	int			val;
+	int			i;
+
+	i = 0;
+	it = pmait(a);
+	while (pmait_delete(&it, buffer, &val))
+	{
+		int j = reversed ? TEST_NUM_INC - i : i;
+		int got = r(buffer);
+		CHECK_EQ(j, got);
+		i++;
+	}
+	CHECK_EQ(i, TEST_NUM);
+}
+
+void			test_pmait_spe(bool reversed, bool str, t_order o)
+{
+	t_pma		a;
+	t_uint		size;
+	t_predicate	pred;
+	t_reverse	rev;
+
+	a = pma(&lt, sizeof(int), sizeof(int));
+	pma_free(&a);
+	if (str)
+	{
+		size = sizeof(char) * 12;
+		pred = reversed ? &gt_str : &lt_str;
+		rev = &reverse_str;
+	}
+	else
+	{
+		size = sizeof(int);
+		pred = reversed ? &gt : &lt;
+		rev = &reverse_int;
+	}
+	a = pma(pred, size, sizeof(int));
+	pma_fill(&a, o);
+	pmait_check(&a, rev, reversed);
+	pmait_check_delete(&a, rev, reversed);
+	pma_fill_delete(&a, o, rev);
+	pma_check_pop(&a, rev, reversed);
+	pma_free(&a);
+}
+
+void			test_pmait(void)
+{
+	test_pmait_spe(false, false, asc);
+	test_pmait_spe(false, false, desc);
+	test_pmait_spe(false, false, gray);
+	test_pmait_spe(true, false, asc);
+	test_pmait_spe(true, false, desc);
+	test_pmait_spe(true, false, gray);
+
+	test_pmait_spe(false, true, asc_str);
+	test_pmait_spe(false, true, desc_str);
+	test_pmait_spe(false, true, gray_str);
+	test_pmait_spe(true, true, asc_str);
+	test_pmait_spe(true, true, desc_str);
+	test_pmait_spe(true, true, gray_str);
+}
+
+void			pmait_back_check(t_pma *a, t_reverse r, bool reversed)
+{
+	t_pmait	it;
+	char		buffer[12];
+	int			val;
+	int			i;
+
+	i = 0;
+	it = pmait(a);
+	while (pmait_next_back(&it, buffer, &val))
+	{
+		int j = !reversed ? TEST_NUM_INC - i : i;
+		int got = r(buffer);
+		CHECK_EQ(j, got);
+		i++;
+	}
+	CHECK_EQ(i, TEST_NUM);
+}
+
+void			pmait_back_check_delete(t_pma *a, t_reverse r, bool reversed)
+{
+	t_pmait	it;
+	char		buffer[12];
+	int			val;
+	int			i;
+
+	i = 0;
+	it = pmait(a);
+	while (pmait_delete_back(&it, buffer, &val))
+	{
+		int j = !reversed ? TEST_NUM_INC - i : i;
+		int got = r(buffer);
+		CHECK_EQ(j, got);
+		i++;
+	}
+	CHECK_EQ(i, TEST_NUM);
+}
+
+void			test_pmait_back_spe(bool reversed, bool str, t_order o)
+{
+	t_pma		a;
+	t_uint		size;
+	t_predicate	pred;
+	t_reverse	rev;
+
+	a = pma(&lt, sizeof(int), sizeof(int));
+	pma_free(&a);
+	if (str)
+	{
+		size = sizeof(char) * 12;
+		pred = reversed ? &gt_str : &lt_str;
+		rev = &reverse_str;
+	}
+	else
+	{
+		size = sizeof(int);
+		pred = reversed ? &gt : &lt;
+		rev = &reverse_int;
+	}
+	a = pma(pred, size, sizeof(int));
+	pma_fill(&a, o);
+	pmait_back_check(&a, rev, reversed);
+	pmait_back_check_delete(&a, rev, reversed);
+	pma_free(&a);
+}
+
+void			test_pmait_back(void)
+{
+	test_pmait_back_spe(false, false, asc);
+	test_pmait_back_spe(false, false, desc);
+	test_pmait_back_spe(false, false, gray);
+	test_pmait_back_spe(true, false, asc);
+	test_pmait_back_spe(true, false, desc);
+	test_pmait_back_spe(true, false, gray);
+
+	test_pmait_back_spe(false, true, asc_str);
+	test_pmait_back_spe(false, true, desc_str);
+	test_pmait_back_spe(false, true, gray_str);
+	test_pmait_back_spe(true, true, asc_str);
+	test_pmait_back_spe(true, true, desc_str);
+	test_pmait_back_spe(true, true, gray_str);
 }
 
 void			putnbr(int n)
@@ -763,7 +908,7 @@ void			print_char(char *i)
 	putnbr(*i);
 }
 
-void			test_pmait(t_pmait it)
+void			test_pmait_manual(t_pmait it)
 {
 	bool		to_update;
 	int			out_key;
@@ -814,7 +959,7 @@ void			test_pmait(t_pmait it)
 	}
 }
 
-void			test_pma(void)
+void			test_pma_manual(void)
 {
 	t_pma		a;
 	int			n;
@@ -865,12 +1010,11 @@ void			test_pma(void)
 
 				}
 				break;
-			case 't': test_pma_sort(); break;
 #ifdef TEST_PMA_BONUS_IT
-			case '^': scanf ("%d",&n); test_pmait(pma_search(&a, &n).it); break;
-			case '>': test_pmait(pmait(&a)); break;
+			case '^': scanf ("%d",&n); test_pmait_manual(pma_search(&a, &n).it); break;
+			case '>': test_pmait_manual(pmait(&a)); break;
 #ifdef TEST_PMA_BONUS_IT_BACK
-			case 'x': scanf ("%d %d",&n,&m); test_pmait(pma_range(&a, &n, &m)); break;
+			case 'x': scanf ("%d %d",&n,&m); test_pmait_manual(pma_range(&a, &n, &m)); break;
 #endif // TEST_PMA_BONUS_IT_BACK
 #endif // TEST_PMA_BONUS_IT
 			default : to_update = false;
@@ -919,22 +1063,43 @@ int			main(void)
 	bool	all;
 
 	all = check_test("all");
+
 #ifdef TEST_ARRAY
 	check("array", &test_array, all);
-#endif
+# ifdef TEST_ARRAY_BONUS
+	check("array bonus", &test_array_bonus, all);
+# endif // TEST_ARRAY_BONUS
+#endif // TEST_ARRAY
+
 #ifdef TEST_BITMAP
 	check("bitmap", &test_bitmap, all);
-#endif
+# ifdef TEST_BITMAP_BONUS
+	check("bitmap bonus", &test_bitmap_bonus, all);
+# endif // TEST_BITMAP_BONUS
+#endif // TEST_BITMAP
+
 #ifdef TEST_QUEUE
 	check("queue", &test_queue, all);
 #endif
+
 #ifdef TEST_SORTED
  	check("sorted", &test_sorted, all);
-#endif
+# ifdef TEST_SORTED_BONUS
+ 	//check("sorted bonus", &test_sorted_bonus, all);
+# endif // TEST_SORTED_BONUS
+#endif // TEST_SORTED
+
 #ifdef TEST_PMA
-	check("pma", &test_pma_sort, all);
-	check("pma manipulator", &test_pma, all);
-#endif
+	check("pma", &test_pma, all);
+# ifdef TEST_PMA_BONUS_IT
+	check("pmait", &test_pmait, all);
+#  ifdef TEST_PMA_BONUS_IT_BACK
+	check("pmait_back", &test_pmait_back, all);
+#  endif // TEST_PMA_BONUS_IT
+# endif // TEST_PMA_BONUS_IT
+	check("pma manipulator", &test_pma_manual, all);
+#endif // TEST_PMA
+
 	printf("All checks done, press enter after checking for leaks\n");
 	getchar();
 	getchar();
