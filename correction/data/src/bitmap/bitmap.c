@@ -27,31 +27,21 @@ void			bitmap_free(t_bitmap *a)
 	*a = bitmap();
 }
 
-int				bitmap_set_len(t_bitmap *a, size_t new_size)
-{
-	size_t		real_size;
-	size_t		real_pos;
-
-	real_pos = (a->pos + 7) / 8;
-	real_size = ft_min_alloc((new_size + 7) / 8);
-
-	if (ft_realloc((void**)&a->data, real_pos, real_size))
-		return (ERR_ALLOC);
-	a->size = real_size * 8;
-	a->pos = MIN(a->pos, new_size);
-	return (OK);
-}
-
-int				bitmap_reserve(t_bitmap *a, size_t new_size)
-{
-	if (new_size <= a->size)
-		return (OK);
-	bitmap_set_len(a, new_size);
-	return (OK);
-}
-
 size_t			bitmap_len(const t_bitmap *a)
 {
 	return (a->pos);
+}
+
+void			bitmap_display(const t_bitmap *a)
+{
+	size_t		i;
+	ft_putnbr_64(a->pos);
+	ft_putstr(": [");
+	i = 0;
+	while (i < a->pos)
+	{
+		ft_putchar(bitmap_get(a, i++) ? 'X' : '_');
+	}
+	ft_putstr("]\n");
 }
 

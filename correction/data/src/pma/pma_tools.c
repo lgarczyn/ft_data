@@ -31,14 +31,7 @@ void		pma_display(t_pma *a, t_printer print_key, t_printer print_val)
 	int			val;
 	t_pmait		it;
 
-	ft_putnbr_64(pma_size(a));
-	ft_putstr(": [");
-	i = 0;
-	while (i < pma_size(a))
-	{
-		ft_putchar(bitmap_get(&a->bucket.flags, i++) ? 'X' : '_');
-	}
-	ft_putstr("]\n");
+	bitmap_display(&a->bucket.flags);
 	ft_putnbr_64(pma_len(a));
 	ft_putstr(": {");
 	it = pmait(a);
@@ -62,7 +55,7 @@ void		pmait_display(t_pmait *it, t_printer print_key, t_printer print_val)
 	while (i < pma_size(it->pma))
 	{
 		if (i == it->id && i == it->end - 1)
-			ft_putchar('X');
+			ft_putchar('x');
 		else if (i == it->id)
 			ft_putchar('>');
 		else if (i == it->end - 1)

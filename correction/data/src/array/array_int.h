@@ -22,7 +22,7 @@
 void	check_array(const t_array *a);
 t_array	array(void);
 void	array_free(t_array *a);
-size_t	array_len(const t_array *a, size_t word);
+size_t	array_len(const t_array *a);
 /*
 ** array_modifiers.c
 */

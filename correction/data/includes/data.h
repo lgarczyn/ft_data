@@ -19,7 +19,7 @@
 
 t_array		array(void);
 void		array_free(t_array *a);
-size_t		array_len(const t_array *a, size_t word);
+size_t		array_len(const t_array *a);
 int			array_reserve(t_array *a, size_t s);
 int			array_set_len(t_array *a, size_t len);
 int			array_insert(t_array *a, const void *data, size_t i, size_t size);
@@ -33,11 +33,11 @@ void		bitmap_free(t_bitmap *a);
 size_t		bitmap_len(const t_bitmap *a);
 int			bitmap_set_len(t_bitmap *bitmap, size_t new_size);
 int			bitmap_reserve(t_bitmap *bitmap, size_t new_size);
+void		bitmap_display(const t_bitmap *a);
 bool		bitmap_get(const t_bitmap *a, size_t i);
 int			bitmap_get_safe(const t_bitmap *a, size_t i, bool *out);
 void		bitmap_set(t_bitmap *a, size_t i, bool b);
 int			bitmap_set_safe(t_bitmap *a, size_t i, bool b);
-
 int			bitmap_push(t_bitmap *a, bool b);
 int			bitmap_pop(t_bitmap *a, bool *data);
 

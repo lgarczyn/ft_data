@@ -50,4 +50,3 @@ int					bitmap_set_safe(t_bitmap *a, size_t i, bool b)
 	}
 	return (ERR_SIZE);
 }
-

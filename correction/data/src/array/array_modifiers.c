@@ -88,8 +88,6 @@ int				array_set_len(t_array *a, size_t len)
 	if (ft_realloc(&a->data, a->pos, new_size))
 		return (ERR_ALLOC);
 	a->size = new_size;
-	if (len > a->pos)
-		ft_bzero(a->data + a->pos, len - a->pos);
 	a->pos = len;
 	return (OK);
 }

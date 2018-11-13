@@ -21,9 +21,13 @@
 */
 t_bitmap	bitmap(void);
 void		bitmap_free(t_bitmap *a);
+size_t		bitmap_len(const t_bitmap *a);
+void		bitmap_display(const t_bitmap *a);
+/*
+** bitmap_alloc.c
+*/
 int			bitmap_set_len(t_bitmap *a, size_t new_size);
 int			bitmap_reserve(t_bitmap *a, size_t new_size);
-size_t		bitmap_len(const t_bitmap *a);
 /*
 ** bitmap_accessors.c
 */
@@ -34,6 +38,6 @@ int			bitmap_set_safe(t_bitmap *a, size_t i, bool b);
 /*
 ** bitmap_stack.c
 */
-int		bitmap_push(t_bitmap *a, bool b);
-int		bitmap_pop(t_bitmap *a, bool *data);
+int			bitmap_push(t_bitmap *a, bool b);
+int			bitmap_pop(t_bitmap *a, bool *data);
 #endif

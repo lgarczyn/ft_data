@@ -26,21 +26,21 @@
 	if (a != b) PRINT_ERR(a, b);\
 } while(0)
 
-#define TEST_ARRAY
-#define TEST_ARRAY_BONUS
-#define TEST_BITMAP
-#define TEST_BITMAP_BONUS
-#define TEST_QUEUE
-#define TEST_QUEUE_BONUS
-#define TEST_SORTED
-#define TEST_SORTED_BONUS
-#define TEST_PMA
-#define TEST_PMA_BONUS_STACK
-#define TEST_PMA_BONUS_IT
-#define TEST_PMA_BONUS_IT_BACK
+//#define			TEST_ARRAY
+//#define			TEST_ARRAY_BONUS
+//#define			TEST_BITMAP
+//#define			TEST_BITMAP_BONUS
+#define			TEST_QUEUE
+#define			TEST_QUEUE_BONUS
+#define			TEST_SORTED
+#define			TEST_SORTED_BONUS
+#define			TEST_PMA
+#define			TEST_PMA_BONUS_STACK
+#define			TEST_PMA_BONUS_IT
+#define			TEST_PMA_BONUS_IT_BACK
 
 
-#ifdef TEST_ARRAY
+#ifdef			TEST_ARRAY
 
 void			test_array(void)
 {
@@ -51,9 +51,9 @@ void			test_array(void)
 	size_t		count = 0;
 
 	a = array();
-	CHECK_EQ(array_len(&a, 1), 0);
+	CHECK_EQ(array_len(&a), 0);
 	array_free(&a);
-	CHECK_EQ(array_len(&a, 1), 0);
+	CHECK_EQ(array_len(&a), 0);
 	a = array();
 	array_free(&a);
 	CHECK_EQ(array_reserve(&a, (size_t)-1), ERR_ALLOC);
@@ -63,7 +63,7 @@ void			test_array(void)
 		str = ft_itoa(i);
 		array_push(&a, str, ft_intlen(i) + 1);
 		count += ft_intlen(i) + 1;
-		CHECK_EQ(count, array_len(&a, 1));
+		CHECK_EQ(count, array_len(&a));
 		free(str);
 
 		str = ft_itoa(i + 1);
@@ -90,12 +90,20 @@ void			test_array(void)
 		}
 		free(str);
 	}
-	CHECK_EQ(array_len(&a, 1), 0);
+	CHECK_EQ(array_len(&a), 0);
 	array_free(&a);
-	CHECK_EQ(array_len(&a, 1), 0);
+	CHECK_EQ(array_len(&a), 0);
+}
 
-	#ifdef TEST_ARRAY_BONUS
-	
+# ifdef TEST_ARRAY_BONUS
+
+void			test_array_bonus(void)
+{
+	t_array		a;
+	char		*str;
+	char		ret[10];
+	int			i = 0;
+
 	for (i = 0; i < 10000; i++)
 	{
 		str = ft_itoa(i);
@@ -114,28 +122,55 @@ void			test_array(void)
 			PRINT_ERR(i, ft_strcmp(str, ret));
 		free(str);
 	}
-	CHECK_EQ(array_len(&a, 1), 0);
+	CHECK_EQ(array_len(&a), 0);
 	for (i = 1; i < 10000; i++)
 	{
 		array_push(&a, &i, sizeof(int));
-		CHECK_EQ(array_len(&a, sizeof(int)), (t_uint)i);
+		CHECK_EQ(array_len(&a) / sizeof(int), (t_uint)i);
 	}
 	CHECK_EQ(array_set_len(&a, 7000 * sizeof(int)), OK);
-	CHECK_EQ(array_len(&a, sizeof(int)), 7000);
+	CHECK_EQ(array_len(&a) / sizeof(int), 7000);
 	CHECK_EQ(array_set_len(&a, 10000 * sizeof(int)), OK);
 	CHECK_EQ(array_pop(&a, &i, sizeof(int)), OK);
 	CHECK_EQ(i, 0);
 
 	array_free(&a);
 
-	#endif
 }
-
+# endif
 #endif
 
 #ifdef TEST_BITMAP
 
-void			test_bitmap(void)
+void			test_bitmap()
+{
+	t_bitmap	b;
+	int			i = 0;
+
+	b = bitmap();
+	CHECK_EQ(bitmap_len(&b), 0);
+	bitmap_free(&b);
+	CHECK_EQ(bitmap_set_len(&b, 10000), OK);
+	CHECK_EQ(bitmap_len(&b), 10000);
+	for (i = 0; i < 10000; i++)
+	{
+		bitmap_set(&b, i, i % 3 || i % 7);
+	}
+	for (i = 0; i < 10000; i++)
+	{
+		CHECK_EQ((int)bitmap_get(&b, i), (int)((i % 3) || (i % 7)));
+	}
+	CHECK_EQ(bitmap_set_len(&b, 0), OK);
+	CHECK_EQ(bitmap_set_len(&b, 8), OK);
+	bitmap_set(&b, 7, true);
+	CHECK_EQ(bitmap_set_len(&b, 7), OK);
+	CHECK_EQ(bitmap_set_len(&b, 8), OK);
+	CHECK_EQ((int)bitmap_get(&b, 7), (int)false);
+}
+
+# ifdef TEST_BITMAP_BONUS
+
+void			test_bitmap_bonus(void)
 {
 	t_bitmap	b;
 	int			i = 0;
@@ -149,25 +184,39 @@ void			test_bitmap(void)
 	bitmap_free(&b);
 	b = bitmap();
 	bitmap_free(&b);
+	CHECK_EQ(bitmap_reserve(&b, 1000), OK);
+	CHECK_EQ(bitmap_len(&b), 0);
 	for (i = 0; i < 10000; i++)
 	{
 		bitmap_push(&b, i % 2);
 		bitmap_push(&b, i % 3);
 		bitmap_push(&b, i % 4);
 		bitmap_push(&b, i % 5);
+		CHECK_EQ(bitmap_set_safe(&b, i * 4 + 3, i % 6), OK);
 	}
+	bool o_b;
 	for (i = 0; i < 10000; i++)
 	{
 		CHECK_EQ(bitmap_get(&b, i * 4 + 0), !!(i % 2));
 		CHECK_EQ(bitmap_get(&b, i * 4 + 1), !!(i % 3));
 		CHECK_EQ(bitmap_get(&b, i * 4 + 2), !!(i % 4));
-		CHECK_EQ(bitmap_get(&b, i * 4 + 3), !!(i % 5));
+		CHECK_EQ(bitmap_get(&b, i * 4 + 3), !!(i % 6));
+
+		CHECK_EQ(bitmap_get_safe(&b, i * 4 + 0, &o_b), OK);
+		CHECK_EQ(o_b, !!(i % 2));
+		CHECK_EQ(bitmap_get_safe(&b, i * 4 + 1, &o_b), OK);
+		CHECK_EQ(o_b, !!(i % 3));
+		CHECK_EQ(bitmap_get_safe(&b, i * 4 + 2, &o_b), OK);
+		CHECK_EQ(o_b, !!(i % 4));
+		CHECK_EQ(bitmap_get_safe(&b, i * 4 + 3, &o_b), OK);
+		CHECK_EQ(o_b, !!(i % 6));
 	}
-	bool o_b;
+	CHECK_EQ(bitmap_get_safe(&b, 10000, &o_b), ERR_SIZE);
+	CHECK_EQ(bitmap_set_safe(&b, 10000, false), ERR_SIZE);
 	for (i = 10000 - 1; i >= 0; i--)
 	{
 		CHECK_EQ(bitmap_pop(&b, &o_b), OK);
-		CHECK_EQ(o_b, !!(i % 5));
+		CHECK_EQ(o_b, !!(i % 6));
 		CHECK_EQ(bitmap_pop(&b, &o_b), OK);
 		CHECK_EQ(o_b, !!(i % 4));
 		CHECK_EQ(bitmap_pop(&b, &o_b), OK);
@@ -181,6 +230,7 @@ void			test_bitmap(void)
 	bitmap_free(&b);
 }
 
+# endif
 #endif
 
 #ifdef			TEST_QUEUE
@@ -196,7 +246,10 @@ void			test_queue_spe(bool push_back, bool pop_back, bool reserve)
 	a = queue(sizeof(int));
 	queue_free(&a);
 	if (reserve)
+	{
 		CHECK_EQ(queue_reserve(&a, 10000), OK);
+		CHECK_EQ(queue_len(&a), 0);
+	}
 	for (i = 0; i < 10000; i++)
 	{
 		if (push_back)
@@ -790,15 +843,15 @@ void			test_pma(void)
 			case 'j': scanf ("%d %c",&n,&s); pma_insert(&a, &n, &s); break;
 
 			case 'r': 
-				n = rand();
-				s = rand() % 26 + 'A';
+				n = rand() / ((1 << 20) - 1);
+				s = rand() % 26;
 				pma_insert(&a, &n, &s);
 				break;
 			case 'm':
 				for (int i = 0; i < 1000000; i++)
 				{	
-					n = rand();
-					s = rand() % 26 + 'A';
+					n = rand() / ((1 << 5) - 1);
+					s = rand() % 26;
 					if (rand() % 13 == 0)
 						pma_delete(&a, &n, &n, &s);
 					else
@@ -845,31 +898,30 @@ int			main(void)
 {
 	bool	all;
 
-	test_pma();
 	all = check_test("all");
-	#ifdef TEST_ARRAY
+#ifdef TEST_ARRAY
 	if (all || check_test("array"))
 	 	test_array();
-	#endif
-	#ifdef TEST_BITMAP
+#endif
+#ifdef TEST_BITMAP
 	if (all || check_test("bitmap"))
 		test_bitmap();
-	#endif
-	#ifdef TEST_QUEUE
+#endif
+#ifdef TEST_QUEUE
 	if (all || check_test("queue"))
 		test_queue();
-	#endif
-	#ifdef TEST_SORTED
+#endif
+#ifdef TEST_SORTED
  	if (all || check_test("sorted"))
  		test_sorted();
-	#endif
-	#ifdef TEST_PMA
+#endif
+#ifdef TEST_PMA
 	if (all || check_test("pma"))
 	{
 		test_pma_sort();
 		test_pma();
 	}
-	#endif
+#endif
 	printf("All checks done, press enter after checking for leaks\n");
 	getchar();
 	getchar();

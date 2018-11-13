@@ -36,9 +36,9 @@ void			array_free(t_array *a)
 	*a = array();
 }
 
-size_t			array_len(const t_array *a, size_t word)
+size_t			array_len(const t_array *a)
 {
 	check_array(a);
-	return (a->pos / word);
+	return (a->pos);
 }
 

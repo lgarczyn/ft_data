@@ -17,6 +17,7 @@ NAMES = \
 	array/array_modifiers \
 	array/array_wrappers \
 	bitmap/bitmap \
+	bitmap/bitmap_alloc \
 	bitmap/bitmap_accessors \
 	bitmap/bitmap_stack \
 	pma/pma \
