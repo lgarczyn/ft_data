@@ -19,7 +19,7 @@
 /*
 ** queue.c
 */
-t_queue		queue(size_t word);
+t_queue		queue(t_uint word);
 void		queue_free(t_queue *a);
 /*
 ** queue_modifiers.c

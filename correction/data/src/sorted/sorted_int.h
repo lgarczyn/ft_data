@@ -19,7 +19,7 @@
 /*
 ** sorted.c
 */
-t_sorted	sorted(t_predicate predicate, size_t word);
+t_sorted	sorted(t_predicate predicate, t_uint word);
 void		sorted_free(t_sorted *a);
 size_t		sorted_len(const t_sorted *a);
 int			sorted_reserve(t_sorted *a, size_t s);

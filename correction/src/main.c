@@ -10,26 +10,26 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-#include "data.h"
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <stdlib.h>
+#include <unistd.h>
 #include <time.h>
+#include "data.h"
 
 #define PRINT_ERR(a, b) do {\
-	printf("line:%i i:%i %lu!=%lu\n", __LINE__, i, (size_t)a, (size_t)b);\
+	printf("line:%i i:%i %lu!=%lu\n", __LINE__, i, (ssize_t)a, (ssize_t)b);\
 } while (0)
 
 #define CHECK_EQ(a, b) do {\
 	if (a != b) PRINT_ERR(a, b);\
 } while(0)
 
-//#define			TEST_ARRAY
-//#define			TEST_ARRAY_BONUS
-//#define			TEST_BITMAP
-//#define			TEST_BITMAP_BONUS
+#define			TEST_ARRAY
+#define			TEST_ARRAY_BONUS
+#define			TEST_BITMAP
+#define			TEST_BITMAP_BONUS
 #define			TEST_QUEUE
 #define			TEST_QUEUE_BONUS
 #define			TEST_SORTED
@@ -45,8 +45,9 @@
 void			test_array(void)
 {
 	t_array		a;
-	char		*str;
 	char		ret[10];
+	char		buf[10];
+	int			len;
 	int			i = 0;
 	size_t		count = 0;
 
@@ -60,35 +61,31 @@ void			test_array(void)
 	CHECK_EQ(array_reserve(&a, 10000 * 11), OK);
 	for (i = 0; i < 10000; i++)
 	{
-		str = ft_itoa(i);
-		array_push(&a, str, ft_intlen(i) + 1);
-		count += ft_intlen(i) + 1;
+		len = sprintf(buf, "%d", i) + 1;
+		array_push(&a, buf, len);
+		count += len;
 		CHECK_EQ(count, array_len(&a));
-		free(str);
 
-		str = ft_itoa(i + 1);
-		array_push(&a, str, ft_intlen(i + 1) + 1);
+		len = sprintf(buf, "%d", i + 1) + 1;
+		array_push(&a, buf, len + 1);
 
-		array_pop(&a, ret, ft_intlen(i + 1) + 1);
-		if (ft_strcmp(str, ret))
+		array_pop(&a, ret, len + 1);
+		if (strcmp(buf, ret))
 		{
-			ft_putnstr(a.data, a.pos);
-			ft_putchar('\n');
+			printf("%*.*s\n", (int)a.pos, (int)a.pos, (char*)a.data);
 			printf("a %lu/%lu\n", a.pos, a.size);
-			PRINT_ERR(i, ft_strcmp(str, ret));
+			PRINT_ERR(i, strcmp(buf, ret));
 		}
-		free(str);
 	}
 	for (i = 9999; i >= 0; i--)
 	{
-		str = ft_itoa(i);
-		array_pop(&a, ret, ft_intlen(i) + 1);
-		if (ft_strcmp(str, ret))
+		len = sprintf(buf, "%d", i) + 1;
+		array_pop(&a, ret, len);
+		if (strcmp(buf, ret))
 		{
 			printf("a %lu/%lu\n", a.pos, a.size);
-			PRINT_ERR(i, ft_strcmp(str, ret));
+			PRINT_ERR(0, strcmp(buf, ret));
 		}
-		free(str);
 	}
 	CHECK_EQ(array_len(&a), 0);
 	array_free(&a);
@@ -100,35 +97,35 @@ void			test_array(void)
 void			test_array_bonus(void)
 {
 	t_array		a;
-	char		*str;
 	char		ret[10];
+	char		buf[10];
+	int			len;
 	int			i = 0;
 
-	for (i = 0; i < 10000; i++)
+	for (i = 0; i < 1000; i++)
 	{
-		str = ft_itoa(i);
-		array_insert(&a, str, 0, ft_intlen(i) + 1);
-		array_remove(&a, ret, 0, ft_intlen(i) + 1);
-		CHECK_EQ(ft_strcmp(str, ret), 0);
-		array_insert(&a, str, 0, ft_intlen(i) + 1);
+		len = sprintf(buf, "%d", i) + 1;
+		array_insert(&a, buf, 0, len);
+		array_remove(&a, ret, 0, len);
+		CHECK_EQ(strcmp(buf, ret), 0);
+		array_insert(&a, buf, 0, len);
 	}
-	for (int j = 9999; j >= 0; j--)
+	for (int j = 999; j >= 0; j--)
 	{
-		i = 9999 - j;
-		str = ft_itoa(i);
-		array_pop(&a, ret, ft_intlen(i) + 1);
-		CHECK_EQ(ft_strcmp(str, ret), 0);
-		free(str);
+		i = 999 - j;
+		len = sprintf(buf, "%d", i) + 1;
+		array_pop(&a, ret, len);
+		CHECK_EQ(strcmp(buf, ret), 0);
 	}
 	CHECK_EQ(array_len(&a), 0);
-	for (i = 1; i < 10000; i++)
+	for (i = 1; i < 1000; i++)
 	{
 		array_push(&a, &i, sizeof(int));
 		CHECK_EQ(array_len(&a) / sizeof(int), (t_uint)i);
 	}
-	CHECK_EQ(array_set_len(&a, 7000 * sizeof(int)), OK);
-	CHECK_EQ(array_len(&a) / sizeof(int), 7000);
-	CHECK_EQ(array_set_len(&a, 10000 * sizeof(int)), OK);
+	CHECK_EQ(array_set_len(&a, 700 * sizeof(int)), OK);
+	CHECK_EQ(array_len(&a) / sizeof(int), 700);
+	CHECK_EQ(array_set_len(&a, 1000 * sizeof(int)), OK);
 	CHECK_EQ(array_pop(&a, &i, sizeof(int)), OK);
 	CHECK_EQ(i, 0);
 
@@ -400,7 +397,7 @@ int				reverse_str(const char *buffer)
 
 #ifdef TEST_SORTED
 
-void			check(t_sorted *a, t_reverse r, bool reversed)
+void			sorted_check(t_sorted *a, t_reverse r, bool reversed)
 {
 	int			i = 0;
 
@@ -414,7 +411,7 @@ void			check(t_sorted *a, t_reverse r, bool reversed)
 	}
 }
 
-void			check_pop(t_sorted *a, t_reverse r, bool reversed)
+void			sorted_check_pop(t_sorted *a, t_reverse r, bool reversed)
 {
 	char		buffer[12];
 
@@ -431,7 +428,7 @@ void			check_pop(t_sorted *a, t_reverse r, bool reversed)
 		printf("check pop non-empty\n");
 }
 
-void			check_delete(t_sorted *a, t_order o, t_reverse r)
+void			sorted_check_delete(t_sorted *a, t_order o, t_reverse r)
 {
 	char		buffer1[12];
 	char		buffer2[12];
@@ -446,7 +443,7 @@ void			check_delete(t_sorted *a, t_order o, t_reverse r)
 		printf("error check_delete 2 %lu!=0\n", sorted_len(a));
 }
 
-void			fill(t_sorted *a, t_order o)
+void			sorted_fill(t_sorted *a, t_order o)
 {
 	char		buffer[12];
 
@@ -458,7 +455,7 @@ void			fill(t_sorted *a, t_order o)
 	}
 }
 
-void			fill_delete(t_sorted *a, t_order o, t_reverse r)
+void			sorted_fill_delete(t_sorted *a, t_order o, t_reverse r)
 {
 	char		buffer1[12];
 	char		buffer2[12];
@@ -505,12 +502,12 @@ void			test_sorted_spe(bool less_pred, bool str, t_order o)
 		rev = &reverse_int;
 	}
 	a = sorted(pred, size);
-	fill(&a, o);
-	fill_delete(&a, o, rev);
-	check(&a, rev, less_pred == false);
-	check_delete(&a, o, rev);
-	fill_delete(&a, o, rev);
-	check_pop(&a, rev, less_pred == false);
+	sorted_fill(&a, o);
+	sorted_fill_delete(&a, o, rev);
+	sorted_check(&a, rev, less_pred == false);
+	sorted_check_delete(&a, o, rev);
+	sorted_fill_delete(&a, o, rev);
+	sorted_check_pop(&a, rev, less_pred == false);
 }
 
 void			test_sorted(void)
@@ -733,13 +730,37 @@ void			test_pma_sort(void)
 	test_pma_spe(true, true, gray_str);
 }
 
+void			putnbr(int n)
+{
+	static char	buffer[11];
+	int			i;
+	int			isneg;
+	int			len;
+
+	len = ft_intlen(n);
+	i = len - 1;
+	isneg = n < 0;
+	if (isneg)
+	{
+		buffer[0] = '-';
+		buffer[i--] = '0' - (n % 10);
+		n = -(n / 10);
+	}
+	while (i >= isneg)
+	{
+		buffer[i--] = '0' + (n % 10);
+		n /= 10;
+	}
+	write(1, buffer, len);
+}
+
 void			print_int(int *i)
 {
-	ft_putnbr(*i);
+	putnbr(*i);
 }
 void			print_char(char *i)
 {
-	ft_putnbr(*i);
+	putnbr(*i);
 }
 
 void			test_pmait(t_pmait it)
@@ -753,7 +774,7 @@ void			test_pmait(t_pmait it)
 	{
 		if (to_update)
 		{
-			ft_putchar('\n');
+			putchar('\n');
 			pmait_display(&it, (t_printer)print_int, (t_printer)print_char);
 		}
 		to_update = true;
@@ -810,7 +831,7 @@ void			test_pma(void)
 	{
 		if (to_update)
 		{
-			ft_putchar('\n');
+			putchar('\n');
 			pma_display(&a, (t_printer)print_int, (t_printer)print_char);
 		}
 		to_update = true;
@@ -877,7 +898,21 @@ bool		check_test(char *str)
 	}
 }
 
-#include <malloc.h>
+void		check(char *name, void (*fn)(), bool all)
+{
+	clock_t	begin;
+	clock_t	end;
+
+	if (all || check_test(name))
+	{
+		begin = clock();
+
+		fn();
+
+		end = clock();
+		printf("%s: %fs\n", name, (double)(end - begin) / CLOCKS_PER_SEC);
+	}
+}
 
 int			main(void)
 {
@@ -885,27 +920,20 @@ int			main(void)
 
 	all = check_test("all");
 #ifdef TEST_ARRAY
-	if (all || check_test("array"))
-	 	test_array();
+	check("array", &test_array, all);
 #endif
 #ifdef TEST_BITMAP
-	if (all || check_test("bitmap"))
-		test_bitmap();
+	check("bitmap", &test_bitmap, all);
 #endif
 #ifdef TEST_QUEUE
-	if (all || check_test("queue"))
-		test_queue();
+	check("queue", &test_queue, all);
 #endif
 #ifdef TEST_SORTED
- 	if (all || check_test("sorted"))
- 		test_sorted();
+ 	check("sorted", &test_sorted, all);
 #endif
 #ifdef TEST_PMA
-	if (all || check_test("pma"))
-	{
-		test_pma_sort();
-		test_pma();
-	}
+	check("pma", &test_pma_sort, all);
+	check("pma manipulator", &test_pma, all);
 #endif
 	printf("All checks done, press enter after checking for leaks\n");
 	getchar();

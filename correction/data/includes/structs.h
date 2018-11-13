@@ -38,7 +38,7 @@ typedef struct	s_queue
 	size_t		pos;
 	size_t		start;
 	size_t		size;
-	size_t		word;
+	t_uint		word;
 }				t_queue;
 
 typedef int		(*t_predicate)(const void *a, const void *b);
@@ -47,7 +47,7 @@ typedef void	(*t_printer)(const void *p);
 typedef struct	s_sorted
 {
 	void		*data;
-	size_t		word;
+	t_uint		word;
 	size_t		size;
 	size_t		pos;
 	t_predicate	predicate;

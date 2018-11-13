@@ -41,7 +41,7 @@ int			bitmap_set_safe(t_bitmap *a, size_t i, bool b);
 int			bitmap_push(t_bitmap *a, bool b);
 int			bitmap_pop(t_bitmap *a, bool *data);
 
-t_queue		queue(size_t word);
+t_queue		queue(t_uint word);
 void		queue_free(t_queue *a);
 size_t		queue_len(const t_queue *a);
 int			queue_reserve(t_queue *a, size_t s);
@@ -50,7 +50,7 @@ int			queue_push_front(t_queue *a, const void *data);
 int			queue_pop_back(t_queue *a, void *data);
 int			queue_pop_front(t_queue *a, void *data);
 
-t_sorted	sorted(t_predicate predicate, size_t word);
+t_sorted	sorted(t_predicate predicate, t_uint word);
 void		sorted_free(t_sorted *a);
 size_t		sorted_len(const t_sorted *a);
 int			sorted_reserve(t_sorted *a, size_t s);

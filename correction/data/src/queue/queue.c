@@ -13,7 +13,7 @@
 #include "libft.h"
 #include "queue_int.h"
 
-t_queue				queue(size_t word)
+t_queue				queue(t_uint word)
 {
 	t_queue			out;
 

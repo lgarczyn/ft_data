@@ -13,7 +13,7 @@
 #include "libft.h"
 #include "sorted_int.h"
 
-t_sorted		sorted(t_predicate predicate, size_t word)
+t_sorted		sorted(t_predicate predicate, t_uint word)
 {
 	t_sorted	out;
 

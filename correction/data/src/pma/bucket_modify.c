@@ -42,7 +42,7 @@ static size_t	count_moves(t_bitmap *b, size_t id, bool *forward)
 
 static void		make_space(t_bucket *b, size_t id, bool forward, size_t len)
 {
-	size_t		word;
+	t_uint		word;
 
 	word = bucket_word(b);
 	if (forward && len)
