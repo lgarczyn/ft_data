@@ -39,20 +39,20 @@ obj/%.o: src/%.c
 	cd `dirname $@` && make
 
 lib:
-	rm -rf $(OBJ)
-	rm -f ft_data
-	rm -rf *.dSYM
+	@rm -rf $(OBJ)
+	@rm -f ft_data
+	@rm -rf *.dSYM
 
 clean:
-	rm -r $(OBJ)
-	rm -r $(unwrap)
+	@rm -r $(OBJ)
+	@rm -r $(unwrap)
 	cd libft && make clean
 	cd printf && make clean
 	cd data && make clean
 
 fclean: lib
-	rm -f ft_data
-	rm -rf *.dSYM
+	@rm -f ft_data
+	@rm -rf *.dSYM
 	cd libft && make fclean
 	cd printf && make fclean
 	cd data && make fclean
