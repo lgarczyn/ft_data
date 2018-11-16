@@ -44,8 +44,7 @@ lib:
 	@rm -rf *.dSYM
 
 clean:
-	@rm -r $(OBJ)
-	@rm -r $(unwrap)
+	@rm -f $(OBJ)
 	cd libft && make clean
 	cd printf && make clean
 	cd data && make clean
