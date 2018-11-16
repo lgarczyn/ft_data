@@ -40,7 +40,7 @@ static void		update_its(t_bucket *b,
 			set_clear(&it_a, i_to);
 		if (it_b && *it_b == i_from)
 			set_clear(&it_b, i_to);
-		if (i_from < bucket_size(b) && bitmap_get(&(b->flags), i_from))
+		if (i_from < bucket_size(b) && bitset_get(&(b->flags), i_from))
 			i_to += GROWTH_FACTOR;
 		i_from++;
 	}
@@ -52,9 +52,9 @@ static int		bucket_clone(const t_bucket *b, t_bucket *tmp, bool adding)
 
 	new_size = (b->count + adding) * GROWTH_FACTOR + PADDING;
 	*tmp = *b;
-	tmp->flags = bitmap();
+	tmp->flags = bitset();
 	tmp->values = array();
-	if (bitmap_set_len(&(tmp->flags), new_size))
+	if (bitset_set_len(&(tmp->flags), new_size))
 		return(ERR_ALLOC);
 	tmp->flags.pos = new_size;
 	if (array_reserve(&(tmp->values), new_size * bucket_word(b)))
@@ -77,11 +77,11 @@ int				bucket_rebalance(t_bucket *b,
 	update_its(b, it_a, it_b, add);
 	while (i_from < bucket_size(b))
 	{
-		if (bitmap_get(&(b->flags), i_from))
+		if (bitset_get(&(b->flags), i_from))
 		{
 			ft_memmove(tmp.values.data + (i_to * bucket_word(b)),
 				b->values.data + (i_from * bucket_word(b)), bucket_word(b));
-			bitmap_set(&(tmp.flags), i_to, true);
+			bitset_set(&(tmp.flags), i_to, true);
 			i_to += GROWTH_FACTOR;
 			if (add && *add == i_to)
 				i_to += GROWTH_FACTOR;

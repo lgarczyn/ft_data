@@ -28,13 +28,13 @@ t_pmait			pmait(const t_pma *a)
 bool			pmait_get(t_pmait *i, void *key, void *val)
 {
 	t_pma		*a;
-	t_bitmap	*bmp;
+	t_bitset	*bmp;
 
 	a = i->pma;
 	if (a->canary != i->canary)
 		ft_putendl_fd("USING INVALID ITERATOR", STDERR);
 	bmp = &(a->bucket.flags);
-	while (i->id < i->end && bitmap_get(bmp, i->id) == false)
+	while (i->id < i->end && bitset_get(bmp, i->id) == false)
 		i->id++;
 	if (i->id >= i->end)
 		return (false);
@@ -45,13 +45,13 @@ bool			pmait_get(t_pmait *i, void *key, void *val)
 bool			pmait_get_back(t_pmait *i, void *key, void *val)
 {
 	t_pma		*a;
-	t_bitmap	*bmp;
+	t_bitset	*bmp;
 
 	a = i->pma;
 	if (a->canary != i->canary)
 		ft_putendl_fd("USING INVALID ITERATOR", STDERR);
 	bmp = &(a->bucket.flags);
-	while (i->end > i->id && bitmap_get(bmp, i->end - 1) == false)
+	while (i->end > i->id && bitset_get(bmp, i->end - 1) == false)
 		i->end--;
 	if (i->end <= i->id)
 		return (false);

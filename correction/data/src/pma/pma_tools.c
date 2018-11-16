@@ -31,7 +31,7 @@ void		pma_display(t_pma *a, t_printer print_key, t_printer print_val)
 	int			val;
 	t_pmait		it;
 
-	bitmap_display(&a->bucket.flags);
+	bitset_display(&a->bucket.flags);
 	ft_putnbr_64(pma_len(a));
 	ft_putstr(": {");
 	it = pmait(a);

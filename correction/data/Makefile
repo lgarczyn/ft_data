@@ -16,10 +16,10 @@ NAMES = \
 	array/array \
 	array/array_modifiers \
 	array/array_wrappers \
-	bitmap/bitmap \
-	bitmap/bitmap_alloc \
-	bitmap/bitmap_accessors \
-	bitmap/bitmap_stack \
+	bitset/bitset \
+	bitset/bitset_alloc \
+	bitset/bitset_accessors \
+	bitset/bitset_stack \
 	pma/pma \
 	pma/pma_modify \
 	pma/pma_search \

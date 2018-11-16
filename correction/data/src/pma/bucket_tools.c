@@ -18,7 +18,7 @@ void			bucket_free(t_bucket *b)
 {
 	t_sizes		sizes;
 
-	bitmap_free(&(b->flags));
+	bitset_free(&(b->flags));
 	array_free(&(b->values));
 	sizes = b->sizes;
 	ft_bzero(b, sizeof(t_bucket));
@@ -42,6 +42,6 @@ size_t			bucket_word(const t_bucket *b)
 
 size_t			bucket_size(const t_bucket *b)
 {
-	return (bitmap_len(&(b->flags)));
+	return (bitset_len(&(b->flags)));
 }
 

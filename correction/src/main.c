@@ -143,93 +143,93 @@ void			test_array_bonus(void)
 
 # define TESTS_BITMAP 10000000
 
-void			test_bitmap()
+void			test_bitset()
 {
-	t_bitmap	b;
+	t_bitset	b;
 	int			i = 0;
 
-	b = bitmap();
-	CHECK_EQ(bitmap_len(&b), 0);
-	bitmap_free(&b);
-	CHECK_EQ(bitmap_set_len(&b, TESTS_BITMAP), OK);
-	CHECK_EQ(bitmap_len(&b), TESTS_BITMAP);
+	b = bitset();
+	CHECK_EQ(bitset_len(&b), 0);
+	bitset_free(&b);
+	CHECK_EQ(bitset_set_len(&b, TESTS_BITMAP), OK);
+	CHECK_EQ(bitset_len(&b), TESTS_BITMAP);
 	for (i = 0; i < TESTS_BITMAP; i++)
 	{
-		bitmap_set(&b, i, i % 3 || i % 7);
+		bitset_set(&b, i, i % 3 || i % 7);
 	}
 	for (i = 0; i < TESTS_BITMAP; i++)
 	{
-		CHECK_EQ((int)bitmap_get(&b, i), (int)((i % 3) || (i % 7)));
+		CHECK_EQ((int)bitset_get(&b, i), (int)((i % 3) || (i % 7)));
 	}
-	CHECK_EQ(bitmap_set_len(&b, 0), OK);
-	CHECK_EQ(bitmap_set_len(&b, 8), OK);
-	bitmap_set(&b, 7, true);
-	CHECK_EQ(bitmap_set_len(&b, 7), OK);
-	CHECK_EQ(bitmap_set_len(&b, 8), OK);
-	CHECK_EQ((int)bitmap_get(&b, 7), (int)false);
+	CHECK_EQ(bitset_set_len(&b, 0), OK);
+	CHECK_EQ(bitset_set_len(&b, 8), OK);
+	bitset_set(&b, 7, true);
+	CHECK_EQ(bitset_set_len(&b, 7), OK);
+	CHECK_EQ(bitset_set_len(&b, 8), OK);
+	CHECK_EQ((int)bitset_get(&b, 7), (int)false);
 }
 
 # ifdef TEST_BITMAP_BONUS
 
 # define TESTS_BITMAP_B 1000000
 
-void			test_bitmap_bonus(void)
+void			test_bitset_bonus(void)
 {
-	t_bitmap	b;
+	t_bitset	b;
 	int			i = 0;
 
-	b = bitmap();
-	CHECK_EQ(bitmap_len(&b), 0);
-	bitmap_free(&b);
-	CHECK_EQ(bitmap_len(&b), 0);
-	bitmap_push(&b, true);
-	CHECK_EQ(bitmap_len(&b), 1);
-	bitmap_free(&b);
-	b = bitmap();
-	bitmap_free(&b);
-	CHECK_EQ(bitmap_reserve(&b, TESTS_BITMAP_B / 100), OK);
-	CHECK_EQ(bitmap_len(&b), 0);
+	b = bitset();
+	CHECK_EQ(bitset_len(&b), 0);
+	bitset_free(&b);
+	CHECK_EQ(bitset_len(&b), 0);
+	bitset_push(&b, true);
+	CHECK_EQ(bitset_len(&b), 1);
+	bitset_free(&b);
+	b = bitset();
+	bitset_free(&b);
+	CHECK_EQ(bitset_reserve(&b, TESTS_BITMAP_B / 100), OK);
+	CHECK_EQ(bitset_len(&b), 0);
 	for (i = 0; i < TESTS_BITMAP_B; i++)
 	{
-		bitmap_push(&b, i % 2);
-		bitmap_push(&b, i % 3);
-		bitmap_push(&b, i % 4);
-		bitmap_push(&b, i % 5);
-		CHECK_EQ(bitmap_set_safe(&b, i * 4 + 3, i % 6), OK);
+		bitset_push(&b, i % 2);
+		bitset_push(&b, i % 3);
+		bitset_push(&b, i % 4);
+		bitset_push(&b, i % 5);
+		CHECK_EQ(bitset_set_safe(&b, i * 4 + 3, i % 6), OK);
 	}
 	bool o_b;
 	for (i = 0; i < TESTS_BITMAP_B; i++)
 	{
-		CHECK_EQ(bitmap_get(&b, i * 4 + 0), !!(i % 2));
-		CHECK_EQ(bitmap_get(&b, i * 4 + 1), !!(i % 3));
-		CHECK_EQ(bitmap_get(&b, i * 4 + 2), !!(i % 4));
-		CHECK_EQ(bitmap_get(&b, i * 4 + 3), !!(i % 6));
+		CHECK_EQ(bitset_get(&b, i * 4 + 0), !!(i % 2));
+		CHECK_EQ(bitset_get(&b, i * 4 + 1), !!(i % 3));
+		CHECK_EQ(bitset_get(&b, i * 4 + 2), !!(i % 4));
+		CHECK_EQ(bitset_get(&b, i * 4 + 3), !!(i % 6));
 
-		CHECK_EQ(bitmap_get_safe(&b, i * 4 + 0, &o_b), OK);
+		CHECK_EQ(bitset_get_safe(&b, i * 4 + 0, &o_b), OK);
 		CHECK_EQ(o_b, !!(i % 2));
-		CHECK_EQ(bitmap_get_safe(&b, i * 4 + 1, &o_b), OK);
+		CHECK_EQ(bitset_get_safe(&b, i * 4 + 1, &o_b), OK);
 		CHECK_EQ(o_b, !!(i % 3));
-		CHECK_EQ(bitmap_get_safe(&b, i * 4 + 2, &o_b), OK);
+		CHECK_EQ(bitset_get_safe(&b, i * 4 + 2, &o_b), OK);
 		CHECK_EQ(o_b, !!(i % 4));
-		CHECK_EQ(bitmap_get_safe(&b, i * 4 + 3, &o_b), OK);
+		CHECK_EQ(bitset_get_safe(&b, i * 4 + 3, &o_b), OK);
 		CHECK_EQ(o_b, !!(i % 6));
 	}
-	CHECK_EQ(bitmap_get_safe(&b, TESTS_BITMAP_B * 4, &o_b), ERR_SIZE);
-	CHECK_EQ(bitmap_set_safe(&b, TESTS_BITMAP_B * 4, false), ERR_SIZE);
+	CHECK_EQ(bitset_get_safe(&b, TESTS_BITMAP_B * 4, &o_b), ERR_SIZE);
+	CHECK_EQ(bitset_set_safe(&b, TESTS_BITMAP_B * 4, false), ERR_SIZE);
 	for (i = TESTS_BITMAP_B - 1; i >= 0; i--)
 	{
-		CHECK_EQ(bitmap_pop(&b, &o_b), OK);
+		CHECK_EQ(bitset_pop(&b, &o_b), OK);
 		CHECK_EQ(o_b, !!(i % 6));
-		CHECK_EQ(bitmap_pop(&b, &o_b), OK);
+		CHECK_EQ(bitset_pop(&b, &o_b), OK);
 		CHECK_EQ(o_b, !!(i % 4));
-		CHECK_EQ(bitmap_pop(&b, &o_b), OK);
+		CHECK_EQ(bitset_pop(&b, &o_b), OK);
 		CHECK_EQ(o_b, !!(i % 3));
-		CHECK_EQ(bitmap_pop(&b, &o_b), OK);
+		CHECK_EQ(bitset_pop(&b, &o_b), OK);
 		CHECK_EQ(o_b, !!(i % 2));
 	}
-	CHECK_EQ(bitmap_pop(&b, &o_b), ERR_SIZE);
+	CHECK_EQ(bitset_pop(&b, &o_b), ERR_SIZE);
 
-	bitmap_free(&b);
+	bitset_free(&b);
 }
 
 # endif
@@ -1097,9 +1097,9 @@ int			main(void)
 #endif // TEST_ARRAY
 
 #ifdef TEST_BITMAP
-	check("bitmap", &test_bitmap, all);
+	check("bitset", &test_bitset, all);
 # ifdef TEST_BITMAP_BONUS
-	check("bitmap bonus", &test_bitmap_bonus, all);
+	check("bitset bonus", &test_bitset_bonus, all);
 # endif // TEST_BITMAP_BONUS
 #endif // TEST_BITMAP
 

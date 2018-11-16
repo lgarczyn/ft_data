@@ -23,7 +23,7 @@ static t_pmait	pma_search_pos(const t_pma *a, const void *key)
 	while (it.id < it.end)
 	{
 		i = it.id + (it.end - it.id) / 2;
-		while (i < it.end && bitmap_get(&(a->bucket.flags), i) == false)
+		while (i < it.end && bitset_get(&(a->bucket.flags), i) == false)
 			i++;
 		if (i == it.end)
 			it.end = it.id + (it.end - it.id) / 2;

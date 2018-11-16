@@ -22,7 +22,7 @@ void			bucket_set(t_bucket *b, size_t id,
 	ptr = bucket_at(b, id);
 	ft_memmove(ptr, key, b->sizes.key);
 	ft_memmove(ptr + b->sizes.key, val, b->sizes.val);
-	bitmap_set(&(b->flags), id, true);
+	bitset_set(&(b->flags), id, true);
 }
 
 void			bucket_get(t_bucket *b, size_t id,

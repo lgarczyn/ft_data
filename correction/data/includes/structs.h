@@ -25,12 +25,12 @@ typedef struct	s_array
 	size_t		warning;
 }				t_array;
 
-typedef struct	s_bitmap
+typedef struct	s_bitset
 {
 	t_uchar		*data;
 	size_t		pos;
 	size_t		size;
-}				t_bitmap;
+}				t_bitset;
 
 typedef struct	s_queue
 {
@@ -67,7 +67,7 @@ typedef struct	s_sizes
 
 typedef struct	s_bucket
 {
-	t_bitmap	flags;
+	t_bitset	flags;
 	t_array		values;
 	t_sizes		sizes;
 	size_t		count;
