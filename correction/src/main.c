@@ -430,23 +430,6 @@ void			sorted_check(t_sorted *a, t_reverse r, bool reversed)
 	}
 }
 
-void			sorted_check_pop(t_sorted *a, t_reverse r, bool reversed)
-{
-	char		buffer[12];
-
-	for (unsigned int i = 0; i < SORTED_TESTS; i++)
-	{
-		int j = reversed ? i : SORTED_TESTS_INC - i;
-		if (sorted_pop(a, buffer))
-			printf("pop returned non-zero\n");
-		int got = r(buffer);
-		CHECK_EQ(j, got);
-		CHECK_EQ(sorted_len(a), SORTED_TESTS_INC - i);
-	}
-	if (sorted_len(a) != 0)
-		printf("check pop non-empty\n");
-}
-
 void			sorted_check_delete(t_sorted *a, t_order o, t_reverse r)
 {
 	char		buffer1[12];
@@ -487,8 +470,7 @@ void			sorted_fill(t_sorted *a, t_order o)
 	for (i = 0; i < SORTED_TESTS; i++)
 	{
 		o(buffer, i, SORTED_TESTS);
-		if (sorted_insert(a, buffer))
-			printf("sorted returned non-zero\n");
+		CHECK_EQ(sorted_insert(a, buffer), OK);
 	}
 }
 
@@ -504,7 +486,7 @@ void			sorted_fill_delete(t_sorted *a, t_order o, t_reverse r)
 		CHECK_EQ(sorted_insert(a, buffer1), OK);
 		o(buffer1, i + 1, SORTED_TESTS);
 		CHECK_EQ(sorted_insert(a, buffer1), OK);
-		sorted_delete(a, buffer1, NULL);
+		CHECK_EQ(sorted_delete(a, buffer1, NULL).found, true);
 		CHECK_EQ(sorted_insert(a, buffer1), OK);
 		sorted_delete(a, buffer1, buffer2);
 
@@ -541,7 +523,7 @@ void			test_sorted_spe(bool less_pred, bool str, t_order o)
 	sorted_check(&a, rev, less_pred == false);
 	sorted_check_delete(&a, o, rev);
 	sorted_fill_delete(&a, o, rev);
-	sorted_check_pop(&a, rev, less_pred == false);
+	sorted_free(&a);
 }
 
 void			test_sorted(void)
@@ -559,6 +541,141 @@ void			test_sorted(void)
 	test_sorted_spe(true, true, asc_str);
 	test_sorted_spe(true, true, desc_str);
 	test_sorted_spe(true, true, gray_str);
+}
+
+void			sorted_fill_hint(t_sorted *a, t_order o)
+{
+	char		buffer[12];
+	int			i = 0;
+	t_uint		index;
+	bool		start;
+
+	o(buffer, 0, SORTED_TESTS);
+	CHECK_EQ(sorted_insert(a, buffer), OK);
+
+	index = sorted_search(a, buffer).index;
+
+	o(buffer, 1, SORTED_TESTS);
+	CHECK_EQ(sorted_insert(a, buffer), OK);
+
+	if (index == sorted_search(a, buffer).index)
+		start = true;
+	else
+		start = false;
+
+	for (i = 2; i < SORTED_TESTS; i++)
+	{
+		o(buffer, i, SORTED_TESTS);
+		CHECK_EQ(sorted_insert_hint(a, buffer, start ? 0 : i), OK);
+	}
+}
+
+void			sorted_check_pop(t_sorted *a, t_reverse r, bool reversed)
+{
+	char		buffer[12];
+	t_uint		i = 0;
+
+	for (;i < SORTED_TESTS; i++)
+	{
+		int j = reversed ? i : SORTED_TESTS_INC - i;
+		CHECK_EQ(sorted_pop(a, buffer), OK);
+		int got = r(buffer);
+		CHECK_EQ(j, got);
+		CHECK_EQ(sorted_len(a), SORTED_TESTS_INC - i);
+	}
+	CHECK_EQ(sorted_len(a), 0);
+}
+
+void			sorted_check_delete_index(t_sorted *a, t_order o, t_reverse r)
+{
+	char		buffer1[12];
+	char		buffer2[12];
+	t_sorteden	res;
+	size_t		index;
+	t_uint		i = 0;
+
+	for (; i < SORTED_TESTS; i++)
+	{
+		o(buffer1, i, SORTED_TESTS);
+
+		res = sorted_search(a, buffer1);
+		CHECK_EQ(res.found, true);
+		index = res.index;
+		CHECK_EQ(strncmp((char*)sorted_get(a, index), buffer1, 12), 0);
+		CHECK_EQ(sorted_delete_index(a, index, buffer2), OK);
+		res = sorted_search(a, buffer1);
+		CHECK_EQ(res.found, false);
+		CHECK_EQ(res.index, index);
+		CHECK_EQ(r(buffer1), r(buffer2));
+	}
+	o(buffer1, SORTED_TESTS, SORTED_TESTS);
+	CHECK_EQ(sorted_delete_index(a, 0, NULL), ERR_SIZE);
+	CHECK_EQ(sorted_len(a), 0);
+}
+
+
+
+void			test_sorted_bonus_spe(bool less_pred, bool str, t_order o)
+{
+	t_sorted	a;
+	t_uint		size;
+	t_predicate	pred;
+	t_reverse	rev;
+
+	a = sorted(&lt, sizeof(int));
+	sorted_free(&a);
+	if (str)
+	{
+		size = sizeof(char) * 12;
+		pred = less_pred ? &lt_str : &gt_str;
+		rev = &reverse_str;
+	}
+	else
+	{
+		size = sizeof(int);
+		pred = less_pred ? &lt : &gt;
+		rev = &reverse_int;
+	}
+	a = sorted(pred, size);
+	sorted_fill_hint(&a, o);
+	sorted_free(&a);
+	sorted_fill_hint(&a, o);
+	sorted_free(&a);
+	sorted_fill_hint(&a, o);
+	sorted_free(&a);
+	sorted_fill_hint(&a, o);
+	sorted_free(&a);
+	sorted_fill_hint(&a, o);
+	sorted_free(&a);
+	sorted_fill_hint(&a, o);
+	sorted_free(&a);
+	sorted_fill_hint(&a, o);
+	sorted_free(&a);
+	sorted_fill_hint(&a, o);
+	sorted_free(&a);
+	sorted_fill_hint(&a, o);
+	sorted_check(&a, rev, less_pred == false);
+	sorted_check_pop(&a, rev, less_pred == false);
+	sorted_fill_hint(&a, o);
+	sorted_check_delete_index(&a, o, rev);
+	sorted_free(&a);
+}
+
+void			test_sorted_bonus(void)
+{
+	test_sorted_bonus_spe(false, false, asc);
+	test_sorted_bonus_spe(false, false, desc);
+	test_sorted_bonus_spe(false, false, gray);
+	test_sorted_bonus_spe(true, false, asc);
+	test_sorted_bonus_spe(true, false, desc);
+	test_sorted_bonus_spe(true, false, gray);
+
+	test_sorted_bonus_spe(false, true, asc_str);
+	test_sorted_bonus_spe(false, true, desc_str);
+	test_sorted_bonus_spe(false, true, gray_str);
+	test_sorted_bonus_spe(true, true, asc_str);
+	test_sorted_bonus_spe(true, true, desc_str);
+	test_sorted_bonus_spe(true, true, gray_str);
 }
 
 #endif
@@ -660,9 +777,7 @@ void			pma_fill(t_pma *a, t_order o)
 	for (int i = 0; i < PMA_TESTS; i++)
 	{
 		o(buffer, i, PMA_TESTS);
-
-		if (pma_insert(a, buffer, &i))
-			printf("pma returned non-zero\n");
+		CHECK_EQ(pma_insert(a, buffer, &i), OK);
 	}
 }
 
@@ -679,14 +794,11 @@ void			pma_fill_delete(t_pma *a, t_order o, t_reverse r)
 		o(key_inserted_buf, i, PMA_TESTS);
 		val_inserted = i;
 
-		if (pma_insert(a, key_inserted_buf, &val_inserted))
-			printf("pma insert returned non-zero\n");
+		CHECK_EQ(pma_insert(a, key_inserted_buf, &val_inserted), OK);
 		o(key_inserted_buf, i + 1, PMA_TESTS);
-		if (pma_insert(a, key_inserted_buf, &val_inserted))
-			printf("pma insert returned non-zero\n");
-		pma_delete(a, key_inserted_buf, NULL, NULL);
-		if (pma_insert(a, key_inserted_buf, &val_inserted))
-			printf("pma insert returned non-zero\n");
+		CHECK_EQ(pma_insert(a, key_inserted_buf, &val_inserted), OK);
+		CHECK_EQ(pma_delete(a, key_inserted_buf, NULL, NULL), OK);
+		CHECK_EQ(pma_insert(a, key_inserted_buf, &val_inserted), OK);
 		pma_delete(a, key_inserted_buf, key_found_buf, &val_found);
 		pma_len(a);
 		int key_inserted = r(key_inserted_buf);
@@ -744,6 +856,36 @@ void			test_pma(void)
 	test_pma_spe(true, true, asc_str);
 	test_pma_spe(true, true, desc_str);
 	test_pma_spe(true, true, gray_str);
+}
+
+void			pmait_check_search(t_pma *a, t_order o, t_reverse r)
+{
+	char		key_search_buf[12];
+	char		key_found_buf[12];
+	int			val_found;
+	int			i = 0;
+	t_pmaen		entry;
+
+	CHECK_EQ(pma_len(a), PMA_TESTS);
+	for (i = 0; i < PMA_TESTS; i++)
+	{
+		o(key_search_buf, i, PMA_TESTS);
+		entry = pma_search(a, key_search_buf);
+		if (entry.found != true)
+		{
+			printf("error: %i not found\n", i);
+			PRINT_ERR(PMA_TESTS - i, pma_len(a));
+			continue;
+		}
+		pmait_next(&entry.it, key_found_buf, &val_found);
+		int key_inserted = r(key_search_buf);
+		int key_found = r(key_found_buf);
+		CHECK_EQ(key_inserted, key_found);
+		CHECK_EQ(i, val_found);
+	}
+	o(key_search_buf, PMA_TESTS, PMA_TESTS);
+	CHECK_EQ(pma_search(a, key_search_buf).found, false);
+	CHECK_EQ(pma_len(a), PMA_TESTS);
 }
 
 void			pmait_check(t_pma *a, t_reverse r, bool reversed)
@@ -808,6 +950,7 @@ void			test_pmait_spe(bool reversed, bool str, t_order o)
 	a = pma(pred, size, sizeof(int));
 	pma_fill(&a, o);
 	pmait_check(&a, rev, reversed);
+	pmait_check_search(&a, o, rev);
 	pmait_check_delete(&a, rev, reversed);
 	pma_fill_delete(&a, o, rev);
 	pma_check_pop(&a, rev, reversed);
@@ -1124,7 +1267,7 @@ int			main(void)
 #ifdef TEST_SORTED
  	check("sorted", &test_sorted, all);
 # ifdef TEST_SORTED_BONUS
- 	//check("sorted bonus", &test_sorted_bonus, all);
+ 	check("sorted bonus", &test_sorted_bonus, all);
 # endif // TEST_SORTED_BONUS
 #endif // TEST_SORTED
 

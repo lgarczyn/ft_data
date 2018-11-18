@@ -13,13 +13,15 @@
 #include "libft.h"
 #include "sorted_int.h"
 
-void			sorted_delete_index(t_sorted *a, size_t index, void *out)
+int				sorted_delete_index(t_sorted *a, size_t index, void *out)
 {
 	size_t		new_pos;
 	size_t		prev_len;
 	size_t		next_len;
 	void		*array_data;
 
+	if (index >= a->pos)
+		return (ERR_SIZE);
 	new_pos = a->pos - a->word;
 	prev_len = index * a->word;
 	next_len = new_pos - prev_len;
@@ -31,6 +33,7 @@ void			sorted_delete_index(t_sorted *a, size_t index, void *out)
 	if (a->pos <= a->size / 4)
 		ft_realloc_down(&a->data, a->pos, &a->size);
 	a->pos = new_pos;
+	return (OK);
 }
 
 t_sorteden		sorted_delete(t_sorted *a, const void *data, void *out)

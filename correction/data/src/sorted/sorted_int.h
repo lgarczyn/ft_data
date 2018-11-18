@@ -43,7 +43,7 @@ int				sorted_insert(t_sorted *a, const void *data);
 /*
 ** sorted_delete.c
 */
-void			sorted_delete_index(t_sorted *a, size_t index, void *out);
+int				sorted_delete_index(t_sorted *a, size_t index, void *out);
 t_sorteden		sorted_delete(t_sorted *a, const void *data, void *out);
 /*
 ** sorted_replace.c

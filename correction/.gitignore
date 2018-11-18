@@ -4,6 +4,5 @@
 ._*
 .DS_Store
 *.dSYM/
-*.txt
 ft_data
 .vscode/

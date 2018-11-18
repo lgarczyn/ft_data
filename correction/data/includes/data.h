@@ -64,7 +64,7 @@ int			sorted_pop(t_sorted *a, void *data);
 
 int			sorted_insert_hint(t_sorted *a, const void *d, size_t h);
 t_sorteden	sorted_replace_hint(t_sorted *a, void *data, size_t hint);
-void		sorted_delete_index(t_sorted *a, size_t index, void *out);
+int			sorted_delete_index(t_sorted *a, size_t index, void *out);
 
 t_pma		pma(t_predicate predicate, t_uint key, t_uint value);
 void		pma_free(t_pma *a);
