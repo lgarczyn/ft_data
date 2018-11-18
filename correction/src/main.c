@@ -974,6 +974,36 @@ void			test_pmait(void)
 	test_pmait_spe(true, true, gray_str);
 }
 
+void			pmait_check_range(t_pma *a, t_order o, t_reverse r)
+{
+	char		key_search_buf[12];
+	char		key_found_buf[12];
+	int			val_found;
+	int			i = 0;
+	t_pmaen		entry;
+
+	CHECK_EQ(pma_len(a), PMA_TESTS);
+	for (i = 0; i < PMA_TESTS; i++)
+	{
+		o(key_search_buf, i, PMA_TESTS);
+		entry = pma_search(a, key_search_buf);
+		if (entry.found != true)
+		{
+			printf("error: %i not found\n", i);
+			PRINT_ERR(PMA_TESTS - i, pma_len(a));
+			continue;
+		}
+		pmait_next(&entry.it, key_found_buf, &val_found);
+		int key_inserted = r(key_search_buf);
+		int key_found = r(key_found_buf);
+		CHECK_EQ(key_inserted, key_found);
+		CHECK_EQ(i, val_found);
+	}
+	o(key_search_buf, PMA_TESTS, PMA_TESTS);
+	CHECK_EQ(pma_search(a, key_search_buf).found, false);
+	CHECK_EQ(pma_len(a), PMA_TESTS);
+}
+
 void			pmait_back_check(t_pma *a, t_reverse r, bool reversed)
 {
 	t_pmait	it;
@@ -1035,6 +1065,7 @@ void			test_pmait_back_spe(bool reversed, bool str, t_order o)
 	}
 	a = pma(pred, size, sizeof(int));
 	pma_fill(&a, o);
+	pmait_check_range(&a, rev, reversed);
 	pmait_back_check(&a, rev, reversed);
 	pmait_back_check_delete(&a, rev, reversed);
 	pma_free(&a);

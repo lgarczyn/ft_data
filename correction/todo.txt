@@ -1,0 +1,128 @@
+todo
+    main
+        more ifdef for queue, sorted and pma
+        test untested
+        performance reports
+            xmalloc()
+            prevent specialized optimisation
+            (that means keeping in mem power law sized arrays and such)
+        remaining tests
+        remaining missing manual functions
+    code
+        clear warnings
+
+allowed functions
+    xmalloc
+    xfree
+    You can use more, but remember that this is supposed to be used in projects
+    
+advice
+    check state at start
+    use debugger
+    init memory to 0
+    reimplement realloc
+        (can offer some cheap perf if authorized)
+
+bonus implementation
+    array
+    bitmap
+    sorted
+    pmait
+    pmait 2
+
+bonus performance
+    good perf mem
+        total vs max total
+        for every functions ?
+        prevent min-maxxing
+    good perf cpu
+        O2 ?
+        vs standard on school computer
+        not much to do
+    possibility to use realloc
+
+mandatory header parts
+    prototypes
+    t_sortedres/t_sorteden/t_sorteden
+    t_pmaen
+    t_uint
+
+
+t_array		array(void);
+void		array_free(t_array *a);
+size_t		array_len(const t_array *a);
+int			array_reserve(t_array *a, size_t s);
+int			array_push(t_array *a, const void *data, size_t size);
+int			array_pop(t_array *a, void *data, size_t size);
+
+int			array_set_len(t_array *a, size_t len);
+int			array_insert(t_array *a, const void *data, size_t i, size_t size);
+int			array_remove(t_array *a, void *data, size_t i, size_t size);
+
+
+t_bitmap	bitmap(void);
+void		bitmap_free(t_bitmap *a);
+size_t		bitmap_len(const t_bitmap *a);
+int			bitmap_set_len(t_bitmap *bitmap, size_t len);
+bool		bitmap_get(const t_bitmap *a, size_t i);
+void		bitmap_set(t_bitmap *a, size_t i, bool b);
+//9: [X__XXXX__]
+void        bitmap_display(const t_bitmap *a);
+
+int			bitmap_reserve(t_bitmap *bitmap, size_t new_size);
+int			bitmap_get_safe(const t_bitmap *a, size_t i, bool *out);
+int			bitmap_set_safe(t_bitmap *a, size_t i, bool b);
+int			bitmap_push(t_bitmap *a, bool b);
+int			bitmap_pop(t_bitmap *a, bool *data);
+
+t_queue		queue(t_uint word);
+void		queue_free(t_queue *a);
+size_t		queue_len(const t_queue *a);
+int			queue_reserve(t_queue *a, size_t s);
+int			queue_push_back(t_queue *a, const void *data);
+int			queue_push_front(t_queue *a, const void *data);
+int			queue_pop_back(t_queue *a, void *data);
+int			queue_pop_front(t_queue *a, void *data);
+
+t_sorted	sorted(t_predicate predicate, t_uint word);
+void		sorted_free(t_sorted *a);
+size_t		sorted_len(const t_sorted *a);
+int			sorted_reserve(t_sorted *a, size_t s);
+void    	*sorted_get(t_sorted *a, size_t index);
+t_sorteden	sorted_search(const t_sorted *a, const void *d);
+int			sorted_insert(t_sorted *a, const void *data);
+t_sorteden	sorted_delete(t_sorted *a, const void *data, void *out);
+
+//decide if duplicate elements are allowed
+int			sorted_pop(t_sorted *a, void *data);
+int			sorted_insert_hint(t_sorted *a, const void *d, size_t h);
+void		sorted_delete_index(t_sorted *a, size_t index, void *out);
+
+t_pma		pma(t_predicate predicate, t_uint key, t_uint value);
+void		pma_free(t_pma *a);
+size_t		pma_len(const t_pma *a);
+int			pma_insert(t_pma *a, const void *key, const void *val);
+int			pma_delete(t_pma *a, const void *key, void *o_key, void *o_val);
+int			pma_get(const t_pma *a, const void *key, void *o_key, void *o_val);
+//9: [X__XXXX__]
+//5: {0:32664 1:32650 5:32714 6:32545 7:32765}
+void		pma_display(t_pma *a, t_printer print_key, t_printer print_char);
+
+//rename pop_low pop_high ?
+int			pma_pop_back(t_pma *a, void *key, void *val);
+int			pma_pop_front(t_pma *a, void *key, void *val);
+
+t_pmaen		pma_search(const t_pma *a, const void *key);
+t_pmait		pmait(const t_pma *a);
+bool		pmait_next(t_pmait *i, void *key, void *val);
+bool		pmait_delete(t_pmait *i, void *key, void *val);
+//       >----<
+//9: [X__XXXX__]
+//5: {0:32664 1:32650 5:32714 6:32545 7:32765}
+void		pmait_display(t_pmait *it, t_printer print_key, t_printer print_char);
+
+t_pmait		pma_range(const t_pma *a, void *key_a, void *key_b);//TO_TEST
+bool		pmait_next_back(t_pmait *i, void *key, void *val);
+bool		pmait_delete_back(t_pmait *i, void *key, void *val);
+
+int			pma_ensure(t_pmaen *en, const void *data);
