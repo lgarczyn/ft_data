@@ -16,6 +16,7 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include <time.h>
+#include <strings.h>
 #include "data.h"
 
 #define PRINT_ERR(a, b) do {\
@@ -41,14 +42,14 @@
 
 #ifdef TEST_ARRAY
 
-# define TESTS_ARRAY 200000
-# define TESTS_ARRAY_INC (TESTS_ARRAY - 1)
+# define ARRAY_TESTS 200000
+# define ARRAY_INC_TESTS (ARRAY_TESTS - 1)
 
 void			test_array(void)
 {
 	t_array		a;
-	char		ret[10];
-	char		buf[10];
+	char		ret[12];
+	char		buf[12];
 	int			len;
 	int			i = 0;
 	size_t		count = 0;
@@ -60,8 +61,9 @@ void			test_array(void)
 	a = array();
 	array_free(&a);
 	CHECK_EQ(array_reserve(&a, (size_t)-1), ERR_ALLOC);
-	CHECK_EQ(array_reserve(&a, TESTS_ARRAY * 11), OK);
-	for (i = 0; i < TESTS_ARRAY; i++)
+	CHECK_EQ(array_reserve(&a, ARRAY_TESTS * 11), OK);
+	CHECK_EQ(array_len(&a), 0);
+	for (i = 0; i < ARRAY_TESTS; i++)
 	{
 		len = sprintf(buf, "%d", i) + 1;
 		array_push(&a, buf, len);
@@ -79,7 +81,7 @@ void			test_array(void)
 			PRINT_ERR(i, strcmp(buf, ret));
 		}
 	}
-	for (i = TESTS_ARRAY_INC; i >= 0; i--)
+	for (i = ARRAY_INC_TESTS; i >= 0; i--)
 	{
 		len = sprintf(buf, "%d", i) + 1;
 		array_pop(&a, ret, len);
@@ -96,18 +98,18 @@ void			test_array(void)
 
 # ifdef TEST_ARRAY_BONUS
 
-#  define TESTS_ARRAY_B 3000
+#  define ARRAY_B_TESTS 3000
 
 void			test_array_bonus(void)
 {
 	t_array		a;
-	char		ret[10];
-	char		buf[10];
+	char		ret[12];
+	char		buf[12];
 	int			len;
 	int			i = 0;
 
 	a = array();
-	for (i = 0; i < TESTS_ARRAY_B; i++)
+	for (i = 0; i < ARRAY_B_TESTS; i++)
 	{
 		len = sprintf(buf, "%d", i) + 1;
 		array_insert(&a, buf, 0, len);
@@ -115,21 +117,21 @@ void			test_array_bonus(void)
 		CHECK_EQ(strcmp(buf, ret), 0);
 		array_insert(&a, buf, 0, len);
 	}
-	for (i = 0; i < TESTS_ARRAY_B; i++)
+	for (i = 0; i < ARRAY_B_TESTS; i++)
 	{
 		len = sprintf(buf, "%d", i) + 1;
 		array_pop(&a, ret, len);
 		CHECK_EQ(strcmp(buf, ret), 0);
 	}
 	CHECK_EQ(array_len(&a), 0);
-	for (i = 1; i < TESTS_ARRAY_B; i++)
+	for (i = 1; i < ARRAY_B_TESTS; i++)
 	{
 		array_push(&a, &i, sizeof(int));
 		CHECK_EQ(array_len(&a) / sizeof(int), (t_uint)i);
 	}
 	CHECK_EQ(array_set_len(&a, 700 * sizeof(int)), OK);
 	CHECK_EQ(array_len(&a) / sizeof(int), 700);
-	CHECK_EQ(array_set_len(&a, TESTS_ARRAY_B * sizeof(int)), OK);
+	CHECK_EQ(array_set_len(&a, ARRAY_B_TESTS * sizeof(int)), OK);
 	CHECK_EQ(array_pop(&a, &i, sizeof(int)), OK);
 	CHECK_EQ(i, 0);
 
@@ -141,7 +143,7 @@ void			test_array_bonus(void)
 
 #ifdef TEST_BITMAP
 
-# define TESTS_BITMAP 10000000
+# define BITMAP_TESTS 10000000
 
 void			test_bitset()
 {
@@ -151,13 +153,13 @@ void			test_bitset()
 	b = bitset();
 	CHECK_EQ(bitset_len(&b), 0);
 	bitset_free(&b);
-	CHECK_EQ(bitset_set_len(&b, TESTS_BITMAP), OK);
-	CHECK_EQ(bitset_len(&b), TESTS_BITMAP);
-	for (i = 0; i < TESTS_BITMAP; i++)
+	CHECK_EQ(bitset_set_len(&b, BITMAP_TESTS), OK);
+	CHECK_EQ(bitset_len(&b), BITMAP_TESTS);
+	for (i = 0; i < BITMAP_TESTS; i++)
 	{
 		bitset_set(&b, i, i % 3 || i % 7);
 	}
-	for (i = 0; i < TESTS_BITMAP; i++)
+	for (i = 0; i < BITMAP_TESTS; i++)
 	{
 		CHECK_EQ((int)bitset_get(&b, i), (int)((i % 3) || (i % 7)));
 	}
@@ -171,7 +173,7 @@ void			test_bitset()
 
 # ifdef TEST_BITMAP_BONUS
 
-# define TESTS_BITMAP_B 1000000
+# define BITMAP_TESTS_B 1000000
 
 void			test_bitset_bonus(void)
 {
@@ -187,9 +189,9 @@ void			test_bitset_bonus(void)
 	bitset_free(&b);
 	b = bitset();
 	bitset_free(&b);
-	CHECK_EQ(bitset_reserve(&b, TESTS_BITMAP_B / 100), OK);
+	CHECK_EQ(bitset_reserve(&b, BITMAP_TESTS_B / 100), OK);
 	CHECK_EQ(bitset_len(&b), 0);
-	for (i = 0; i < TESTS_BITMAP_B; i++)
+	for (i = 0; i < BITMAP_TESTS_B; i++)
 	{
 		bitset_push(&b, i % 2);
 		bitset_push(&b, i % 3);
@@ -198,7 +200,7 @@ void			test_bitset_bonus(void)
 		CHECK_EQ(bitset_set_safe(&b, i * 4 + 3, i % 6), OK);
 	}
 	bool o_b;
-	for (i = 0; i < TESTS_BITMAP_B; i++)
+	for (i = 0; i < BITMAP_TESTS_B; i++)
 	{
 		CHECK_EQ(bitset_get(&b, i * 4 + 0), !!(i % 2));
 		CHECK_EQ(bitset_get(&b, i * 4 + 1), !!(i % 3));
@@ -214,9 +216,9 @@ void			test_bitset_bonus(void)
 		CHECK_EQ(bitset_get_safe(&b, i * 4 + 3, &o_b), OK);
 		CHECK_EQ(o_b, !!(i % 6));
 	}
-	CHECK_EQ(bitset_get_safe(&b, TESTS_BITMAP_B * 4, &o_b), ERR_SIZE);
-	CHECK_EQ(bitset_set_safe(&b, TESTS_BITMAP_B * 4, false), ERR_SIZE);
-	for (i = TESTS_BITMAP_B - 1; i >= 0; i--)
+	CHECK_EQ(bitset_get_safe(&b, BITMAP_TESTS_B * 4, &o_b), ERR_SIZE);
+	CHECK_EQ(bitset_set_safe(&b, BITMAP_TESTS_B * 4, false), ERR_SIZE);
+	for (i = BITMAP_TESTS_B - 1; i >= 0; i--)
 	{
 		CHECK_EQ(bitset_pop(&b, &o_b), OK);
 		CHECK_EQ(o_b, !!(i % 6));
@@ -237,8 +239,8 @@ void			test_bitset_bonus(void)
 
 #ifdef			TEST_QUEUE
 
-#define TESTS_QUEUE 100000
-#define TESTS_QUEUE_INC (TESTS_QUEUE - 1)
+#define QUEUE_TESTS 100000
+#define QUEUE_TESTS_INC (QUEUE_TESTS - 1)
 
 void			test_queue_spe(bool push_back, bool pop_back, bool reserve)
 {
@@ -252,10 +254,10 @@ void			test_queue_spe(bool push_back, bool pop_back, bool reserve)
 	queue_free(&a);
 	if (reserve)
 	{
-		CHECK_EQ(queue_reserve(&a, TESTS_QUEUE), OK);
+		CHECK_EQ(queue_reserve(&a, QUEUE_TESTS), OK);
 		CHECK_EQ(queue_len(&a), 0);
 	}
-	for (i = 0; i < TESTS_QUEUE; i++)
+	for (i = 0; i < QUEUE_TESTS; i++)
 	{
 		if (push_back)
 			queue_push_back(&a, &i);
@@ -263,14 +265,14 @@ void			test_queue_spe(bool push_back, bool pop_back, bool reserve)
 			queue_push_front(&a, &i);
 		CHECK_EQ(queue_len(&a), (unsigned int)i + 1);
 	}
-	for (i = 0; i < TESTS_QUEUE; i++)
+	for (i = 0; i < QUEUE_TESTS; i++)
 	{
 		if (pop_back)
 			queue_pop_back(&a, &ret);
 		else
 			queue_pop_front(&a, &ret);
-		CHECK_EQ(queue_len(&a), TESTS_QUEUE_INC - (unsigned int)i);
-		CHECK_EQ(ret, (push_back == pop_back ? TESTS_QUEUE_INC - i : i));
+		CHECK_EQ(queue_len(&a), QUEUE_TESTS_INC - (unsigned int)i);
+		CHECK_EQ(ret, (push_back == pop_back ? QUEUE_TESTS_INC - i : i));
 	}
 	queue_free(&a);
 }
@@ -287,7 +289,7 @@ void			test_queue_perf()
 	for (int i = 0; i < 1000; i++)
 		CHECK_EQ(queue_push_back(&a, &i), 0);
 	
-	for (int i = 0; i < TESTS_QUEUE * 10; i++)
+	for (int i = 0; i < QUEUE_TESTS * 10; i++)
 	{
 		queue_pop_back(&a, &ret);
 		queue_push_front(&a, &ret);
@@ -354,6 +356,7 @@ typedef void	(*t_order)(char *buffer, int i, int max);
 
 void			asc(char *buffer, int i, int max)
 {
+	bzero(buffer, sizeof(int));
 	*(int*)buffer = i;
 	buffer[sizeof(int)] = '\0';
 	(void)max;
@@ -361,12 +364,14 @@ void			asc(char *buffer, int i, int max)
 
 void			desc(char *buffer, int i, int max)
 {
+	bzero(buffer, sizeof(int));
 	*(int*)buffer = max - 1 - i;
 	buffer[sizeof(int)] = '\0';
 }
 
 void			gray(char *buffer, int i, int max)
 {
+	bzero(buffer, sizeof(int));
 	if ((max & (max - 1)) != 0)
 		printf("max is not a power of 2\n");
 	*(int*)buffer = i ^ (i >> 1);
@@ -375,17 +380,20 @@ void			gray(char *buffer, int i, int max)
 
 void			asc_str(char *buffer, int i, int max)
 {
+	bzero(buffer, 12);
 	sprintf(buffer, "%i", i);
 	(void)max;
 }
 
 void			desc_str(char *buffer, int i, int max)
 {
+	bzero(buffer, 12);
 	sprintf(buffer, "%i", max - 1 - i);
 }
 
 void			gray_str(char *buffer, int i, int max)
 {
+	bzero(buffer, 12);
 	if ((max & (max - 1)) != 0)
 		printf("max is not a power of 2\n");
 	sprintf(buffer, "%i", i ^ (i >> 1));
@@ -443,16 +451,18 @@ void			sorted_check_delete(t_sorted *a, t_order o, t_reverse r)
 {
 	char		buffer1[12];
 	char		buffer2[12];
-	t_searchres	res;
+	t_sorteden	res;
 	size_t		index;
+	t_uint		i = 0;
 
-	for (t_uint i = 0; i < SORTED_TESTS; i++)
+	for (; i < SORTED_TESTS; i++)
 	{
 		o(buffer1, i, SORTED_TESTS);
 
 		res = sorted_search(a, buffer1);
 		CHECK_EQ(res.found, true);
 		index = res.index;
+		CHECK_EQ(strncmp((char*)sorted_get(a, index), buffer1, 12), 0);
 		res = sorted_delete(a, buffer1, buffer2);
 		CHECK_EQ(res.found, true);
 		CHECK_EQ(res.index, index);
@@ -461,15 +471,20 @@ void			sorted_check_delete(t_sorted *a, t_order o, t_reverse r)
 		CHECK_EQ(res.index, index);
 		CHECK_EQ(r(buffer1), r(buffer2));
 	}
-	if (sorted_len(a) != 0)
-		printf("error check_delete 2 %lu!=0\n", sorted_len(a));
+	o(buffer1, SORTED_TESTS, SORTED_TESTS);
+	CHECK_EQ(sorted_search(a, buffer1).found, false);
+	CHECK_EQ(sorted_len(a), 0);
 }
 
 void			sorted_fill(t_sorted *a, t_order o)
 {
 	char		buffer[12];
+	int			i = 0;
 
-	for (int i = 0; i < SORTED_TESTS; i++)
+	CHECK_EQ(sorted_reserve(a, (size_t)-1), ERR_ALLOC);
+	CHECK_EQ(sorted_reserve(a, SORTED_TESTS / 10), OK);
+	CHECK_EQ(sorted_len(a), 0);
+	for (i = 0; i < SORTED_TESTS; i++)
 	{
 		o(buffer, i, SORTED_TESTS);
 		if (sorted_insert(a, buffer))
@@ -481,25 +496,22 @@ void			sorted_fill_delete(t_sorted *a, t_order o, t_reverse r)
 {
 	char		buffer1[12];
 	char		buffer2[12];
+	int			i = 0;
 
-	for (int i = 0; i < SORTED_TESTS_INC; i++)
+	for (; i < SORTED_TESTS_INC; i++)
 	{
 		o(buffer1, i, SORTED_TESTS);
-		if (sorted_insert(a, buffer1))
-			printf("sorted insert returned non-zero\n");
+		CHECK_EQ(sorted_insert(a, buffer1), OK);
 		o(buffer1, i + 1, SORTED_TESTS);
-		if (sorted_insert(a, buffer1))
-			printf("sorted insert returned non-zero\n");
+		CHECK_EQ(sorted_insert(a, buffer1), OK);
 		sorted_delete(a, buffer1, NULL);
-		if (sorted_insert(a, buffer1))
-			printf("sorted insert returned non-zero\n");
+		CHECK_EQ(sorted_insert(a, buffer1), OK);
 		sorted_delete(a, buffer1, buffer2);
 
 		CHECK_EQ(r(buffer1), r(buffer2));
 	}
 	o(buffer1, SORTED_TESTS_INC, SORTED_TESTS);
-	if (sorted_insert(a, buffer1))
-		printf("sorted insert returned non-zero\n");
+	CHECK_EQ(sorted_insert(a, buffer1), OK);
 }
 
 void			test_sorted_spe(bool less_pred, bool str, t_order o)
@@ -636,6 +648,8 @@ void			pma_check_get(t_pma *a, t_order o, t_reverse r)
 		CHECK_EQ(key_inserted, key_found);
 		CHECK_EQ(i, val_found);
 	}
+	o(key_search_buf, PMA_TESTS, PMA_TESTS);
+	CHECK_EQ(pma_get(a, key_search_buf, NULL, NULL), ERR_MISSING);
 	CHECK_EQ(pma_len(a), PMA_TESTS);
 }
 

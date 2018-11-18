@@ -13,9 +13,9 @@
 #include "libft.h"
 #include "sorted_int.h"
 
-t_searchres		sorted_replace(t_sorted *a, void *data)
+t_sorteden		sorted_replace(t_sorted *a, void *data)
 {
-	t_searchres	res;
+	t_sorteden	res;
 
 	res = sorted_search(a, data);
 	if (res.found)
@@ -29,7 +29,7 @@ t_searchres		sorted_replace(t_sorted *a, void *data)
 	return (res);
 }
 
-t_searchres		sorted_replace_hint(t_sorted *a, void *data, size_t hint)
+t_sorteden		sorted_replace_hint(t_sorted *a, void *data, size_t hint)
 {
 	if (hint == 0 || a->predicate(sorted_get(a, hint - 1), data))
 		if (hint >= sorted_len(a) || a->predicate(data, sorted_get(a, hint)))

@@ -57,7 +57,7 @@ typedef struct	s_searchres
 {
 	size_t		index;
 	bool		found;
-}				t_searchres;
+}				t_sorteden;
 
 typedef struct	s_sizes
 {

@@ -33,9 +33,9 @@ void			sorted_delete_index(t_sorted *a, size_t index, void *out)
 	a->pos = new_pos;
 }
 
-t_searchres		sorted_delete(t_sorted *a, const void *data, void *out)
+t_sorteden		sorted_delete(t_sorted *a, const void *data, void *out)
 {
-	t_searchres	res;
+	t_sorteden	res;
 
 	res = sorted_search(a, data);
 	if (res.found)

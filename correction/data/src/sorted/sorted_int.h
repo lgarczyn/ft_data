@@ -32,8 +32,8 @@ int			sorted_pop(t_sorted	*a, void *data);
 /*
 ** sorted_search.c
 */
-t_searchres		sorted_search_range( const t_sorted *a, const void *ptr, size_t start, size_t end);
-t_searchres		sorted_search(const t_sorted *a, const void *ptr);
+t_sorteden		sorted_search_range( const t_sorted *a, const void *ptr, size_t start, size_t end);
+t_sorteden		sorted_search(const t_sorted *a, const void *ptr);
 /*
 ** sorted_insert.c
 */
@@ -44,11 +44,11 @@ int				sorted_insert(t_sorted *a, const void *data);
 ** sorted_delete.c
 */
 void			sorted_delete_index(t_sorted *a, size_t index, void *out);
-t_searchres		sorted_delete(t_sorted *a, const void *data, void *out);
+t_sorteden		sorted_delete(t_sorted *a, const void *data, void *out);
 /*
 ** sorted_replace.c
 */
-t_searchres		sorted_replace(t_sorted *a, void *data);
-t_searchres		sorted_replace_hint(t_sorted *a, void *data, size_t hint);
+t_sorteden		sorted_replace(t_sorted *a, void *data);
+t_sorteden		sorted_replace_hint(t_sorted *a, void *data, size_t hint);
 
 #endif

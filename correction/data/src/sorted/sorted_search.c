@@ -13,10 +13,10 @@
 #include "libft.h"
 #include "sorted_int.h"
 
-t_searchres		sorted_search_range(
+t_sorteden		sorted_search_range(
 	const t_sorted *a, const void *ptr, size_t start, size_t end)
 {
-	t_searchres	res;
+	t_sorteden	res;
 
 	res.index = start + (end - start) / 2;
 	res.found = 0;
@@ -40,7 +40,7 @@ t_searchres		sorted_search_range(
 	return (res);
 }
 
-t_searchres		sorted_search(const t_sorted *a, const void *ptr)
+t_sorteden		sorted_search(const t_sorted *a, const void *ptr)
 {
 	return (sorted_search_range(a, ptr, 0, sorted_len(a)));
 }

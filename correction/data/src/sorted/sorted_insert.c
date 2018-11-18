@@ -47,7 +47,7 @@ int				sorted_insert_hint(t_sorted *a, const void *data, size_t hint)
 
 int				sorted_insert(t_sorted *a, const void *data)
 {
-	t_searchres	res;
+	t_sorteden	res;
 
 	res = sorted_search(a, data);
 	if (res.found)
