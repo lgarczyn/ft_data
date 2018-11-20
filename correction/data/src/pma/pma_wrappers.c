@@ -25,7 +25,6 @@ int				pma_ensure(t_pmaen *en, const void *data)
 			en->it.id,
 			en->key, data))
 			return (ERR_ALLOC);
-
 		en->it.pma->canary++;
 		en->it.canary++;
 		en->found = true;

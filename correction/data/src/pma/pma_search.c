@@ -17,7 +17,7 @@
 static t_pmait	pma_search_pos(const t_pma *a, const void *key)
 {
 	size_t		i;
-	t_pmait	it;
+	t_pmait		it;
 
 	it = pmait(a);
 	while (it.id < it.end)
@@ -33,7 +33,7 @@ static t_pmait	pma_search_pos(const t_pma *a, const void *key)
 				it.end--;
 			else if (a->predicate(pma_cat(a, i), key))
 				it.id++;
-			break;
+			break ;
 		}
 		else if (a->predicate(key, pma_cat(a, i)))
 			it.end = i;
@@ -57,7 +57,7 @@ t_pmaen			pma_search(const t_pma *a, const void *key)
 t_pmait			pma_range(const t_pma *a,
 	const void *start, const void *end)
 {
-	t_pmait	it;
+	t_pmait		it;
 
 	it = pmait(a);
 	if (start)
@@ -70,11 +70,10 @@ t_pmait			pma_range(const t_pma *a,
 int				pma_get(const t_pma *a, const void *key,
 	void *out_key, void *out_val)
 {
-	t_pmaen	en;
+	t_pmaen		en;
 
 	en = pma_search(a, key);
 	if (en.found)
 		pmait_get(&(en.it), out_key, out_val);
 	return (en.found ? OK : ERR_MISSING);
 }
-

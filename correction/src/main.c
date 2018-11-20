@@ -1262,32 +1262,32 @@ void			test_pmait_manual(t_pmait it)
 
 		switch (getchar())
 		{
-			case 'r': it = pmait(it.pma); break;
+			case 'r': it = pmait(it.pma); break ;
 			case 'n':
 				if (pmait_next(&it, &out_key, &out_val))
 					printf("%i:%i\n", out_key, out_val);
 				else
 					printf("it reached end\n");
-				break;
+				break ;
 			case 'd':
 				if (pmait_delete(&it, &out_key, &out_val))
 					printf("%i:%i\n", out_key, out_val);
 				else
 					printf("it reached end\n");
-				break;
+				break ;
 #ifdef TEST_PMA_BONUS_IT_BACK
 			case 'p':
 				if (pmait_next_back(&it, &out_key, &out_val))
 					printf("%i:%i\n", out_key, out_val);
 				else
 					printf("it reached end\n");
-				break;
+				break ;
 			case 'b':
 				if (pmait_delete_back(&it, &out_key, &out_val))
 					printf("%i:%i\n", out_key, out_val);
 				else
 					printf("it reached end\n");
-				break;
+				break ;
 #endif // TEST_PMA_BONUS_IT_BACK
 			case 'q': return ;
 			default : to_update = false;
@@ -1319,21 +1319,21 @@ void			test_pma_manual(void)
 		switch (getchar())
 		{
 			case 'q': return ;
-			case 'f': pma_free(&a); break;
+			case 'f': pma_free(&a); break ;
 			case 's':
 				scanf ("%d",&n);
 				printf("a[%lu] == %i\n", pma_search(&a, &n).it.id, n);
 				to_update = false;
-				break;
-			case 'd': scanf ("%d",&n); pma_delete(&a, &n, &out_key, &out_val); break;
-			case 'i': scanf ("%d",&n); s = rand() / ((1 << 5) - 1); pma_insert(&a, &n, &s); break;
-			case 'j': scanf ("%d %c",&n,&s); pma_insert(&a, &n, &s); break;
+				break ;
+			case 'd': scanf ("%d",&n); pma_delete(&a, &n, &out_key, &out_val); break ;
+			case 'i': scanf ("%d",&n); s = rand() / ((1 << 5) - 1); pma_insert(&a, &n, &s); break ;
+			case 'j': scanf ("%d %c",&n,&s); pma_insert(&a, &n, &s); break ;
 
 			case 'r': 
 				n = rand() / ((1 << 20) - 1);
 				s = rand() % 26;
 				pma_insert(&a, &n, &s);
-				break;
+				break ;
 			case 'm':
 				for (int i = 0; i < 1000000; i++)
 				{	
@@ -1345,19 +1345,19 @@ void			test_pma_manual(void)
 						pma_insert(&a, &n, &s);
 
 				}
-				break;
+				break ;
 #ifdef TEST_PMA_BONUS_IT
-			case '^': scanf ("%d",&n); test_pmait_manual(pma_search(&a, &n).it); break;
-			case '>': test_pmait_manual(pmait(&a)); break;
+			case '^': scanf ("%d",&n); test_pmait_manual(pma_search(&a, &n).it); break ;
+			case '>': test_pmait_manual(pmait(&a)); break ;
 #ifdef TEST_PMA_BONUS_IT_BACK
-			case 'x': scanf ("%d %d",&n,&m); test_pmait_manual(pma_range(&a, &n, &m)); break;
+			case 'x': scanf ("%d %d",&n,&m); test_pmait_manual(pma_range(&a, &n, &m)); break ;
 #endif // TEST_PMA_BONUS_IT_BACK
 #endif // TEST_PMA_BONUS_IT
 			default : to_update = false;
 
 			// pma_get
 			// pma_ensure(t_pmaen *en, const void *data);
-			// pma_range(const t_pma *a, void *key_a, void *key_b); break;
+			// pma_range(const t_pma *a, void *key_a, void *key_b); break ;
 		}
 	}
 }

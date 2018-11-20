@@ -35,6 +35,7 @@ size_t			bitset_len(const t_bitset *a)
 void			bitset_display(const t_bitset *a)
 {
 	size_t		i;
+
 	ft_putnbr_64(a->pos);
 	ft_putstr(": [");
 	i = 0;
@@ -44,4 +45,3 @@ void			bitset_display(const t_bitset *a)
 	}
 	ft_putstr("]\n");
 }
-

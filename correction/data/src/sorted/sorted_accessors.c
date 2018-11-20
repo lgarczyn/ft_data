@@ -30,4 +30,3 @@ int				sorted_pop(t_sorted *a, void *data)
 	sorted_delete_index(a, sorted_len(a) - 1, data);
 	return (OK);
 }
-

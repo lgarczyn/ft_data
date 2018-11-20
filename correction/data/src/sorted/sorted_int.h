@@ -26,29 +26,30 @@ int			sorted_reserve(t_sorted *a, size_t s);
 /*
 ** sorted_accessors.c
 */
-void		*sorted_get(t_sorted	*a, size_t index);
-const	void	*sorted_cget(const t_sorted *a, size_t index);
+void		*sorted_get(t_sorted *a, size_t index);
+const void	*sorted_cget(const t_sorted *a, size_t index);
 int			sorted_pop(t_sorted	*a, void *data);
 /*
 ** sorted_search.c
 */
-t_sorteden		sorted_search_range( const t_sorted *a, const void *ptr, size_t start, size_t end);
-t_sorteden		sorted_search(const t_sorted *a, const void *ptr);
+t_sorteden	sorted_search(const t_sorted *a, const void *ptr);
+t_sorteden	sorted_search_range(const t_sorted *a, const void *ptr,
+	size_t start, size_t end);
 /*
 ** sorted_insert.c
 */
-int				sorted_insert_index(t_sorted *a, const void *data, size_t i);
-int				sorted_insert_hint(t_sorted *a, const void *data, size_t hint);
-int				sorted_insert(t_sorted *a, const void *data);
+int			sorted_insert_index(t_sorted *a, const void *data, size_t i);
+int			sorted_insert_hint(t_sorted *a, const void *data, size_t hint);
+int			sorted_insert(t_sorted *a, const void *data);
 /*
 ** sorted_delete.c
 */
-int				sorted_delete_index(t_sorted *a, size_t index, void *out);
-t_sorteden		sorted_delete(t_sorted *a, const void *data, void *out);
+int			sorted_delete_index(t_sorted *a, size_t index, void *out);
+t_sorteden	sorted_delete(t_sorted *a, const void *data, void *out);
 /*
 ** sorted_replace.c
 */
-t_sorteden		sorted_replace(t_sorted *a, void *data);
-t_sorteden		sorted_replace_hint(t_sorted *a, void *data, size_t hint);
+t_sorteden	sorted_replace(t_sorted *a, void *data);
+t_sorteden	sorted_replace_hint(t_sorted *a, void *data, size_t hint);
 
 #endif

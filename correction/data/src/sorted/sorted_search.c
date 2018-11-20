@@ -44,4 +44,3 @@ t_sorteden		sorted_search(const t_sorted *a, const void *ptr)
 {
 	return (sorted_search_range(a, ptr, 0, sorted_len(a)));
 }
-

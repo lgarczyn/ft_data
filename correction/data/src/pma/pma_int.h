@@ -48,25 +48,30 @@ void		pmait_display(t_pmait *it, t_printer key, t_printer val);
 */
 t_pmaen		pma_search(const t_pma *a, const void *key);
 t_pmait		pma_range(const t_pma *a, const void *start, const void *end);
-int			pma_get(const t_pma *a, const void *key, void *out_key, void *out_val);
+int			pma_get(const t_pma *a, const void *key,
+	void *out_key, void *out_val);
 /*
 ** bucket_accesors.c
 */
-void		bucket_set(t_bucket *b, size_t id, const void *key, const void *val);
+void		bucket_set(t_bucket *b, size_t id,
+	const void *key, const void *val);
 void		bucket_get(t_bucket *b, size_t id, void *key, void *val);
 /*
 ** bucket_rebalance.c
 */
-int			bucket_rebalance(t_bucket *b, size_t *it_a, size_t *it_b, size_t *add);
+int			bucket_rebalance(t_bucket *b,
+	size_t *it_a, size_t *it_b, size_t *add);
 /*
 ** bucket_modify.c
 */
-int			bucket_insert(t_bucket *b, size_t id, const void *key, const void *val);
+int			bucket_insert(t_bucket *b, size_t id,
+	const void *key, const void *val);
 void		bucket_delete(t_bucket *b, size_t id, size_t *it_a, size_t *it_b);
 /*
 ** pma_modify.c
 */
-int			pma_delete(t_pma *a, const void *key, void *out_key, void *out_val);
+int			pma_delete(t_pma *a, const void *key,
+	void *out_key, void *out_val);
 int			pma_insert(t_pma *a, const void *key, const void *val);
 /*
 ** pmait.c

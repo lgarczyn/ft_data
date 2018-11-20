@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   types.h                                             :+:      :+:    :+:   */
+/*   tructs                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lgarczyn <lgarczyn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -53,7 +53,7 @@ typedef struct	s_sorted
 	t_predicate	predicate;
 }				t_sorted;
 
-typedef struct	s_searchres
+typedef struct	s_sorteden
 {
 	size_t		index;
 	bool		found;
@@ -91,7 +91,7 @@ typedef struct	s_pmait
 typedef struct	s_pmaen
 {
 	t_pmait		it;
-	void		*key;
+	const void	*key;
 	bool		found;
 }				t_pmaen;
 

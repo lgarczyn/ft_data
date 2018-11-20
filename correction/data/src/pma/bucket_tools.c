@@ -44,4 +44,3 @@ size_t			bucket_size(const t_bucket *b)
 {
 	return (bitset_len(&(b->flags)));
 }
-

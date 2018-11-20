@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "libft.h"
-
 #include "pma_int.h"
 
 static size_t	count_moves(t_bitset *b, size_t id, bool *forward)
@@ -75,7 +74,7 @@ int				bucket_insert(t_bucket *b, size_t id,
 			return (ERR_ALLOC);
 		move_len = count_moves(&(b->flags), id, &forward);
 	}
-	else 
+	else
 	{
 		move_len = count_moves(&(b->flags), id, &forward);
 		if (move_len > MAX_HAMMER_INSERT_LEN)
@@ -100,7 +99,6 @@ void			bucket_delete(t_bucket *b, size_t id,
 	ft_bzero(value, b->sizes.val + b->sizes.key);
 	bitset_set(&(b->flags), id, false);
 	b->count--;
-	if (b->count * (GROWTH_FACTOR * 2) < bucket_size(b))
+	if (b->count * GROWTH_FACTOR * 2 < bucket_size(b))
 		bucket_rebalance(b, it_a, it_b, NULL);
 }
-

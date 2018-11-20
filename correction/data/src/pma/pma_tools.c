@@ -14,29 +14,30 @@
 
 #include "pma_int.h"
 
-void			*pma_at(t_pma *a, size_t index)
+void		*pma_at(t_pma *a, size_t index)
 {
 	return (bucket_at(&(a->bucket), index));
 }
 
-const void		*pma_cat(const t_pma *a, size_t index)
+const void	*pma_cat(const t_pma *a, size_t index)
 {
 	return (bucket_cat(&(a->bucket), index));
 }
 
 void		pma_display(t_pma *a, t_printer print_key, t_printer print_val)
 {
-	size_t		i;
-	char		key[12];
-	int			val;
-	t_pmait		it;
+	size_t	i;
+	char	key[12];
+	int		val;
+	t_pmait	it;
 
 	bitset_display(&a->bucket.flags);
 	ft_putnbr_64(pma_len(a));
 	ft_putstr(": {");
 	it = pmait(a);
 	i = 0;
-	while (pmait_next(&it, &key, &val)) {
+	while (pmait_next(&it, &key, &val))
+	{
 		print_key(&key);
 		ft_putchar(':');
 		print_val(&val);
@@ -48,7 +49,7 @@ void		pma_display(t_pma *a, t_printer print_key, t_printer print_val)
 
 void		pmait_display(t_pmait *it, t_printer print_key, t_printer print_val)
 {
-	size_t		i;
+	size_t	i;
 
 	ft_putspace(ft_unumlen(pma_size(it->pma)) + 3);
 	i = 0;

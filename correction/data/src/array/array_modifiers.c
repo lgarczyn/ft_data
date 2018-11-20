@@ -41,7 +41,6 @@ int				array_insert(t_array *a, const void *data,
 	next_len = a->pos - i;
 	if ((r = array_move(a, i, i + size, next_len)))
 		return (r);
-
 	ft_memcpy(a->data + i, data, size);
 	return (OK);
 }
@@ -91,4 +90,3 @@ int				array_set_len(t_array *a, size_t len)
 	a->pos = len;
 	return (OK);
 }
-

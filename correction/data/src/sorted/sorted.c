@@ -45,4 +45,3 @@ int				sorted_reserve(t_sorted *a, size_t s)
 	}
 	return (OK);
 }
-

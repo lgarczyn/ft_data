@@ -29,11 +29,8 @@ int					bitset_pop(t_bitset *a, bool *data)
 {
 	if (a->pos <= 0)
 		return (ERR_SIZE);
-
 	*data = bitset_get(a, a->pos - 1);
-
 	a->pos--;
-
 	if (a->pos <= a->size / 4)
 		bitset_set_len((void*)&a->data, a->pos);
 	return (OK);

@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef _BITMAP_INT_H
-# define _BITMAP_INT_H
+#ifndef _BITSET_INT_H
+# define _BITSET_INT_H
 
 # include "libft.h"
 # include "data.h"

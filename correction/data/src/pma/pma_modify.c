@@ -26,7 +26,7 @@ int				pma_delete(t_pma *a, const void *key,
 		bucket_get(&(a->bucket), en.it.id, out_key, out_val);
 		bucket_delete(&(a->bucket), en.it.id, NULL, NULL);
 	}
-	en.key = (void*)key;
+	en.key = key;
 	return (en.found ? OK : ERR_MISSING);
 }
 
@@ -48,4 +48,3 @@ int				pma_insert(t_pma *a, const void *key, const void *val)
 		return (OK);
 	}
 }
-

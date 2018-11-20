@@ -36,4 +36,3 @@ void			bucket_get(t_bucket *b, size_t id,
 	if (val)
 		ft_memmove(val, ptr + b->sizes.key, b->sizes.val);
 }
-

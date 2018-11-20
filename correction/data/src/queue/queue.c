@@ -43,4 +43,3 @@ int					queue_reserve(t_queue *a, size_t new_size)
 	}
 	return (OK);
 }
-

@@ -41,4 +41,3 @@ size_t			array_len(const t_array *a)
 	check_array(a);
 	return (a->pos);
 }
-

@@ -22,7 +22,7 @@ t_sorteden		sorted_replace(t_sorted *a, void *data)
 	{
 		ft_memswap(sorted_get(a, res.index), data, a->word);
 	}
-	else 
+	else
 	{
 		sorted_insert_index(a, data, res.index);
 	}

@@ -55,10 +55,10 @@ static int		bucket_clone(const t_bucket *b, t_bucket *tmp, bool adding)
 	tmp->flags = bitset();
 	tmp->values = array();
 	if (bitset_set_len(&(tmp->flags), new_size))
-		return(ERR_ALLOC);
+		return (ERR_ALLOC);
 	tmp->flags.pos = new_size;
 	if (array_reserve(&(tmp->values), new_size * bucket_word(b)))
-		return(ERR_ALLOC);
+		return (ERR_ALLOC);
 	tmp->values.pos = new_size * bucket_word(b);
 	return (OK);
 }
@@ -92,4 +92,3 @@ int				bucket_rebalance(t_bucket *b,
 	*b = tmp;
 	return (OK);
 }
-

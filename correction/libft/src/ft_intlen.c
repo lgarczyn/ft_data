@@ -12,9 +12,9 @@
 
 #include <unistd.h>
 
-int					ft_intlen(int num)
+int				ft_intlen(int num)
 {
-	int				sign;
+	int			sign;
 
 	sign = (num < 0);
 	if (!sign)
@@ -61,7 +61,7 @@ int				ft_unumlen(ssize_t i)
 	return (c);
 }
 
-int					ft_numlen(size_t i)
+int				ft_numlen(size_t i)
 {
 	int			c;
 
