@@ -13,13 +13,6 @@
 #include "libft.h"
 #include <stdlib.h>
 
-size_t		ft_min_alloc(size_t size)
-{
-	if (size > 0xFFFFFFFFFFFFFF)
-		return ((size_t)-1);
-	return (ROUND_UP(size - 24, 16) + 24);
-}
-
 /*
 ** if *ptr is null, it will always be allocated to new size
 ** if not, its data will be transfered, and freed

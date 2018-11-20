@@ -52,12 +52,12 @@ DEB = -g -g3 #-fsanitize=address
 
 OPT = #-O3
 
-FLG = -Wall -Wextra -Werror -funsigned-char $(DEB)
+FLG = -Wall -Wextra -Werror -funsigned-char -m64 $(DEB)
 
 all: $(NAME)
 
 $(NAME):$(OBJ)
-	ar -rcsT  $(NAME) ../libft/libft.a $(OBJ)
+	ar -rc  $(NAME)  $(OBJ)
 
 obj/%.o: src/%.c includes/data.h
 	mkdir -p `dirname $@`

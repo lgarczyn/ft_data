@@ -40,7 +40,7 @@ int					ft_intlen(int num)
 	return (1 + sign);
 }
 
-int					ft_unumlen(ssize_t i)
+int				ft_unumlen(ssize_t i)
 {
 	int			c;
 
@@ -60,7 +60,6 @@ int					ft_unumlen(ssize_t i)
 	}
 	return (c);
 }
-
 
 int					ft_numlen(size_t i)
 {

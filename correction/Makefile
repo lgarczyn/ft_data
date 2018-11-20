@@ -24,18 +24,20 @@ DEB = -g -g3 #-fsanitize=address
 
 OPT = #-O3
 
-FLG = -Wall -Wextra -funsigned-char -fno-signed-char -m64 $(OPT) $(DEB) -std=c11
+FLG = -Wall -Wextra -funsigned-char -fno-signed-char  $(OPT) $(DEB) -std=c11 -m64
 
 all: $(NAME)
 
-$(NAME):$(OBJ) libft/libft.a printf/libprintf.a data/libdata.a
+$(NAME):$(OBJ) libft/libft.a printf/libftprintf.a data/libftdata.a
 	gcc -o ft_data $(OBJ) $(INC) $(FLG) $(LIB)
 	
 obj/%.o: src/%.c
 	@mkdir -p obj
 	gcc  -o $@ -c $< $(INC) $(FLG)
 
-%.a:
+phony:
+
+%.a: phony
 	cd `dirname $@` && make
 
 lib:
@@ -61,3 +63,5 @@ re: fclean all
 libre: lib all
 
 optire: fclean opti
+
+.PHONY = phony

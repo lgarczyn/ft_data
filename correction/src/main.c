@@ -252,7 +252,7 @@ void			test_queue_spe(bool push_back, bool pop_back, bool reserve)
 {
 	t_queue		a;
 	int			ret;
-	int			i;
+	int			i = 0;
 
 	a = queue(sizeof(int));
 	queue_free(&a);
@@ -1231,26 +1231,8 @@ void			test_pmait_back(void)
 
 void			putnbr(int n)
 {
-	static char	buffer[11];
-	int			i;
-	int			isneg;
-	int			len;
-
-	len = ft_intlen(n);
-	i = len - 1;
-	isneg = n < 0;
-	if (isneg)
-	{
-		buffer[0] = '-';
-		buffer[i--] = '0' - (n % 10);
-		n = -(n / 10);
-	}
-	while (i >= isneg)
-	{
-		buffer[i--] = '0' + (n % 10);
-		n /= 10;
-	}
-	write(1, buffer, len);
+	printf("%i", n);
+	fflush(NULL);
 }
 
 void			print_int(int *i)

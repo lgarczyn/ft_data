@@ -24,7 +24,7 @@
 # define MAX(a,b)			(((a)>(b))?(a):(b))
 # define CLAMP(x,lo,hi)		MIN(hi, MAX(lo,x))
 # define DIV_RDUP(x, y)		(((x) % (y)) ? (x) / (y) + 1 : (x) / (y))
-# define ROUND_UP(a, b)		(DIV_RDUP(a, b) * b)
+# define ROUND_UP(a, b)		(DIV_RDUP(a, b) * (b))
 # define STDIN				0
 # define STDOUT				1
 # define STDERR				2
@@ -49,6 +49,8 @@ typedef struct		s_buffer
 	size_t			total;
 	int				fd;
 }					t_buffer;
+
+# define REALLOC_GROWTH_FACTOR 2
 
 char				*ft_strerror(int err);
 void				ft_perror(const char *str);
@@ -154,8 +156,7 @@ void				ft_strdel(char **as);
 void				ft_striter(char *s, void (*f)(char *));
 void				ft_striteri(char *s, void (*f)(unsigned int, char *));
 
-#define REALLOC_GROWTH_FACTOR 2
-
+void				check_min_alloc();
 size_t				ft_min_alloc(size_t size);
 int					ft_realloc(void **ptr, size_t old_size, size_t new_size);
 int					ft_realloc_double(void **ptr, size_t *old_size);
