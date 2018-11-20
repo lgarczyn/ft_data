@@ -22,7 +22,7 @@ LIB = -L libft -lft -L printf -lftprintf -L data -lftdata
 
 DEB = -g -g3 #-fsanitize=address 
 
-OPT = -O3
+OPT = #-O3
 
 FLG = -Wall -Wextra -funsigned-char -fno-signed-char -m64 $(OPT) $(DEB) -std=c11
 

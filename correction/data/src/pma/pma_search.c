@@ -50,6 +50,7 @@ t_pmaen			pma_search(const t_pma *a, const void *key)
 	res.it = pma_search_pos(a, key);
 	res.key = (void*)key;
 	res.found = res.it.id < res.it.end;
+	res.it.end = pmait(a).end;
 	return (res);
 }
 
