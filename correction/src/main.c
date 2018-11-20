@@ -929,27 +929,33 @@ void			pmait_check_delete(t_pma *a, t_reverse r, bool reversed)
 	CHECK_EQ(i, PMA_TESTS);
 }
 
-void			pmait_cmp(t_pmait a, t_pmait b)
+bool			pmait_cmp_one(t_pmait *a, t_pmait *b, int i)
 {
 	char		key_a[BUFFER_SIZE];
 	char		key_b[BUFFER_SIZE];
 	char		val_a[BUFFER_SIZE];
 	char		val_b[BUFFER_SIZE];
+
+	bzero(key_a, BUFFER_SIZE);
+	bzero(key_b, BUFFER_SIZE);
+	bzero(val_a, BUFFER_SIZE);
+	bzero(val_b, BUFFER_SIZE);
+	bool a_found = pmait_next(a, key_a, val_a);
+	bool b_found = pmait_next(b, key_b, val_b);
+	CHECK_EQ(a_found, b_found);
+	if (a_found == false || b_found == false)
+		return false;
+	CHECK_EQ(memcmp(key_a, key_b, BUFFER_SIZE), 0);
+	CHECK_EQ(memcmp(val_a, val_b, BUFFER_SIZE), 0);
+	return (true);
+}
+
+void			pmait_cmp(t_pmait a, t_pmait b)
+{
 	int			i = 0;
 
-	while (1)
+	while (pmait_cmp_one(&a, &b, i))
 	{
-		bzero(key_a, BUFFER_SIZE);
-		bzero(key_b, BUFFER_SIZE);
-		bzero(val_a, BUFFER_SIZE);
-		bzero(val_b, BUFFER_SIZE);
-		bool a_found = pmait_next(&a, key_a, val_a);
-		bool b_found = pmait_next(&b, key_b, val_b);
-		CHECK_EQ(a_found, b_found);
-		if (a_found == false || b_found == false)
-			break ;
-		CHECK_EQ(memcmp(key_a, key_b, BUFFER_SIZE), 0);
-		CHECK_EQ(memcmp(val_a, val_b, BUFFER_SIZE), 0);
 		i++;
 	}
 }
@@ -1060,27 +1066,54 @@ void			pmait_back_check_delete(t_pma *a, t_reverse r, bool reversed)
 	CHECK_EQ(i, PMA_TESTS);
 }
 
-void			pmait_cmp_back(t_pmait a, t_pmait b)
+bool			pmait_cmp_one_back(t_pmait *a, t_pmait *b, int i)
 {
 	char		key_a[BUFFER_SIZE];
 	char		key_b[BUFFER_SIZE];
 	char		val_a[BUFFER_SIZE];
 	char		val_b[BUFFER_SIZE];
+
+	bzero(key_a, BUFFER_SIZE);
+	bzero(key_b, BUFFER_SIZE);
+	bzero(val_a, BUFFER_SIZE);
+	bzero(val_b, BUFFER_SIZE);
+	bool a_found = pmait_next_back(a, key_a, val_a);
+	bool b_found = pmait_next_back(b, key_b, val_b);
+	CHECK_EQ(a_found, b_found);
+	if (a_found == false || b_found == false)
+		return false;
+	CHECK_EQ(memcmp(key_a, key_b, BUFFER_SIZE), 0);
+	CHECK_EQ(memcmp(val_a, val_b, BUFFER_SIZE), 0);
+	return (true);
+}
+
+bool			pmait_cmp_one_front_back(t_pmait *front, t_pmait *back, int i)
+{
+	char		key_a[BUFFER_SIZE];
+	char		key_b[BUFFER_SIZE];
+	char		val_a[BUFFER_SIZE];
+	char		val_b[BUFFER_SIZE];
+
+	bzero(key_a, BUFFER_SIZE);
+	bzero(key_b, BUFFER_SIZE);
+	bzero(val_a, BUFFER_SIZE);
+	bzero(val_b, BUFFER_SIZE);
+	bool a_found = pmait_next(front, key_a, val_a);
+	bool b_found = pmait_next_back(back, key_b, val_b);
+	CHECK_EQ(a_found, b_found);
+	if (a_found == false || b_found == false)
+		return false;
+	CHECK_EQ(memcmp(key_a, key_b, BUFFER_SIZE), 0);
+	CHECK_EQ(memcmp(val_a, val_b, BUFFER_SIZE), 0);
+	return (true);
+}
+
+void			pmait_cmp_back(t_pmait a, t_pmait b)
+{
 	int			i = 0;
 
-	while (1)
+	while (pmait_cmp_one_back(&a, &b, i))
 	{
-		bzero(key_a, BUFFER_SIZE);
-		bzero(key_b, BUFFER_SIZE);
-		bzero(val_a, BUFFER_SIZE);
-		bzero(val_b, BUFFER_SIZE);
-		bool a_found = pmait_next_back(&a, key_a, val_a);
-		bool b_found = pmait_next_back(&b, key_b, val_b);
-		CHECK_EQ(a_found, b_found);
-		if (a_found == false || b_found == false)
-			break ;
-		CHECK_EQ(memcmp(key_a, key_b, BUFFER_SIZE), 0);
-		CHECK_EQ(memcmp(val_a, val_b, BUFFER_SIZE), 0);
 		i++;
 	}
 }
@@ -1122,56 +1155,29 @@ void			test_pmait_back_more()
 	t_pmait it = pma_range(&a, &last, &first);
 	CHECK_EQ(pmait_next(&it, NULL, NULL), false);
 	CHECK_EQ(pmait_next_back(&it, NULL, NULL), false);
-
-	//cmp_one and cmp_one_back
-	//call on search vs range for everything
-	/*char		key_buf_i[BUFFER_SIZE];
+	
+	char		key_buf_i[BUFFER_SIZE];
 	char		key_buf_j[BUFFER_SIZE];
-	char		key_found_i[BUFFER_SIZE];
-	char		key_found_j[BUFFER_SIZE];
-	char		key_found_r_i[BUFFER_SIZE];
-	char		key_found_r_j[BUFFER_SIZE];
-	int			i = 0;
 
-	CHECK_EQ(pma_len(a), PMA_TESTS);
-	for (i = 0; i < PMA_TESTS; i++)
+	for (i = 0; i < PMA_TESTS; i += 2)
 	{
 		o(key_buf_i, i, PMA_TESTS);
-		for (int j = 0; j < PMA_TESTS; j++)
+		for (int j = i; j < PMA_TESTS; j += 2)
 		{
 			o(key_buf_j, j, PMA_TESTS);
 
-			t_pmait it_r_i = pma_range(a, key_buf_i, key_buf_j);
+			t_pmait it_r_i = pma_range(&a, key_buf_i, key_buf_j);
 			t_pmait it_r_j = it_r_i;
-			t_pmaen en_i = pma_search(a, key_buf_i);
-			t_pmaen en_j = pma_search(a, key_buf_j);
+			t_pmaen en_i = pma_search(&a, key_buf_i);
+			t_pmaen en_j = pma_search(&a, key_buf_j);
 
 			if (en_i.found && en_j.found)
 			{
-				bzero(key_found_i, BUFFER_SIZE);
-				bzero(key_found_j, BUFFER_SIZE);
-				bzero(key_found_r_i, BUFFER_SIZE);
-				bzero(key_found_r_j, BUFFER_SIZE);
-
 				t_pmait it_i = en_i.it;
-				bool a = pmait_next(&it_i, key_found_i, NULL);
-				bool b = pmait_next(&it_r_i, &key_found_r_i, NULL);
-				CHECK_EQ(a, b);
-				if (a && b)
-				{
-					CHECK_EQ(memcmp(key_buf_i, key_found_i, BUFFER_SIZE), OK);
-					CHECK_EQ(memcmp(key_buf_i, key_found_r_i, BUFFER_SIZE), OK);
-				}
-
 				t_pmait it_j = en_j.it;
-				a = pmait_next(&it_j, key_found_j, NULL);
-				b = pmait_next_back(&it_r_j, &key_found_r_j, NULL);
-				CHECK_EQ(a, b);
-				if (a && b)
-				{
-					CHECK_EQ(memcmp(key_buf_j, key_found_j, BUFFER_SIZE), OK);
-					CHECK_EQ(memcmp(key_buf_j, key_found_r_j, BUFFER_SIZE), OK);
-				}
+
+				pmait_cmp_one(&it_i, &it_r_i, i);
+				pmait_cmp_one_front_back(&it_j, &it_r_j, i);
 			}
 			else
 			{
@@ -1179,7 +1185,7 @@ void			test_pmait_back_more()
 				CHECK_EQ(en_j.found, true);
 			}
 		}
-	}*/
+	}
 }
 
 void			test_pmait_back_spe(bool reversed, bool str, t_order o)

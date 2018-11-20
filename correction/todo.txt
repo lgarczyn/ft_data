@@ -121,7 +121,7 @@ bool		pmait_delete(t_pmait *i, void *key, void *val);
 //5: {0:32664 1:32650 5:32714 6:32545 7:32765}
 void		pmait_display(t_pmait *it, t_printer print_key, t_printer print_char);
 
-t_pmait		pma_range(const t_pma *a, void *key_a, void *key_b);//TO_TEST
+t_pmait		pma_range(const t_pma *a, void *key_a, void *key_b);
 bool		pmait_next_back(t_pmait *i, void *key, void *val);
 bool		pmait_delete_back(t_pmait *i, void *key, void *val);
 
