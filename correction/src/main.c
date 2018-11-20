@@ -34,8 +34,8 @@ void	print_err(ssize_t a, ssize_t b, int line, int i)
 
 #define TEST_ARRAY
 #define TEST_ARRAY_BONUS
-#define TEST_BITMAP
-#define TEST_BITMAP_BONUS
+#define TEST_BITSET
+#define TEST_BITSET_BONUS
 #define TEST_QUEUE
 #define TEST_SORTED
 #define TEST_SORTED_BONUS
@@ -147,9 +147,9 @@ void			test_array_bonus(void)
 # endif
 #endif
 
-#ifdef TEST_BITMAP
+#ifdef TEST_BITSET
 
-# define BITMAP_TESTS 10000000
+# define BITSET_TESTS 10000000
 
 void			test_bitset()
 {
@@ -159,13 +159,13 @@ void			test_bitset()
 	b = bitset();
 	CHECK_EQ(bitset_len(&b), 0);
 	bitset_free(&b);
-	CHECK_EQ(bitset_set_len(&b, BITMAP_TESTS), OK);
-	CHECK_EQ(bitset_len(&b), BITMAP_TESTS);
-	for (i = 0; i < BITMAP_TESTS; i++)
+	CHECK_EQ(bitset_set_len(&b, BITSET_TESTS), OK);
+	CHECK_EQ(bitset_len(&b), BITSET_TESTS);
+	for (i = 0; i < BITSET_TESTS; i++)
 	{
 		bitset_set(&b, i, i % 3 || i % 7);
 	}
-	for (i = 0; i < BITMAP_TESTS; i++)
+	for (i = 0; i < BITSET_TESTS; i++)
 	{
 		CHECK_EQ((int)bitset_get(&b, i), (int)((i % 3) || (i % 7)));
 	}
@@ -177,9 +177,9 @@ void			test_bitset()
 	CHECK_EQ((int)bitset_get(&b, 7), (int)false);
 }
 
-# ifdef TEST_BITMAP_BONUS
+# ifdef TEST_BITSET_BONUS
 
-# define BITMAP_TESTS_B 1000000
+# define BITSET_TESTS_B 1000000
 
 void			test_bitset_bonus(void)
 {
@@ -195,9 +195,9 @@ void			test_bitset_bonus(void)
 	bitset_free(&b);
 	b = bitset();
 	bitset_free(&b);
-	CHECK_EQ(bitset_reserve(&b, BITMAP_TESTS_B / 100), OK);
+	CHECK_EQ(bitset_reserve(&b, BITSET_TESTS_B / 100), OK);
 	CHECK_EQ(bitset_len(&b), 0);
-	for (i = 0; i < BITMAP_TESTS_B; i++)
+	for (i = 0; i < BITSET_TESTS_B; i++)
 	{
 		bitset_push(&b, i % 2);
 		bitset_push(&b, i % 3);
@@ -206,7 +206,7 @@ void			test_bitset_bonus(void)
 		CHECK_EQ(bitset_set_safe(&b, i * 4 + 3, i % 6), OK);
 	}
 	bool o_b;
-	for (i = 0; i < BITMAP_TESTS_B; i++)
+	for (i = 0; i < BITSET_TESTS_B; i++)
 	{
 		CHECK_EQ(bitset_get(&b, i * 4 + 0), !!(i % 2));
 		CHECK_EQ(bitset_get(&b, i * 4 + 1), !!(i % 3));
@@ -222,9 +222,9 @@ void			test_bitset_bonus(void)
 		CHECK_EQ(bitset_get_safe(&b, i * 4 + 3, &o_b), OK);
 		CHECK_EQ(o_b, !!(i % 6));
 	}
-	CHECK_EQ(bitset_get_safe(&b, BITMAP_TESTS_B * 4, &o_b), ERR_SIZE);
-	CHECK_EQ(bitset_set_safe(&b, BITMAP_TESTS_B * 4, false), ERR_SIZE);
-	for (i = BITMAP_TESTS_B - 1; i >= 0; i--)
+	CHECK_EQ(bitset_get_safe(&b, BITSET_TESTS_B * 4, &o_b), ERR_SIZE);
+	CHECK_EQ(bitset_set_safe(&b, BITSET_TESTS_B * 4, false), ERR_SIZE);
+	for (i = BITSET_TESTS_B - 1; i >= 0; i--)
 	{
 		CHECK_EQ(bitset_pop(&b, &o_b), OK);
 		CHECK_EQ(o_b, !!(i % 6));
@@ -1413,12 +1413,12 @@ int			main(void)
 # endif // TEST_ARRAY_BONUS
 #endif // TEST_ARRAY
 
-#ifdef TEST_BITMAP
+#ifdef TEST_BITSET
 	check("bitset", &test_bitset, all);
-# ifdef TEST_BITMAP_BONUS
+# ifdef TEST_BITSET_BONUS
 	check("bitset bonus", &test_bitset_bonus, all);
-# endif // TEST_BITMAP_BONUS
-#endif // TEST_BITMAP
+# endif // TEST_BITSET_BONUS
+#endif // TEST_BITSET
 
 #ifdef TEST_QUEUE
 	check("queue", &test_queue, all);
