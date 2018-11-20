@@ -66,7 +66,7 @@ void			test_array(void)
 	CHECK_EQ(array_len(&a), 0);
 	a = array();
 	array_free(&a);
-	CHECK_EQ(array_reserve(&a, (size_t)-1), ERR_ALLOC);
+	//CHECK_EQ(array_reserve(&a, (size_t)-1), ERR_ALLOC);
 	CHECK_EQ(array_reserve(&a, ARRAY_TESTS * 11), OK);
 	CHECK_EQ(array_len(&a), 0);
 	for (i = 0; i < ARRAY_TESTS; i++)
@@ -1398,7 +1398,7 @@ int			main(void)
 {
 	bool	all;
 
-	all = check_test("all");
+	all = true;//heck_test("all");
 
 #ifdef TEST_ARRAY
 	check("array", &test_array, all);

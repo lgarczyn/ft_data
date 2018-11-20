@@ -27,18 +27,14 @@ int					bitset_push(t_bitset *a, bool b)
 
 int					bitset_pop(t_bitset *a, bool *data)
 {
-	size_t			new_pos;
-
 	if (a->pos <= 0)
 		return (ERR_SIZE);
 
-	new_pos = a->pos - 1;
+	*data = bitset_get(a, a->pos - 1);
 
-	*data = bitset_get(a, new_pos);
+	a->pos--;
 
-	if (new_pos <= a->size / 4)
-		ft_realloc_down((void*)&a->data, a->pos, &a->size);
-
-	a->pos = new_pos;
+	if (a->pos <= a->size / 4)
+		bitset_set_len((void*)&a->data, a->pos);
 	return (OK);
 }

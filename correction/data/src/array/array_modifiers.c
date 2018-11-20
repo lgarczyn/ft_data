@@ -20,7 +20,7 @@ int				array_move(t_array *a, size_t from, size_t to, size_t size)
 	check_array(a);
 	if (from == to)
 		return (OK);
-	if (from + size > a->pos)
+	if (from + size > a->pos && size)
 		return (ERR_SIZE);
 	new_pos = MAX(to + size, a->pos);
 	if (new_pos > a->size)

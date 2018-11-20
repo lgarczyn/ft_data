@@ -61,6 +61,8 @@ size_t		ft_min_alloc(size_t size)
 			return (0x600);
 		return (ROUND_UP(size, 0x200));
 	}
+	if (size == 0)
+		size = 1;
 	return (ROUND_UP(size, 16));
 }
 
