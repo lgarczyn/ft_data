@@ -25,7 +25,7 @@ t_sorted		sorted(t_predicate predicate, t_uint word)
 
 void			sorted_free(t_sorted *a)
 {
-	free(a->data);
+	xfree(a->data);
 	*a = sorted(a->predicate, a->word);
 }
 

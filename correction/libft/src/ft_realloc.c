@@ -13,6 +13,8 @@
 #include "libft.h"
 #include <stdlib.h>
 
+void		xfree(void *ptr);
+
 /*
 ** if *ptr is null, it will always be allocated to new size
 ** if not, its data will be transfered, and freed
@@ -28,16 +30,17 @@ int			ft_realloc(void **ptr, size_t old_size, size_t new_size)
 	if (*ptr == NULL)
 	{
 		*ptr = ft_memalloc(new_size);
-		if (!*ptr)
+		if (*ptr == NULL)
 			return (ERR_ALLOC);
+		return (OK);
 	}
 	mem = ft_memalloc(new_size);
 	if (mem == NULL)
 		return (ERR_ALLOC);
 	ft_memmove(mem, *ptr, MIN(new_size, old_size));
-	free(*ptr);
+	xfree(*ptr);
 	*ptr = mem;
-	return (0);
+	return (OK);
 }
 
 /*

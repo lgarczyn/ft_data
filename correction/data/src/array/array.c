@@ -32,7 +32,7 @@ t_array			array(void)
 void			array_free(t_array *a)
 {
 	check_array(a);
-	free(a->data);
+	xfree(a->data);
 	*a = array();
 }
 

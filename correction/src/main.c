@@ -17,6 +17,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <strings.h>
+#include <malloc/malloc.h>
 #include "data.h"
 
 void	print_err(ssize_t a, ssize_t b, int line, int i)
@@ -46,6 +47,53 @@ void	print_err(ssize_t a, ssize_t b, int line, int i)
 
 #define BUFFER_SIZE 12
 
+typedef struct					s_mem_report
+{
+	size_t						current;
+	size_t						max;
+}								t_mem_report;
+
+static t_mem_report				modify_mem_score(size_t score, bool increment)
+{
+	static _Atomic size_t		mem_count = 0;
+	static _Atomic size_t		mem_max = 0;
+	t_mem_report				mem;
+
+	if (score)
+	{
+		if (increment)
+		{
+			mem_count += score;
+			if (mem_count > mem_max)
+				mem_max = mem_count;
+		}
+		else
+			mem_count -= score;
+	}
+	mem.current = mem_count;
+	mem.max = mem_max;
+	return (mem);
+}
+
+#define CHECK_LEAKS() do {\
+	CHECK_EQ(modify_mem_score(0, false).current, 0);\
+} while(0)
+
+void							xfree(void *ptr)
+{
+	modify_mem_score((ssize_t)malloc_size(ptr), false);
+	free(ptr);
+}
+
+void							*xmalloc(size_t size)
+{
+	void						*ptr;
+
+	ptr = malloc(size);
+	modify_mem_score((ssize_t)malloc_size(ptr), true);
+	return (ptr);
+}
+
 #ifdef TEST_ARRAY
 
 # define ARRAY_TESTS 200000
@@ -63,10 +111,15 @@ void			test_array(void)
 	a = array();
 	CHECK_EQ(array_len(&a), 0);
 	array_free(&a);
+	CHECK_LEAKS();
 	CHECK_EQ(array_len(&a), 0);
 	a = array();
 	array_free(&a);
+	CHECK_LEAKS();
 	//CHECK_EQ(array_reserve(&a, (size_t)-1), ERR_ALLOC);
+	CHECK_EQ(array_reserve(&a, ARRAY_TESTS * 11), OK);
+	array_free(&a);
+	CHECK_LEAKS();
 	CHECK_EQ(array_reserve(&a, ARRAY_TESTS * 11), OK);
 	CHECK_EQ(array_len(&a), 0);
 	for (i = 0; i < ARRAY_TESTS; i++)
@@ -100,6 +153,7 @@ void			test_array(void)
 	CHECK_EQ(array_len(&a), 0);
 	array_free(&a);
 	CHECK_EQ(array_len(&a), 0);
+	CHECK_LEAKS();
 }
 
 # ifdef TEST_ARRAY_BONUS
@@ -142,7 +196,7 @@ void			test_array_bonus(void)
 	CHECK_EQ(i, 0);
 
 	array_free(&a);
-
+	CHECK_LEAKS();
 }
 # endif
 #endif
@@ -175,6 +229,8 @@ void			test_bitset()
 	CHECK_EQ(bitset_set_len(&b, 7), OK);
 	CHECK_EQ(bitset_set_len(&b, 8), OK);
 	CHECK_EQ((int)bitset_get(&b, 7), (int)false);
+	bitset_free(&b);
+	CHECK_LEAKS();
 }
 
 # ifdef TEST_BITSET_BONUS
@@ -236,8 +292,8 @@ void			test_bitset_bonus(void)
 		CHECK_EQ(o_b, !!(i % 2));
 	}
 	CHECK_EQ(bitset_pop(&b, &o_b), ERR_SIZE);
-
 	bitset_free(&b);
+	CHECK_LEAKS();
 }
 
 # endif
@@ -281,33 +337,36 @@ void			test_queue_spe(bool push_back, bool pop_back, bool reserve)
 		CHECK_EQ(ret, (push_back == pop_back ? QUEUE_TESTS_INC - i : i));
 	}
 	queue_free(&a);
+	CHECK_LEAKS();
 }
 
 void			test_queue_perf()
 {
 	t_queue		a;
 	int			ret;
+	int			i = 0;
 
 	a = queue(sizeof(int));
 	queue_free(&a);
 	a = queue(sizeof(int));
 	queue_free(&a);
-	for (int i = 0; i < 1000; i++)
+	for (i = 0; i < 1000; i++)
 		CHECK_EQ(queue_push_back(&a, &i), 0);
 	
-	for (int i = 0; i < QUEUE_TESTS * 10; i++)
+	for (i = 0; i < QUEUE_TESTS * 10; i++)
 	{
 		queue_pop_back(&a, &ret);
 		queue_push_front(&a, &ret);
 	}
 
-	for (int i = 0; i < 1000; i++)
+	for (i = 0; i < 1000; i++)
 	{
 		CHECK_EQ(queue_pop_front(&a, &ret), 0);
 		CHECK_EQ(ret, i);
 	}
 		
 	queue_free(&a);
+	CHECK_LEAKS();
 }
 
 void			test_queue(void)
@@ -505,6 +564,7 @@ void			test_sorted_spe(bool less_pred, bool str, t_order o)
 	t_uint		size;
 	t_predicate	pred;
 	t_reverse	rev;
+	int			i = 0;
 
 	a = sorted(&lt, sizeof(int));
 	sorted_free(&a);
@@ -527,6 +587,7 @@ void			test_sorted_spe(bool less_pred, bool str, t_order o)
 	sorted_check_delete(&a, o, rev);
 	sorted_fill_delete(&a, o, rev);
 	sorted_free(&a);
+	CHECK_LEAKS();
 }
 
 void			test_sorted(void)
@@ -545,6 +606,8 @@ void			test_sorted(void)
 	test_sorted_spe(true, true, desc_str);
 	test_sorted_spe(true, true, gray_str);
 }
+
+# ifdef TEST_SORTED_BONUS
 
 void			sorted_fill_hint(t_sorted *a, t_order o)
 {
@@ -624,6 +687,7 @@ void			test_sorted_bonus_spe(bool less_pred, bool str, t_order o)
 	t_uint		size;
 	t_predicate	pred;
 	t_reverse	rev;
+	int			i = 0;
 
 	a = sorted(&lt, sizeof(int));
 	sorted_free(&a);
@@ -662,6 +726,7 @@ void			test_sorted_bonus_spe(bool less_pred, bool str, t_order o)
 	sorted_fill_hint(&a, o);
 	sorted_check_delete_index(&a, o, rev);
 	sorted_free(&a);
+	CHECK_LEAKS();
 }
 
 void			test_sorted_bonus(void)
@@ -681,6 +746,7 @@ void			test_sorted_bonus(void)
 	test_sorted_bonus_spe(true, true, gray_str);
 }
 
+# endif
 #endif
 
 #ifdef TEST_PMA
@@ -820,6 +886,7 @@ void			test_pma_spe(bool reversed, bool str, t_order o)
 	t_uint		size;
 	t_predicate	pred;
 	t_reverse	rev;
+	int			i = 0;
 
 	a = pma(&lt, sizeof(int), sizeof(int));
 	pma_free(&a);
@@ -842,6 +909,7 @@ void			test_pma_spe(bool reversed, bool str, t_order o)
 	pma_check_get(&a, o, rev);
 	pma_check_delete(&a, o, rev);
 	pma_free(&a);
+	CHECK_LEAKS();
 }
 
 void			test_pma(void)
@@ -976,6 +1044,8 @@ void			test_pmait_more()
 	CHECK_EQ(en.found, true);
 	if (en.found)
 		pmait_cmp(pmait(&a), en.it);
+	pma_free(&a);
+	CHECK_LEAKS();
 }
 
 void			test_pmait_spe(bool reversed, bool str, t_order o)
@@ -984,6 +1054,7 @@ void			test_pmait_spe(bool reversed, bool str, t_order o)
 	t_uint		size;
 	t_predicate	pred;
 	t_reverse	rev;
+	int			i = 0;
 
 	a = pma(&lt, sizeof(int), sizeof(int));
 	pma_free(&a);
@@ -1007,6 +1078,7 @@ void			test_pmait_spe(bool reversed, bool str, t_order o)
 	pma_fill_delete(&a, o, rev);	
 	pma_check_pop(&a, rev, reversed);
 	pma_free(&a);
+	CHECK_LEAKS();
 }
 
 void			test_pmait(void)
@@ -1186,6 +1258,8 @@ void			test_pmait_back_more()
 			}
 		}
 	}
+	pma_free(&a);
+	CHECK_LEAKS();
 }
 
 void			test_pmait_back_spe(bool reversed, bool str, t_order o)
@@ -1194,6 +1268,7 @@ void			test_pmait_back_spe(bool reversed, bool str, t_order o)
 	t_uint		size;
 	t_predicate	pred;
 	t_reverse	rev;
+	int			i = 0;
 
 	a = pma(&lt, sizeof(int), sizeof(int));
 	pma_free(&a);
@@ -1214,6 +1289,7 @@ void			test_pmait_back_spe(bool reversed, bool str, t_order o)
 	pmait_back_check(&a, rev, reversed);
 	pmait_back_check_delete(&a, rev, reversed);
 	pma_free(&a);
+	CHECK_LEAKS();
 }
 
 void			test_pmait_back(void)
@@ -1408,6 +1484,7 @@ int			main(void)
 
 #ifdef TEST_ARRAY
 	check("array", &test_array, all);
+	//check("array mem", &test_array_mem, all);
 # ifdef TEST_ARRAY_BONUS
 	check("array bonus", &test_array_bonus, all);
 # endif // TEST_ARRAY_BONUS
@@ -1415,6 +1492,7 @@ int			main(void)
 
 #ifdef TEST_BITSET
 	check("bitset", &test_bitset, all);
+	//check("bitset mem", &test_bitset_mem, all);
 # ifdef TEST_BITSET_BONUS
 	check("bitset bonus", &test_bitset_bonus, all);
 # endif // TEST_BITSET_BONUS
@@ -1422,10 +1500,12 @@ int			main(void)
 
 #ifdef TEST_QUEUE
 	check("queue", &test_queue, all);
+	//check("queue mem", &test_queue_mem, all);
 #endif
 
 #ifdef TEST_SORTED
  	check("sorted", &test_sorted, all);
+	//check("sorted mem", &test_sorted_mem, all);
 # ifdef TEST_SORTED_BONUS
  	check("sorted bonus", &test_sorted_bonus, all);
 # endif // TEST_SORTED_BONUS
@@ -1433,6 +1513,7 @@ int			main(void)
 
 #ifdef TEST_PMA
 	check("pma", &test_pma, all);
+	//check("pma mem", &test_pma_mem, all);
 # ifdef TEST_PMA_BONUS_IT
 	check("pmait", &test_pmait, all);
 #  ifdef TEST_PMA_BONUS_IT_BACK
@@ -1441,6 +1522,7 @@ int			main(void)
 # endif // TEST_PMA_BONUS_IT
 	check("pma manipulator", &test_pma_manual, all);
 #endif // TEST_PMA
+
 
 	printf("All checks done, press enter after checking for leaks\n");
 	getchar();

@@ -11,10 +11,14 @@ todo
     code
         clear warnings
 
-allowed functions
-    xmalloc
-    xfree
-    You can use more, but remember that this is supposed to be used in projects
+instructions
+	check norme
+	check allowed functions
+		xmalloc
+		xfree
+		You can use more, but remember that this is supposed to be used in projects
+	check MAGIC numbers
+	check main.c
     
 advice
     check state at start

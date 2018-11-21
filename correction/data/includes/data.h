@@ -89,4 +89,8 @@ bool		pmait_delete_back(t_pmait *i, void *key, void *val);
 
 int			pma_ensure(t_pmaen *en, const void *data);
 
+
+void		xfree(void *ptr);
+void		*xmalloc(size_t size);
+
 #endif

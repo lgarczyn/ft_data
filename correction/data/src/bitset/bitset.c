@@ -23,7 +23,7 @@ t_bitset		bitset(void)
 
 void			bitset_free(t_bitset *a)
 {
-	free(a->data);
+	xfree(a->data);
 	*a = bitset();
 }
 

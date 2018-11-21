@@ -24,7 +24,7 @@ t_queue				queue(t_uint word)
 
 void				queue_free(t_queue *a)
 {
-	free(a->data);
+	xfree(a->data);
 	*a = queue(a->word);
 }
 

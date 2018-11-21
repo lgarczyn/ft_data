@@ -32,7 +32,7 @@ int					queue_realloc(t_queue *a, size_t new_size)
 		ft_memmove(new_data + first_half, a->data, a->pos - first_half);
 	}
 	a->start = 0;
-	free(a->data);
+	xfree(a->data);
 	a->data = new_data;
 	a->size = new_size;
 	return (OK);
