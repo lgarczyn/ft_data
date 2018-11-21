@@ -11,19 +11,21 @@
 /* ************************************************************************** */
 
 #include "libft.h"
-
 #include "pma_int.h"
+#include <assert.h>
+#include <pthread.h>
+#include <stdlib.h>
 
 t_pma					pma(t_predicate predicate, t_uint key, t_uint value)
 {
 	t_pma				out;
-	static _Atomic u64	global_canary = 1337;
+	static size_t		global_canary = 1337;
 
 	ft_bzero(&out, sizeof(t_pma));
 	out.predicate = predicate;
 	out.bucket.sizes.key = key;
 	out.bucket.sizes.val = value;
-	global_canary += CANARY_STEP;
+	__atomic_fetch_add(&global_canary, CANARY_STEP, __ATOMIC_SEQ_CST);
 	out.canary = global_canary;
 	return (out);
 }

@@ -13,8 +13,6 @@
 #include "libft.h"
 #include <stdlib.h>
 
-void		xfree(void *ptr);
-
 /*
 ** if *ptr is null, it will always be allocated to new size
 ** if not, its data will be transfered, and freed

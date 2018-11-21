@@ -162,4 +162,8 @@ int					ft_realloc(void **ptr, size_t old_size, size_t new_size);
 int					ft_realloc_double(void **ptr, size_t *old_size);
 int					ft_realloc_array(void **ptr, size_t pos, size_t *size);
 int					ft_realloc_down(void **ptr, size_t pos, size_t *size);
+
+void				xfree(void *ptr);
+void				*xmalloc(size_t size);
+
 #endif
