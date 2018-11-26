@@ -22,7 +22,7 @@ static int		bitset_realloc(t_bitset *a, size_t new_size)
 	real_new_size = ft_min_alloc(DIV_RDUP(new_size, 8));
 	if (a->size == real_new_size * 8)
 		return (OK);
-	if (ft_realloc((void**)&a->data, real_pos, real_new_size))
+	if (ft_realloc((void**)&a->data, real_pos, real_new_size, &real_new_size))
 		return (ERR_ALLOC);
 	a->size = real_new_size * 8;
 	return (OK);

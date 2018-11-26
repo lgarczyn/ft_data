@@ -48,8 +48,21 @@ void	print_err(ssize_t a, ssize_t b, int line, int i)
 
 #define BUFFER_SIZE 12
 
-//#include <malloc/malloc.h>
+#define TARGET_LINUX
+
+#ifdef TARGET_LINUX
 #include <malloc.h>
+size_t	get_allocated_size(void *ptr)
+{
+	return (malloc_usable_size(ptr));
+}
+#else
+#include <malloc/malloc.h>
+size_t	get_allocated_size(void *ptr)
+{
+	return (malloc_size(ptr));
+}
+#endif
 
 typedef struct					s_mem_report
 {
@@ -57,7 +70,7 @@ typedef struct					s_mem_report
 	size_t						max;
 }								t_mem_report;
 
-static t_mem_report				modify_mem_score(size_t score, bool increment)
+static t_mem_report				modify_mem_score(size_t score, bool increment, bool reset)
 {
 	static _Atomic size_t		mem_count = 0;
 	static _Atomic size_t		mem_max = 0;
@@ -76,16 +89,25 @@ static t_mem_report				modify_mem_score(size_t score, bool increment)
 	}
 	mem.current = mem_count;
 	mem.max = mem_max;
+	if (reset)
+	{
+		mem_count = 0;
+		mem_max = 0;
+	}
 	return (mem);
 }
 
 #define CHECK_LEAKS() do {\
-	CHECK_EQ(modify_mem_score(0, false).current, 0);\
+	CHECK_EQ(modify_mem_score(0, false, true).current, 0);\
 } while(0)
+
+#define DISPLAY_USED_MEM(s) do {\
+	printf("%s mem: %lub\n", s, modify_mem_score(0, false, false).current);\
+} while (0)
 
 void							xfree(void *ptr)
 {
-	modify_mem_score((ssize_t)malloc_usable_size(ptr), false);
+	modify_mem_score((ssize_t)get_allocated_size(ptr), false, false);
 	free(ptr);
 }
 
@@ -94,7 +116,7 @@ void							*xmalloc(size_t size)
 	void						*ptr;
 
 	ptr = malloc(size);
-	modify_mem_score((ssize_t)malloc_usable_size(ptr), true);
+	modify_mem_score((ssize_t)get_allocated_size(ptr), true, false);
 	return (ptr);
 }
 
@@ -171,6 +193,8 @@ void			test_array_mem()
 		array_push(&a, &b, sizeof(t_array));
 	}
 	
+	DISPLAY_USED_MEM("array");
+	
 	for (i = MEM_TEST_COUNT - 1; i >= 0; i--)
 	{
 		array_pop(&a, &b, sizeof(t_array));
@@ -182,9 +206,46 @@ void			test_array_mem()
 		array_free(&b);
 	}
 	array_free(&a);
-
 	CHECK_LEAKS();
 }
+/*
+void			test_array_mem(void)
+{
+	t_array		a;
+	t_array		b;
+	int			i = 0;
+	int			j;
+	int			k;
+
+	a = array();
+	for (i = 0; i < 100; i++)
+	{
+		b = array();
+		for (j = 0; j < i * i; j++)
+		{
+			CHECK_EQ(array_push(&b, &j, sizeof(int)), OK);
+		}
+		CHECK_EQ(array_push(&a, &b, sizeof(t_array)), OK);
+	}
+
+	printf("array mem: %lub\n", modify_mem_score(0, false, false).current);
+	
+	for (i = 100 - 1; i >= 0; i--)
+	{
+		CHECK_EQ(array_pop(&a, &b, sizeof(t_array)), OK);
+		for (j = i * i - 1; j >= 0; j--)
+		{
+			CHECK_EQ(array_pop(&b, &k, sizeof(int)), OK);
+			CHECK_EQ(j, k);
+		}
+		CHECK_EQ(array_pop(&b, &k, sizeof(int)), ERR_SIZE);
+		array_free(&b);
+	}
+	CHECK_EQ(array_pop(&a, &b, sizeof(t_array)), ERR_SIZE);
+	array_free(&b);
+	CHECK_LEAKS();
+}
+*/
 
 # ifdef TEST_ARRAY_BONUS
 
@@ -280,6 +341,8 @@ void			test_bitset_mem()
 			bitset_set(b + i, j, (j + i) % 3 == 0);
 		}
 	}
+	
+	DISPLAY_USED_MEM("bitset");
 
 	for (i = 0; i < MEM_TEST_COUNT; i++)
 	{
@@ -464,6 +527,8 @@ void			test_queue_mem()
 		}
 		queue_push_back(&a, &b);
 	}
+	
+	DISPLAY_USED_MEM("queue");
 	
 	for (i = 0; i < MEM_TEST_COUNT; i++)
 	{
@@ -728,6 +793,8 @@ void			test_sorted_mem()
 		}
 		sorted_insert(&a, &b);
 	}
+	
+	DISPLAY_USED_MEM("sorted");
 	
 	for (i = 0; i < 1000; i++)
 	{
@@ -1091,6 +1158,8 @@ void				test_pma_mem()
 		}
 		pma_insert(&a, &i, &b);
 	}
+	
+	DISPLAY_USED_MEM("pma");
 	
 	for (i = 0; i < MEM_TEST_COUNT; i++)
 	{

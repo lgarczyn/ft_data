@@ -17,7 +17,7 @@ int					bitset_push(t_bitset *a, bool b)
 {
 	if (a->pos + 1 >= a->size)
 	{
-		if (bitset_reserve(a, (a->pos + 1) * 2))
+		if (bitset_reserve(a, (a->pos + 1) * REALLOC_GROWTH_FACTOR))
 			return (ERR_ALLOC);
 	}
 	bitset_set(a, a->pos, b);
