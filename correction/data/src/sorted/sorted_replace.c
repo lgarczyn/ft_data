@@ -20,7 +20,7 @@ t_sorteden		sorted_replace(t_sorted *a, void *data)
 	res = sorted_search(a, data);
 	if (res.found)
 	{
-		ft_memswap(sorted_get(a, res.index), data, a->word);
+		ft_memswap(sorted_get_mut(a, res.index), data, a->word);
 	}
 	else
 	{
@@ -31,10 +31,10 @@ t_sorteden		sorted_replace(t_sorted *a, void *data)
 
 t_sorteden		sorted_replace_hint(t_sorted *a, void *data, size_t hint)
 {
-	if (hint == 0 || a->predicate(sorted_get(a, hint - 1), data))
-		if (hint >= sorted_len(a) || a->predicate(data, sorted_get(a, hint)))
+	if (hint == 0 || a->predicate(sorted_get_mut(a, hint - 1), data))
+		if (hint >= sorted_len(a) || a->predicate(data, sorted_get_mut(a, hint)))
 		{
-			ft_memswap(sorted_get(a, hint), data, a->word);
+			ft_memswap(sorted_get_mut(a, hint), data, a->word);
 		}
 	return (sorted_replace(a, data));
 }

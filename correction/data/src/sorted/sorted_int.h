@@ -26,8 +26,8 @@ int			sorted_reserve(t_sorted *a, size_t s);
 /*
 ** sorted_accessors.c
 */
-void		*sorted_get(t_sorted *a, size_t index);
-const void	*sorted_cget(const t_sorted *a, size_t index);
+void		*sorted_get_mut(t_sorted *a, size_t index);
+const void	*sorted_get(const t_sorted *a, size_t index);
 int			sorted_pop(t_sorted	*a, void *data);
 /*
 ** sorted_search.c

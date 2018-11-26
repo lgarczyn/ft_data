@@ -54,17 +54,17 @@ t_sorted	sorted(t_predicate predicate, t_uint word);
 void		sorted_free(t_sorted *a);
 size_t		sorted_len(const t_sorted *a);
 int			sorted_reserve(t_sorted *a, size_t s);
-void		*sorted_get(t_sorted *a, size_t index);
-const void	*sorted_cget(const t_sorted *a, size_t index);
+const void	*sorted_get(const t_sorted *a, size_t index);
 t_sorteden	sorted_search(const t_sorted *a, const void *d);
 int			sorted_insert(t_sorted *a, const void *data);
+//inserts data. if something was already there, store it back into data  
 t_sorteden	sorted_replace(t_sorted *a, void *data);
 t_sorteden	sorted_delete(t_sorted *a, const void *data, void *out);
+int			sorted_delete_index(t_sorted *a, size_t index, void *out);
 int			sorted_pop(t_sorted *a, void *data);
 
 int			sorted_insert_hint(t_sorted *a, const void *d, size_t h);
 t_sorteden	sorted_replace_hint(t_sorted *a, void *data, size_t hint);
-int			sorted_delete_index(t_sorted *a, size_t index, void *out);
 
 t_pma		pma(t_predicate predicate, t_uint key, t_uint value);
 void		pma_free(t_pma *a);

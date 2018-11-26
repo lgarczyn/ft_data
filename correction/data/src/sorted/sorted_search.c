@@ -24,15 +24,15 @@ t_sorteden		sorted_search_range(
 	{
 		if (res.index == start)
 		{
-			if (a->predicate(ptr, sorted_cget(a, res.index)) == 0)
+			if (a->predicate(ptr, sorted_get(a, res.index)) == 0)
 			{
-				if (a->predicate(sorted_cget(a, res.index), ptr) == 0)
+				if (a->predicate(sorted_get(a, res.index), ptr) == 0)
 					res.found = 1;
 				else
 					res.index++;
 			}
 		}
-		else if (a->predicate(ptr, sorted_cget(a, res.index)))
+		else if (a->predicate(ptr, sorted_get(a, res.index)))
 			res = sorted_search_range(a, ptr, start, res.index);
 		else
 			res = sorted_search_range(a, ptr, res.index, end);

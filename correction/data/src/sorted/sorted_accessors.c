@@ -13,12 +13,12 @@
 #include "libft.h"
 #include "sorted_int.h"
 
-void			*sorted_get(t_sorted *a, size_t index)
+void			*sorted_get_mut(t_sorted *a, size_t index)
 {
 	return (a->data + (index * a->word));
 }
 
-const void		*sorted_cget(const t_sorted *a, size_t index)
+const void		*sorted_get(const t_sorted *a, size_t index)
 {
 	return (a->data + (index * a->word));
 }

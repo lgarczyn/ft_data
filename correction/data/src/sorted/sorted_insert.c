@@ -26,8 +26,8 @@ int				sorted_insert_index(t_sorted *a, const void *data, size_t i)
 	prev_len = i * a->word;
 	next_len = a->pos - prev_len;
 	if (a->pos - prev_len)
-		ft_memmove(sorted_get(a, i + 1), sorted_cget(a, i), next_len);
-	ft_memcpy(sorted_get(a, i), data, a->word);
+		ft_memmove(sorted_get_mut(a, i + 1), sorted_get(a, i), next_len);
+	ft_memcpy(sorted_get_mut(a, i), data, a->word);
 	a->pos = new_pos;
 	return (OK);
 }

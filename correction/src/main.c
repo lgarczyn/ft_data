@@ -43,7 +43,6 @@ void	print_err(ssize_t a, ssize_t b, int line, int i)
 #define TEST_SORTED
 #define TEST_SORTED_BONUS
 #define TEST_PMA
-#define TEST_PMA_BONUS_STACK
 #define TEST_PMA_BONUS_IT
 #define TEST_PMA_BONUS_IT_BACK
 
@@ -138,22 +137,13 @@ void			test_array(void)
 		array_push(&a, buf, len + 1);
 
 		array_pop(&a, ret, len + 1);
-		if (strcmp(buf, ret))
-		{
-			printf("%*.*s\n", (int)a.pos, (int)a.pos, (char*)a.data);
-			printf("a %lu/%lu\n", a.pos, a.size);
-			PRINT_ERR(i, strcmp(buf, ret));
-		}
+		CHECK_EQ(strcmp(buf, ret), 0);
 	}
 	for (i = ARRAY_INC_TESTS; i >= 0; i--)
 	{
 		len = sprintf(buf, "%d", i) + 1;
 		array_pop(&a, ret, len);
-		if (strcmp(buf, ret))
-		{
-			printf("a %lu/%lu\n", a.pos, a.size);
-			PRINT_ERR(0, strcmp(buf, ret));
-		}
+		CHECK_EQ(strcmp(buf, ret), 0);
 	}
 	CHECK_EQ(array_len(&a), 0);
 	array_free(&a);
@@ -592,7 +582,7 @@ void			sorted_check(t_sorted *a, t_reverse r, bool reversed)
 	{
 		int j = reversed ? SORTED_TESTS_INC - i : i;
 		
-		int got = r(sorted_cget(a, i));
+		int got = r(sorted_get(a, i));
 		CHECK_EQ(j, got);
 	}
 }
@@ -612,7 +602,7 @@ void			sorted_check_delete(t_sorted *a, t_order o, t_reverse r)
 		res = sorted_search(a, buffer1);
 		CHECK_EQ(res.found, true);
 		index = res.index;
-		CHECK_EQ(strncmp((char*)sorted_get(a, index), buffer1, BUFFER_SIZE), 0);
+		CHECK_EQ(strncmp((const char*)sorted_get(a, index), buffer1, BUFFER_SIZE), 0);
 		res = sorted_delete(a, buffer1, buffer2);
 		CHECK_EQ(res.found, true);
 		CHECK_EQ(res.index, index);
@@ -714,18 +704,18 @@ void			test_sorted(void)
 
 int				sorted_less(t_sorted *a, t_sorted *b)
 {
-	return (a->pos < b->pos);
+	return (sorted_len(a) < sorted_len(b));
 }
 
 void			test_sorted_mem()
 {
-	t_sorted	a;
-	t_sorted	b;
-	t_sorted	*b_ptr;
-	int			i;
-	int			j;
-	int			j_max;
-	int			*j_ptr;
+	t_sorted		a;
+	t_sorted		b;
+	const t_sorted	*b_ptr;
+	int				i;
+	int				j;
+	int				j_max;
+	const int		*j_ptr;
 
 	a = sorted((t_predicate)sorted_less, sizeof(t_sorted));
 	for (i = 0; i < 1000; i++)
@@ -741,14 +731,15 @@ void			test_sorted_mem()
 	
 	for (i = 0; i < 1000; i++)
 	{
-		b_ptr = sorted_get(&a, i);
+		b_ptr = sorted_get(&a, 0);
 		j_max = i;
 		for (j = 0; j < j_max; j++)
 		{
 			j_ptr = sorted_get(b_ptr, j);
 			CHECK_EQ(*j_ptr, j);
 		}
-		sorted_free(b_ptr);
+		sorted_delete_index(&a, 0, &b);
+		sorted_free(&b);
 	}
 	sorted_free(&a);
 
@@ -815,7 +806,7 @@ void			sorted_check_delete_index(t_sorted *a, t_order o, t_reverse r)
 		res = sorted_search(a, buffer1);
 		CHECK_EQ(res.found, true);
 		index = res.index;
-		CHECK_EQ(strncmp((char*)sorted_get(a, index), buffer1, BUFFER_SIZE), 0);
+		CHECK_EQ(strncmp((const char*)sorted_get(a, index), buffer1, BUFFER_SIZE), 0);
 		CHECK_EQ(sorted_delete_index(a, index, buffer2), OK);
 		res = sorted_search(a, buffer1);
 		CHECK_EQ(res.found, false);
@@ -1075,6 +1066,51 @@ void			test_pma(void)
 	test_pma_spe(true, true, gray_str);
 }
 
+int				pma_less(t_pma *a, t_pma *b)
+{
+	return (pma_len(a) < pma_len(b));
+}
+
+void				test_pma_mem()
+{
+	t_pma			a;
+	t_pma			b;
+	int				i;
+	int				j;
+	int				j_max;
+	int				k;
+
+	a = pma((t_predicate)pma_less, sizeof(int), sizeof(t_pma));
+	for (i = 0; i < MEM_TEST_COUNT; i++)
+	{
+		b = pma(lt, sizeof(int), 0);
+		j_max = GET_MEM_TEST_SPREAD(i);
+		for (j = 0; j < j_max; j++)
+		{
+			pma_insert(&b, &j, NULL);
+		}
+		pma_insert(&a, &i, &b);
+	}
+	
+	for (i = 0; i < MEM_TEST_COUNT; i++)
+	{
+		j_max = GET_MEM_TEST_SPREAD(i);
+		CHECK_EQ(pma_get(&a, &i, NULL, &b), OK);
+		for (j = 0; j < j_max; j++)
+		{
+			CHECK_EQ(pma_get(&b, &j, &k, NULL), OK);
+			CHECK_EQ(j, k);
+		}
+		CHECK_EQ(pma_delete(&a, &i, NULL, &b), OK);
+		pma_free(&b);
+	}
+	pma_free(&a);
+
+	CHECK_LEAKS();
+}
+
+# ifdef TEST_PMA_BONUS_IT
+
 void			pmait_check_search(t_pma *a, t_order o, t_reverse r)
 {
 	char		key_search_buf[BUFFER_SIZE];
@@ -1245,6 +1281,8 @@ void			test_pmait(void)
 
 	test_pmait_more();
 }
+
+#  ifdef TEST_PMA_BONUS_IT_BACK
 
 void			pmait_back_check(t_pma *a, t_reverse r, bool reversed)
 {
@@ -1457,6 +1495,10 @@ void			test_pmait_back(void)
 	test_pmait_back_more();
 }
 
+#  endif // TEST_PMA_BONUS_IT_BACK
+# endif // TEST_PMA_BONUS_IT
+
+
 void			putnbr(int n)
 {
 	printf("%i", n);
@@ -1471,6 +1513,8 @@ void			print_char(char *i)
 {
 	putnbr(*i);
 }
+
+# ifdef TEST_PMA_BONUS_IT
 
 void			test_pmait_manual(t_pmait it)
 {
@@ -1503,7 +1547,7 @@ void			test_pmait_manual(t_pmait it)
 				else
 					printf("it reached end\n");
 				break ;
-#ifdef TEST_PMA_BONUS_IT_BACK
+#  ifdef TEST_PMA_BONUS_IT_BACK
 			case 'p':
 				if (pmait_next_back(&it, &out_key, &out_val))
 					printf("%i:%i\n", out_key, out_val);
@@ -1516,12 +1560,14 @@ void			test_pmait_manual(t_pmait it)
 				else
 					printf("it reached end\n");
 				break ;
-#endif // TEST_PMA_BONUS_IT_BACK
+#  endif // TEST_PMA_BONUS_IT_BACK
 			case 'q': return ;
 			default : to_update = false;
 		}
 	}
 }
+
+# endif // TEST_PMA_BONUS_IT
 
 void			test_pma_manual(void)
 {
@@ -1574,13 +1620,13 @@ void			test_pma_manual(void)
 
 				}
 				break ;
-#ifdef TEST_PMA_BONUS_IT
+# ifdef TEST_PMA_BONUS_IT
 			case '^': scanf ("%d",&n); test_pmait_manual(pma_search(&a, &n).it); break ;
 			case '>': test_pmait_manual(pmait(&a)); break ;
-#ifdef TEST_PMA_BONUS_IT_BACK
+#  ifdef TEST_PMA_BONUS_IT_BACK
 			case 'x': scanf ("%d %d",&n,&m); test_pmait_manual(pma_range(&a, &n, &m)); break ;
-#endif // TEST_PMA_BONUS_IT_BACK
-#endif // TEST_PMA_BONUS_IT
+#  endif // TEST_PMA_BONUS_IT_BACK
+# endif // TEST_PMA_BONUS_IT
 			default : to_update = false;
 
 			// pma_get
@@ -1590,7 +1636,7 @@ void			test_pma_manual(void)
 	}
 }
 
-#endif
+#endif // TEST_PMA
 
 bool		check_test(char *str)
 {
@@ -1659,7 +1705,7 @@ int			main(void)
 
 #ifdef TEST_PMA
 	check("pma", &test_pma, all);
-	//check("pma mem", &test_pma_mem, all);
+	check("pma mem", &test_pma_mem, all);
 # ifdef TEST_PMA_BONUS_IT
 	check("pmait", &test_pmait, all);
 #  ifdef TEST_PMA_BONUS_IT_BACK
