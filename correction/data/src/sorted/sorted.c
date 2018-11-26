@@ -39,9 +39,8 @@ int				sorted_reserve(t_sorted *a, size_t s)
 	s *= a->word;
 	if (s > a->size)
 	{
-		if (ft_realloc(&a->data, a->size, s))
+		if (ft_realloc(&a->data, a->pos, s, &a->size))
 			return (ERR_ALLOC);
-		a->size = s;
 	}
 	return (OK);
 }

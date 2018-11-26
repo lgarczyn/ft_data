@@ -36,4 +36,20 @@ static const int g_a[0] = ILLEGAL;
 typedef unsigned int	t_uint;
 typedef unsigned char	t_uchar;
 
+typedef struct			s_list
+{
+	void				*content;
+	size_t				content_size;
+	struct s_list		*next;
+}						t_list;
+
+typedef struct			s_buffer
+{
+	char				*buffer;
+	size_t				size;
+	size_t				pos;
+	size_t				total;
+	int					fd;
+}						t_buffer;
+
 #endif

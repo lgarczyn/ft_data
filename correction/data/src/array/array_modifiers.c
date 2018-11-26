@@ -24,7 +24,11 @@ int				array_move(t_array *a, size_t from, size_t to, size_t size)
 		return (ERR_SIZE);
 	new_pos = MAX(to + size, a->pos);
 	if (new_pos > a->size)
-		if (ft_realloc_array(&a->data, a->pos, &a->size))
+		if (ft_realloc(
+			&a->data,
+			a->pos,
+			new_pos * REALLOC_GROWTH_FACTOR,
+			&a->size))
 			return (ERR_ALLOC);
 	ft_memmove(a->data + to, a->data + from, size);
 	a->pos = new_pos;
@@ -69,24 +73,16 @@ int				array_reserve(t_array *a, size_t new_size)
 {
 	check_array(a);
 	if (new_size > a->size)
-	{
-		new_size = ft_min_alloc(new_size);
-		if (ft_realloc(&a->data, a->pos, new_size))
+		if (ft_realloc(&a->data, a->pos, new_size, &a->size))
 			return (ERR_ALLOC);
-		a->size = new_size;
-	}
 	return (OK);
 }
 
 int				array_set_len(t_array *a, size_t len)
 {
-	size_t		new_size;
-
 	check_array(a);
-	new_size = ft_min_alloc(len);
-	if (ft_realloc(&a->data, a->pos, new_size))
+	if (ft_realloc(&a->data, a->pos, len, &a->size))
 		return (ERR_ALLOC);
-	a->size = new_size;
 	a->pos = len;
 	return (OK);
 }

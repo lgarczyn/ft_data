@@ -53,7 +53,7 @@ typedef struct					s_mem_report
 	size_t						max;
 }								t_mem_report;
 
-static t_mem_report				modify_mem_score(size_t score, bool increment)
+static t_mem_report				modify_mem_score(size_t score, bool increment, bool reset)
 {
 	static _Atomic size_t		mem_count = 0;
 	static _Atomic size_t		mem_max = 0;
@@ -72,16 +72,21 @@ static t_mem_report				modify_mem_score(size_t score, bool increment)
 	}
 	mem.current = mem_count;
 	mem.max = mem_max;
+	if (reset)
+	{
+		mem_count = 0;
+		mem_max = 0;
+	}
 	return (mem);
 }
 
 #define CHECK_LEAKS() do {\
-	CHECK_EQ(modify_mem_score(0, false).current, 0);\
+	CHECK_EQ(modify_mem_score(0, false, true).current, 0);\
 } while(0)
 
 void							xfree(void *ptr)
 {
-	modify_mem_score((ssize_t)malloc_size(ptr), false);
+	modify_mem_score((ssize_t)malloc_size(ptr), false, false);
 	free(ptr);
 }
 
@@ -90,7 +95,7 @@ void							*xmalloc(size_t size)
 	void						*ptr;
 
 	ptr = malloc(size);
-	modify_mem_score((ssize_t)malloc_size(ptr), true);
+	modify_mem_score((ssize_t)malloc_size(ptr), true, false);
 	return (ptr);
 }
 
@@ -153,6 +158,43 @@ void			test_array(void)
 	CHECK_EQ(array_len(&a), 0);
 	array_free(&a);
 	CHECK_EQ(array_len(&a), 0);
+	CHECK_LEAKS();
+}
+
+void			test_array_mem(void)
+{
+	t_array		a;
+	t_array		b;
+	int			i = 0;
+	int			j;
+	int			k;
+
+	a = array();
+	for (i = 0; i < 100; i++)
+	{
+		b = array();
+		for (j = 0; j < i * i; j++)
+		{
+			CHECK_EQ(array_push(&b, &j, sizeof(int)), OK);
+		}
+		CHECK_EQ(array_push(&a, &b, sizeof(t_array)), OK);
+	}
+
+	printf("array mem: %lub\n", modify_mem_score(0, false, false).current);
+	
+	for (i = 100 - 1; i >= 0; i--)
+	{
+		CHECK_EQ(array_pop(&a, &b, sizeof(t_array)), OK);
+		for (j = i * i - 1; j >= 0; j--)
+		{
+			CHECK_EQ(array_pop(&b, &k, sizeof(int)), OK);
+			CHECK_EQ(j, k);
+		}
+		CHECK_EQ(array_pop(&b, &k, sizeof(int)), ERR_SIZE);
+		array_free(&b);
+	}
+	CHECK_EQ(array_pop(&a, &b, sizeof(t_array)), ERR_SIZE);
+	array_free(&b);
 	CHECK_LEAKS();
 }
 
@@ -1484,7 +1526,7 @@ int			main(void)
 
 #ifdef TEST_ARRAY
 	check("array", &test_array, all);
-	//check("array mem", &test_array_mem, all);
+	check("array mem", &test_array_mem, all);
 # ifdef TEST_ARRAY_BONUS
 	check("array bonus", &test_array_bonus, all);
 # endif // TEST_ARRAY_BONUS
