@@ -17,7 +17,6 @@
 #include <unistd.h>
 #include <time.h>
 #include <strings.h>
-#include <malloc/malloc.h>
 #include "data.h"
 
 void	print_err(ssize_t a, ssize_t b, int line, int i)
@@ -33,6 +32,9 @@ void	print_err(ssize_t a, ssize_t b, int line, int i)
 	if ((a) != (b)) PRINT_ERR(a, b);\
 } while(0)
 
+#define MEM_TEST_COUNT			1000
+#define GET_MEM_TEST_SPREAD(x)	(x * x / MEM_TEST_COUNT)
+
 #define TEST_ARRAY
 #define TEST_ARRAY_BONUS
 #define TEST_BITSET
@@ -46,6 +48,9 @@ void	print_err(ssize_t a, ssize_t b, int line, int i)
 #define TEST_PMA_BONUS_IT_BACK
 
 #define BUFFER_SIZE 12
+
+//#include <malloc/malloc.h>
+#include <malloc.h>
 
 typedef struct					s_mem_report
 {
@@ -81,7 +86,7 @@ static t_mem_report				modify_mem_score(size_t score, bool increment)
 
 void							xfree(void *ptr)
 {
-	modify_mem_score((ssize_t)malloc_size(ptr), false);
+	modify_mem_score((ssize_t)malloc_usable_size(ptr), false);
 	free(ptr);
 }
 
@@ -90,7 +95,7 @@ void							*xmalloc(size_t size)
 	void						*ptr;
 
 	ptr = malloc(size);
-	modify_mem_score((ssize_t)malloc_size(ptr), true);
+	modify_mem_score((ssize_t)malloc_usable_size(ptr), true);
 	return (ptr);
 }
 
@@ -153,6 +158,41 @@ void			test_array(void)
 	CHECK_EQ(array_len(&a), 0);
 	array_free(&a);
 	CHECK_EQ(array_len(&a), 0);
+	CHECK_LEAKS();
+}
+
+void			test_array_mem()
+{
+	t_array		a;
+	t_array		b;
+	int			i;
+	int			j;
+	int			j_max;
+
+	a = array();
+	for (i = 0; i < MEM_TEST_COUNT; i++)
+	{
+		b = array();
+		j_max = GET_MEM_TEST_SPREAD(i);
+		for (j = 0; j < j_max; j++)
+		{
+			array_push(&b, &j, sizeof(int));
+		}
+		array_push(&a, &b, sizeof(t_array));
+	}
+	
+	for (i = MEM_TEST_COUNT - 1; i >= 0; i--)
+	{
+		array_pop(&a, &b, sizeof(t_array));
+		j_max = GET_MEM_TEST_SPREAD(i);
+		for (j = j_max - 1; j >= 0 ; j--)
+		{
+			array_pop(&b, &j, sizeof(int));
+		}
+		array_free(&b);
+	}
+	array_free(&a);
+
 	CHECK_LEAKS();
 }
 
@@ -230,6 +270,36 @@ void			test_bitset()
 	CHECK_EQ(bitset_set_len(&b, 8), OK);
 	CHECK_EQ((int)bitset_get(&b, 7), (int)false);
 	bitset_free(&b);
+	CHECK_LEAKS();
+}
+
+void			test_bitset_mem()
+{
+	t_bitset	b[MEM_TEST_COUNT];
+	int			i;
+	int			j;
+	int			j_max;
+
+	for (i = 0; i < MEM_TEST_COUNT; i++)
+	{
+		b[i] = bitset();
+		j_max = GET_MEM_TEST_SPREAD(i);
+		CHECK_EQ(bitset_set_len(b + i, j_max), OK);
+		for (j = 0; j < j_max; j++)
+		{
+			bitset_set(b + i, j, (j + i) % 3 == 0);
+		}
+	}
+
+	for (i = 0; i < MEM_TEST_COUNT; i++)
+	{
+		j_max = GET_MEM_TEST_SPREAD(i);
+		for (j = 0; j < j_max; j++)
+		{
+			CHECK_EQ(bitset_get(b + i, j), (j + i) % 3 == 0);
+		}
+		bitset_free(b + i);
+	}
 	CHECK_LEAKS();
 }
 
@@ -383,6 +453,41 @@ void			test_queue(void)
 	test_queue_spe(true, true, true);
 
 	test_queue_perf();
+}
+
+void			test_queue_mem()
+{
+	t_queue		a;
+	t_queue		b;
+	int			i;
+	int			j;
+	int			j_max;
+
+	a = queue(sizeof(t_queue));
+	for (i = 0; i < MEM_TEST_COUNT; i++)
+	{
+		b = queue(sizeof(int));
+		j_max = GET_MEM_TEST_SPREAD(i);
+		for (j = 0; j < j_max; j++)
+		{
+			queue_push_back(&b, &j);
+		}
+		queue_push_back(&a, &b);
+	}
+	
+	for (i = 0; i < MEM_TEST_COUNT; i++)
+	{
+		queue_pop_front(&a, &b);
+		j_max = GET_MEM_TEST_SPREAD(i);
+		for (j = 0; j < j_max; j++)
+		{
+			queue_pop_front(&b, &j);
+		}
+		queue_free(&b);
+	}
+	queue_free(&a);
+
+	CHECK_LEAKS();
 }
 
 #endif
@@ -607,6 +712,49 @@ void			test_sorted(void)
 	test_sorted_spe(true, true, gray_str);
 }
 
+int				sorted_less(t_sorted *a, t_sorted *b)
+{
+	return (a->pos < b->pos);
+}
+
+void			test_sorted_mem()
+{
+	t_sorted	a;
+	t_sorted	b;
+	t_sorted	*b_ptr;
+	int			i;
+	int			j;
+	int			j_max;
+	int			*j_ptr;
+
+	a = sorted((t_predicate)sorted_less, sizeof(t_sorted));
+	for (i = 0; i < 1000; i++)
+	{
+		b = sorted(lt, sizeof(int));
+		j_max = i;
+		for (j = 0; j < j_max; j++)
+		{
+			sorted_insert(&b, &j);
+		}
+		sorted_insert(&a, &b);
+	}
+	
+	for (i = 0; i < 1000; i++)
+	{
+		b_ptr = sorted_get(&a, i);
+		j_max = i;
+		for (j = 0; j < j_max; j++)
+		{
+			j_ptr = sorted_get(b_ptr, j);
+			CHECK_EQ(*j_ptr, j);
+		}
+		sorted_free(b_ptr);
+	}
+	sorted_free(&a);
+
+	CHECK_LEAKS();
+}
+
 # ifdef TEST_SORTED_BONUS
 
 void			sorted_fill_hint(t_sorted *a, t_order o)
@@ -678,8 +826,6 @@ void			sorted_check_delete_index(t_sorted *a, t_order o, t_reverse r)
 	CHECK_EQ(sorted_delete_index(a, 0, NULL), ERR_SIZE);
 	CHECK_EQ(sorted_len(a), 0);
 }
-
-
 
 void			test_sorted_bonus_spe(bool less_pred, bool str, t_order o)
 {
@@ -1480,11 +1626,11 @@ int			main(void)
 {
 	bool	all;
 
-	all = true;//heck_test("all");
+	all = check_test("all");
 
 #ifdef TEST_ARRAY
 	check("array", &test_array, all);
-	//check("array mem", &test_array_mem, all);
+	check("array mem", &test_array_mem, all);
 # ifdef TEST_ARRAY_BONUS
 	check("array bonus", &test_array_bonus, all);
 # endif // TEST_ARRAY_BONUS
@@ -1492,7 +1638,7 @@ int			main(void)
 
 #ifdef TEST_BITSET
 	check("bitset", &test_bitset, all);
-	//check("bitset mem", &test_bitset_mem, all);
+	check("bitset mem", &test_bitset_mem, all);
 # ifdef TEST_BITSET_BONUS
 	check("bitset bonus", &test_bitset_bonus, all);
 # endif // TEST_BITSET_BONUS
@@ -1500,12 +1646,12 @@ int			main(void)
 
 #ifdef TEST_QUEUE
 	check("queue", &test_queue, all);
-	//check("queue mem", &test_queue_mem, all);
+	check("queue mem", &test_queue_mem, all);
 #endif
 
 #ifdef TEST_SORTED
  	check("sorted", &test_sorted, all);
-	//check("sorted mem", &test_sorted_mem, all);
+	check("sorted mem", &test_sorted_mem, all);
 # ifdef TEST_SORTED_BONUS
  	check("sorted bonus", &test_sorted_bonus, all);
 # endif // TEST_SORTED_BONUS

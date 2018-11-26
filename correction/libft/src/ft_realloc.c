@@ -70,7 +70,7 @@ int			ft_realloc_array(void **ptr, size_t pos, size_t *size)
 {
 	size_t	new_size;
 
-	new_size = ft_min_alloc(*size * REALLOC_GROWTH_FACTOR);
+	new_size = ft_min_alloc(*size * REALLOC_GROWTH_FACTOR * 8 + 125);
 	if (ft_realloc(ptr, pos, new_size))
 		return (ERR_ALLOC);
 	*size = new_size;

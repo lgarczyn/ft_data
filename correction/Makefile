@@ -29,7 +29,7 @@ FLG = -Wall -Wextra -funsigned-char -fno-signed-char  $(OPT) $(DEB) -std=c11 -m6
 all: $(NAME)
 
 $(NAME):$(OBJ) libft/libft.a printf/libftprintf.a data/libftdata.a
-	gcc -o ft_data $(OBJ) $(INC) $(FLG) $(LIB)
+	gcc -o ft_data $(OBJ) $(INC) $(FLG) $(LIB) libft/libft.a printf/libftprintf.a data/libftdata.a
 	
 obj/%.o: src/%.c
 	@mkdir -p obj

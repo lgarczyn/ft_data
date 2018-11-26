@@ -13,10 +13,10 @@
 #include "libft.h"
 #include <stdlib.h>
 
-#include <malloc/malloc.h>
 #include <printf.h>
 
-/*
+/* 
+**  #include <malloc/malloc.h>
 **  void		check_min_alloc(void)
 **  {
 **  	size_t	i;
@@ -45,7 +45,7 @@
 **	MAC OS min_alloc
 */
 
-size_t		ft_min_alloc(size_t size)
+/*size_t		ft_min_alloc(size_t size)
 {
 	if (size > 0xFFFFFFFFFFFFFF)
 		return ((size_t)-1);
@@ -64,14 +64,12 @@ size_t		ft_min_alloc(size_t size)
 	if (size == 0)
 		size = 1;
 	return (ROUND_UP(size, 16));
+}*/
+
+size_t		ft_min_alloc(size_t size)
+{
+	if (size > 0xFFFFFFFFFFFFFF)
+		return ((size_t)-1);
+	return (ROUND_UP(size - 24, 16) + 24);
 }
 
-/*
-**	linux min_alloc
-**  size_t		ft_min_alloc(size_t size)
-**  {
-**		if (size > 0xFFFFFFFFFFFFFF)
-**			return ((size_t)-1);
-**  	return (ROUND_UP(size - 24, 16) + 24);
-**  }
-*/
