@@ -1,20 +1,23 @@
 todo
-    main
-        compare perf with baseline
     code
-        clear warnings
         decide if sorted allows duplicate
 
 instructions
 	check norme
+    check optimisation level
 	check allowed functions
 		xmalloc
 		xfree
+        any call to functiosn defined in mem, especially modify_mem_score, is -42
 		You can use more, but remember that this is supposed to be used in projects
 	check MAGIC numbers
 	check main.c after diff
     check valgrind if you want, but the user can defend himself
         basically is he erasing sensitive data or not
+    check crash
+        if a crash is due to incorrect use, it's ok
+        the main is strictly correct used
+    prints are allowed under incorrect use
     
 advice
     check state at start
@@ -36,7 +39,6 @@ bonus performance
         for every functions ?
         prevent min-maxxing
     good perf cpu
-        O2 ?
         vs standard on school computer
         not much to do
 

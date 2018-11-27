@@ -29,10 +29,10 @@
 # define STDOUT				1
 # define STDERR				2
 
-# define OK					0
-# define ERR_ALLOC			-1
-# define ERR_SIZE			-2
-# define ERR_MISSING		-3
+# define OK					(0)
+# define ERR_ALLOC			(-1)
+# define ERR_SIZE			(-2)
+# define ERR_MISSING		(-3)
 
 # define REALLOC_GROWTH_FACTOR 2
 

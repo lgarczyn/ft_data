@@ -65,10 +65,14 @@ void		pmait_display(t_pmait *it, t_printer print_key, t_printer print_val)
 			ft_putchar('>');
 		else if (i == it->end - 1)
 			ft_putchar('<');
-		else if (i > it->id && i < it->end)
+		else if (i > it->id && i < it->end - 1)
 			ft_putchar('-');
-		else
+		else if (i < it->id && i < it->end - 1)
 			ft_putchar(' ');
+		else if (i < it->id && i > it->end - 1)
+			ft_putchar('?');
+		else
+			break ;
 		i++;
 	}
 	ft_putchar('\n');
