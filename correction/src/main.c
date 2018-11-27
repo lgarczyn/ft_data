@@ -151,20 +151,20 @@ void			test_array(void)
 	for (i = 0; i < ARRAY_TESTS; i++)
 	{
 		len = sprintf(buf, "%d", i) + 1;
-		array_push(&a, buf, len);
+		CHECK_EQ(array_push(&a, buf, len), OK);
 		count += len;
 		CHECK_EQ(count, array_len(&a));
 
 		len = sprintf(buf, "%d", i + 1) + 1;
-		array_push(&a, buf, len + 1);
+		CHECK_EQ(array_push(&a, buf, len + 1), OK);
 
-		array_pop(&a, ret, len + 1);
+		CHECK_EQ(array_pop(&a, ret, len + 1), OK);
 		CHECK_EQ(strcmp(buf, ret), 0);
 	}
 	for (i = ARRAY_INC_TESTS; i >= 0; i--)
 	{
 		len = sprintf(buf, "%d", i) + 1;
-		array_pop(&a, ret, len);
+		CHECK_EQ(array_pop(&a, ret, len), OK);
 		CHECK_EQ(strcmp(buf, ret), 0);
 	}
 	CHECK_EQ(array_len(&a), 0);
@@ -188,64 +188,26 @@ void			test_array_mem()
 		j_max = GET_MEM_TEST_SPREAD(i);
 		for (j = 0; j < j_max; j++)
 		{
-			array_push(&b, &j, sizeof(int));
+			CHECK_EQ(array_push(&b, &j, sizeof(int)), OK);
 		}
-		array_push(&a, &b, sizeof(t_array));
+		CHECK_EQ(array_push(&a, &b, sizeof(t_array)), OK);
 	}
 	
 	DISPLAY_USED_MEM("array");
 	
 	for (i = MEM_TEST_COUNT - 1; i >= 0; i--)
 	{
-		array_pop(&a, &b, sizeof(t_array));
+		CHECK_EQ(array_pop(&a, &b, sizeof(t_array)), OK);
 		j_max = GET_MEM_TEST_SPREAD(i);
 		for (j = j_max - 1; j >= 0 ; j--)
 		{
-			array_pop(&b, &j, sizeof(int));
+			CHECK_EQ(array_pop(&b, &j, sizeof(int)), OK);
 		}
 		array_free(&b);
 	}
 	array_free(&a);
 	CHECK_LEAKS();
 }
-/*
-void			test_array_mem(void)
-{
-	t_array		a;
-	t_array		b;
-	int			i = 0;
-	int			j;
-	int			k;
-
-	a = array();
-	for (i = 0; i < 100; i++)
-	{
-		b = array();
-		for (j = 0; j < i * i; j++)
-		{
-			CHECK_EQ(array_push(&b, &j, sizeof(int)), OK);
-		}
-		CHECK_EQ(array_push(&a, &b, sizeof(t_array)), OK);
-	}
-
-	printf("array mem: %lub\n", modify_mem_score(0, false, false).current);
-	
-	for (i = 100 - 1; i >= 0; i--)
-	{
-		CHECK_EQ(array_pop(&a, &b, sizeof(t_array)), OK);
-		for (j = i * i - 1; j >= 0; j--)
-		{
-			CHECK_EQ(array_pop(&b, &k, sizeof(int)), OK);
-			CHECK_EQ(j, k);
-		}
-		CHECK_EQ(array_pop(&b, &k, sizeof(int)), ERR_SIZE);
-		array_free(&b);
-	}
-	CHECK_EQ(array_pop(&a, &b, sizeof(t_array)), ERR_SIZE);
-	array_free(&b);
-	CHECK_LEAKS();
-}
-*/
 
 # ifdef TEST_ARRAY_BONUS
 
@@ -263,21 +225,21 @@ void			test_array_bonus(void)
 	for (i = 0; i < ARRAY_B_TESTS; i++)
 	{
 		len = sprintf(buf, "%d", i) + 1;
-		array_insert(&a, buf, 0, len);
-		array_remove(&a, ret, 0, len);
+		CHECK_EQ(array_insert(&a, buf, 0, len), OK);
+		CHECK_EQ(array_remove(&a, ret, 0, len), OK);
 		CHECK_EQ(strcmp(buf, ret), 0);
-		array_insert(&a, buf, 0, len);
+		CHECK_EQ(array_insert(&a, buf, 0, len), OK);
 	}
 	for (i = 0; i < ARRAY_B_TESTS; i++)
 	{
 		len = sprintf(buf, "%d", i) + 1;
-		array_pop(&a, ret, len);
+		CHECK_EQ(array_pop(&a, ret, len), OK);
 		CHECK_EQ(strcmp(buf, ret), 0);
 	}
 	CHECK_EQ(array_len(&a), 0);
 	for (i = 1; i < ARRAY_B_TESTS; i++)
 	{
-		array_push(&a, &i, sizeof(int));
+		CHECK_EQ(array_push(&a, &i, sizeof(int)), OK);
 		CHECK_EQ(array_len(&a) / sizeof(int), (t_uint)i);
 	}
 	CHECK_EQ(array_set_len(&a, 700 * sizeof(int)), OK);
@@ -445,17 +407,17 @@ void			test_queue_spe(bool push_back, bool pop_back, bool reserve)
 	for (i = 0; i < QUEUE_TESTS; i++)
 	{
 		if (push_back)
-			queue_push_back(&a, &i);
+			CHECK_EQ(queue_push_back(&a, &i), OK);
 		else
-			queue_push_front(&a, &i);
+			CHECK_EQ(queue_push_front(&a, &i), OK);
 		CHECK_EQ(queue_len(&a), (unsigned int)i + 1);
 	}
 	for (i = 0; i < QUEUE_TESTS; i++)
 	{
 		if (pop_back)
-			queue_pop_back(&a, &ret);
+			CHECK_EQ(queue_pop_back(&a, &ret), OK);
 		else
-			queue_pop_front(&a, &ret);
+			CHECK_EQ(queue_pop_front(&a, &ret), OK);
 		CHECK_EQ(queue_len(&a), QUEUE_TESTS_INC - (unsigned int)i);
 		CHECK_EQ(ret, (push_back == pop_back ? QUEUE_TESTS_INC - i : i));
 	}
@@ -478,8 +440,8 @@ void			test_queue_perf()
 	
 	for (i = 0; i < QUEUE_TESTS * 10; i++)
 	{
-		queue_pop_back(&a, &ret);
-		queue_push_front(&a, &ret);
+		CHECK_EQ(queue_pop_back(&a, &ret), OK);
+		CHECK_EQ(queue_push_front(&a, &ret), OK);
 	}
 
 	for (i = 0; i < 1000; i++)
@@ -523,20 +485,20 @@ void			test_queue_mem()
 		j_max = GET_MEM_TEST_SPREAD(i);
 		for (j = 0; j < j_max; j++)
 		{
-			queue_push_back(&b, &j);
+			CHECK_EQ(queue_push_back(&b, &j), OK);
 		}
-		queue_push_back(&a, &b);
+		CHECK_EQ(queue_push_back(&a, &b), OK);
 	}
 	
 	DISPLAY_USED_MEM("queue");
 	
 	for (i = 0; i < MEM_TEST_COUNT; i++)
 	{
-		queue_pop_front(&a, &b);
+		CHECK_EQ(queue_pop_front(&a, &b), OK);
 		j_max = GET_MEM_TEST_SPREAD(i);
 		for (j = 0; j < j_max; j++)
 		{
-			queue_pop_front(&b, &j);
+			CHECK_EQ(queue_pop_front(&b, &j), OK);
 		}
 		queue_free(&b);
 	}
@@ -789,9 +751,9 @@ void			test_sorted_mem()
 		j_max = i;
 		for (j = 0; j < j_max; j++)
 		{
-			sorted_insert(&b, &j);
+			CHECK_EQ(sorted_insert(&b, &j), OK);
 		}
-		sorted_insert(&a, &b);
+		CHECK_EQ(sorted_insert(&a, &b), OK);
 	}
 	
 	DISPLAY_USED_MEM("sorted");
@@ -1002,7 +964,6 @@ void			pma_check_delete(t_pma *a, t_order o, t_reverse r)
 	for (i = 0; i < PMA_TESTS; i++)
 	{
 		o(key_search_buf, i, PMA_TESTS);
-		//val_inserted = reversed ? PMA_TESTS_INC - i : i;
 		if (pma_delete(a, key_search_buf, key_found_buf, &val_found) != OK)
 		{
 			printf("error: %i not found\n", i);
@@ -1028,7 +989,6 @@ void			pma_check_get(t_pma *a, t_order o, t_reverse r)
 	for (i = 0; i < PMA_TESTS; i++)
 	{
 		o(key_search_buf, i, PMA_TESTS);
-		//val_inserted = reversed ? PMA_TESTS_INC - i : i;
 		if (pma_get(a, key_search_buf, key_found_buf, &val_found) != OK)
 		{
 			printf("error: %i not found\n", i);

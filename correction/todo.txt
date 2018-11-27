@@ -1,15 +1,9 @@
 todo
     main
-        more ifdef for queue, sorted and pma
-        test untested
-        performance reports
-            xmalloc()
-            prevent specialized optimisation
-            (that means keeping in mem power law sized arrays and such)
-        remaining tests
-        remaining missing manual functions
+        compare perf with baseline
     code
         clear warnings
+        decide if sorted allows duplicate
 
 instructions
 	check norme
@@ -18,7 +12,9 @@ instructions
 		xfree
 		You can use more, but remember that this is supposed to be used in projects
 	check MAGIC numbers
-	check main.c
+	check main.c after diff
+    check valgrind if you want, but the user can defend himself
+        basically is he erasing sensitive data or not
     
 advice
     check state at start
@@ -43,13 +39,21 @@ bonus performance
         O2 ?
         vs standard on school computer
         not much to do
-    possibility to use realloc
+
+bonus suggestions
+    a switch allowing pma or sorted to have duplicate elements
+    some way to templatize all that using makefile MAGIC
+    1 point per 5 small functions, or 3 larger functions
+    possibility to use realloc if allowed
 
 mandatory header parts
     prototypes
     t_sortedres/t_sorteden/t_sorteden
     t_pmaen
     t_uint
+    t_array
+        bzeroed must be valid
+        must contain a data element ?
 
 
 t_array		array(void);
