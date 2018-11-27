@@ -805,8 +805,10 @@ void			test_sorted_mem()
 			j_ptr = sorted_get(b_ptr, j);
 			CHECK_EQ(*j_ptr, j);
 		}
-		sorted_delete_index(&a, 0, &b);
-		sorted_free(&b);
+		if (sorted_delete_index(&a, 0, &b) == OK)
+			sorted_free(&b);
+		else
+			PRINT_ERR(ERR_MISSING, OK);
 	}
 	sorted_free(&a);
 
@@ -1138,6 +1140,13 @@ int				pma_less(t_pma *a, t_pma *b)
 	return (pma_len(a) < pma_len(b));
 }
 
+void				print_int(int*ptr);
+
+void				print_pma(t_pma *a)
+{
+	ft_putnbr(pma_len(a));
+}
+
 void				test_pma_mem()
 {
 	t_pma			a;
@@ -1147,11 +1156,11 @@ void				test_pma_mem()
 	int				j_max;
 	int				k;
 
-	a = pma((t_predicate)pma_less, sizeof(int), sizeof(t_pma));
+	a = pma((t_predicate)lt, sizeof(int), sizeof(t_pma));
 	for (i = 0; i < MEM_TEST_COUNT; i++)
 	{
 		b = pma(lt, sizeof(int), 0);
-		j_max = GET_MEM_TEST_SPREAD(i);
+		j_max = i;
 		for (j = 0; j < j_max; j++)
 		{
 			pma_insert(&b, &j, NULL);
@@ -1163,15 +1172,17 @@ void				test_pma_mem()
 	
 	for (i = 0; i < MEM_TEST_COUNT; i++)
 	{
-		j_max = GET_MEM_TEST_SPREAD(i);
+		j_max = i;
 		CHECK_EQ(pma_get(&a, &i, NULL, &b), OK);
 		for (j = 0; j < j_max; j++)
 		{
 			CHECK_EQ(pma_get(&b, &j, &k, NULL), OK);
 			CHECK_EQ(j, k);
 		}
-		CHECK_EQ(pma_delete(&a, &i, NULL, &b), OK);
-		pma_free(&b);
+		if (pma_delete(&a, &i, NULL, &b) == OK)
+			pma_free(&b);
+		else
+			PRINT_ERR(ERR_MISSING, OK);
 	}
 	pma_free(&a);
 

@@ -27,24 +27,28 @@ const void	*pma_cat(const t_pma *a, size_t index)
 void		pma_display(t_pma *a, t_printer print_key, t_printer print_val)
 {
 	size_t	i;
-	char	key[12];
-	int		val;
+	char	*buffer_key;
+	char	*buffer_val;
 	t_pmait	it;
+
+	buffer_key = xmalloc(a->bucket.sizes.key + a->bucket.sizes.val);
+	buffer_val = buffer_key + a->bucket.sizes.key;
 
 	bitset_display(&a->bucket.flags);
 	ft_putnbr_64(pma_len(a));
 	ft_putstr(": {");
 	it = pmait(a);
 	i = 0;
-	while (pmait_next(&it, &key, &val))
+	while (pmait_next(&it, buffer_key, buffer_val))
 	{
-		print_key(&key);
+		print_key(buffer_key);
 		ft_putchar(':');
-		print_val(&val);
+		print_val(buffer_val);
 		if (++i < pma_len(a))
 			ft_putchar(' ');
 	}
 	ft_putstr("}\n");
+	xfree(buffer_key);
 }
 
 void		pmait_display(t_pmait *it, t_printer print_key, t_printer print_val)
