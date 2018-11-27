@@ -14,11 +14,21 @@
 #include <stdlib.h>
 
 /*
-** if *ptr is null, it will always be allocated to new size
-** if not, its data will be transfered, and freed
+** p is a pointer to a malloc_allocated pointer
+** len is the current used part of the allocated pointer
+** nlen is the new minimum usable size to allocate
+** size will contain the actual new size after successful realloc
+**
+** if *ptr is null, it will always be allocated to nlen
+** if not, its data will be transfered then the pointer freed
 ** if the data cannot fit, it is truncated
 ** the data is NOT automatically null terminated
 ** if malloc should fail, the data is unaffected, a non-zero value is returned
+** value of *size is ignored, but should always be the old value of size
+**   as it allows checking for useless realloc
+**
+** unlike the real realloc, a nlen of zero will never free the pointer,
+** as *size will be set to a platform-adequate minimum allocation
 */
 
 #include <stdio.h>
@@ -29,9 +39,6 @@ int				ft_realloc(void **p, size_t len, size_t nlen, size_t *size)
 	size_t		real_size;
 
 	real_size = ft_min_alloc(nlen);
-	// if (real_size == *size)
-	// 	printf("useless fucking realloc\n");
-		//bzero(*p + MIN(nlen, len), *size - MIN(nlen, len));
 	if (*p == NULL)
 	{
 		*p = ft_memalloc(real_size);
@@ -52,12 +59,11 @@ int				ft_realloc(void **p, size_t len, size_t nlen, size_t *size)
 }
 
 /*
-** if *ptr is null, it will always be allocated to at least *size * 2
-** if *size is 0 it will be set to at least 24
-** if malloc should fail, the data is unaffected, a non-zero value is returned
+** behaves like ft_realloc, except as nlen is less than len,
+** both arguments are equivalent
 */
 
-int			ft_realloc_down(void **ptr, size_t len, size_t *size)
+int				ft_realloc_down(void **ptr, size_t len, size_t *size)
 {
 	if (ft_realloc(ptr, len, len, size))
 		return (ERR_ALLOC);

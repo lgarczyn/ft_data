@@ -21,7 +21,11 @@ int				sorted_insert_index(t_sorted *a, const void *data, size_t i)
 
 	new_pos = a->pos + a->word;
 	if (new_pos > a->size)
-		if (ft_realloc(&a->data, a->pos, new_pos * REALLOC_GROWTH_FACTOR, &a->size))
+		if (ft_realloc(
+			&a->data,
+			a->pos,
+			new_pos * REALLOC_GROWTH_FACTOR,
+			&a->size))
 			return (ERR_ALLOC);
 	prev_len = i * a->word;
 	next_len = a->pos - prev_len;

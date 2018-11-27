@@ -33,7 +33,6 @@ void		pma_display(t_pma *a, t_printer print_key, t_printer print_val)
 
 	buffer_key = xmalloc(a->bucket.sizes.key + a->bucket.sizes.val);
 	buffer_val = buffer_key + a->bucket.sizes.key;
-
 	bitset_display(&a->bucket.flags);
 	ft_putnbr_64(pma_len(a));
 	ft_putstr(": {");

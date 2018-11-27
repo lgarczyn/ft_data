@@ -601,7 +601,7 @@ int				reverse_str(const char *buffer)
 	return (atoi(buffer));
 }
 
-#define SORTED_TESTS (1 << 9)
+#define SORTED_TESTS (1 << 10)
 #define SORTED_TESTS_INC (SORTED_TESTS - 1)
 
 #ifdef TEST_SORTED
@@ -863,21 +863,6 @@ void			test_sorted_bonus_spe(bool less_pred, bool str, t_order o)
 		rev = &reverse_int;
 	}
 	a = sorted(pred, size);
-	sorted_fill_hint(&a, o);
-	sorted_free(&a);
-	sorted_fill_hint(&a, o);
-	sorted_free(&a);
-	sorted_fill_hint(&a, o);
-	sorted_free(&a);
-	sorted_fill_hint(&a, o);
-	sorted_free(&a);
-	sorted_fill_hint(&a, o);
-	sorted_free(&a);
-	sorted_fill_hint(&a, o);
-	sorted_free(&a);
-	sorted_fill_hint(&a, o);
-	sorted_free(&a);
-	sorted_fill_hint(&a, o);
 	sorted_free(&a);
 	sorted_fill_hint(&a, o);
 	sorted_check(&a, rev, less_pred == false);
@@ -1749,8 +1734,6 @@ int			main(void)
 {
 	bool	all;
 
-	test_pma_manual();
-
 	all = check_test("all");
 
 #ifdef TEST_ARRAY
@@ -1776,7 +1759,7 @@ int			main(void)
 
 #ifdef TEST_SORTED
  	check_time("sorted", &test_sorted, all, 0.224660);
-	check_mem("sorted mem", &test_sorted_mem, all, 2742944);
+	check_mem("sorted mem", &test_sorted_mem, all, 3014336);
 # ifdef TEST_SORTED_BONUS
  	check_time("sorted bonus", &test_sorted_bonus, all, 0.167893);
 # endif // TEST_SORTED_BONUS

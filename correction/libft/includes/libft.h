@@ -145,7 +145,6 @@ size_t			ft_min_alloc(size_t size);
 int				ft_realloc(void **p, size_t len, size_t nlen, size_t *size);
 int				ft_realloc_down(void **p, size_t len, size_t *size);
 
-
 void			xfree(void *ptr);
 void			*xmalloc(size_t size);
 

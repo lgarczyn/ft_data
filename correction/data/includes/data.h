@@ -57,7 +57,10 @@ int			sorted_reserve(t_sorted *a, size_t s);
 const void	*sorted_get(const t_sorted *a, size_t index);
 t_sorteden	sorted_search(const t_sorted *a, const void *d);
 int			sorted_insert(t_sorted *a, const void *data);
-//inserts data. if something was already there, store it back into data  
+/*
+** sorted_replace
+** if any item in t_sorted matches with data, swap data and item
+*/
 t_sorteden	sorted_replace(t_sorted *a, void *data);
 t_sorteden	sorted_delete(t_sorted *a, const void *data, void *out);
 int			sorted_delete_index(t_sorted *a, size_t index, void *out);

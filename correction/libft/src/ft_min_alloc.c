@@ -15,7 +15,7 @@
 
 #include <printf.h>
 
-/* 
+/*
 **  #include <malloc/malloc.h>
 **  void		check_min_alloc(void)
 **  {
@@ -45,7 +45,7 @@
 **	MAC OS min_alloc
 */
 
-/*size_t		ft_min_alloc(size_t size)
+size_t		ft_min_alloc(size_t size)
 {
 	if (size > 0xFFFFFFFFFFFFFF)
 		return ((size_t)-1);
@@ -64,12 +64,17 @@
 	if (size == 0)
 		size = 1;
 	return (ROUND_UP(size, 16));
-}*/
-
-size_t		ft_min_alloc(size_t size)
-{
-	if (size > 0xFFFFFFFFFFFFFF)
-		return ((size_t)-1);
-	return (ROUND_UP(size - 24, 16) + 24);
 }
 
+/*
+**	Linux min_alloc
+*/
+
+/*
+**  size_t		ft_min_alloc(size_t size)
+**  {
+**  	if (size > 0xFFFFFFFFFFFFFF)
+**  		return ((size_t)-1);
+**  	return (ROUND_UP(size - 24, 16) + 24);
+**  }
+*/
