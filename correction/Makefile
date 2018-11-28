@@ -18,9 +18,9 @@ INC = -Ilibft/includes -Iprintf/includes -Idata/includes
 		
 OBJ = $(addprefix obj/, $(addsuffix .o, $(basename $(SRC))))
 
-DEB = #-g -g3 #-fsanitize=address 
+DEB = -g -g3 #-fsanitize=address 
 
-OPT = -O2
+OPT = #-O2
 
 FLG = -Wall -Wextra -funsigned-char -fno-signed-char  $(OPT) $(DEB) -std=c11 -m64
 

@@ -48,6 +48,7 @@ void	print_err(ssize_t a, ssize_t b, int line, int i)
 #define TEST_PMA
 #define TEST_PMA_BONUS_IT
 #define TEST_PMA_BONUS_IT_BACK
+#define TEST_PMA_BONUS_MULTI
 
 #define BUFFER_SIZE 12
 
@@ -934,7 +935,6 @@ void			pma_check_delete(t_pma *a, t_order o, t_reverse r)
 	char		key_found_buf[BUFFER_SIZE];
 	int			val_found;
 	
-	CHECK_EQ(pma_len(a), PMA_TESTS);
 	for (int i = 0; i < PMA_TESTS; i++)
 	{
 		o(key_search_buf, i, PMA_TESTS);
@@ -949,7 +949,6 @@ void			pma_check_delete(t_pma *a, t_order o, t_reverse r)
 		CHECK_EQ(key_inserted, key_found);
 		CHECK_EQ(i, val_found);
 	}
-	CHECK_EQ(pma_len(a), 0);
 }
 
 void			pma_check_get(t_pma *a, t_order o, t_reverse r)
@@ -1044,7 +1043,9 @@ void			test_pma_spe(bool reversed, bool str, t_order o)
 	pma_check_get(&a, o, rev);
 	pma_fill_delete(&a, o, rev);
 	pma_check_get(&a, o, rev);
+	CHECK_EQ(pma_len(&a), PMA_TESTS);
 	pma_check_delete(&a, o, rev);
+	CHECK_EQ(pma_len(&a), 0);
 	pma_free(&a);
 }
 
@@ -1220,6 +1221,8 @@ void			test_pmait_more()
 	t_pma		a;
 	t_order		o;
 	int			first;
+	t_pmait		found;
+	t_pmait		all;
 
 	o = asc;
 	a = pma(&lt, sizeof(int), sizeof(int));
@@ -1229,7 +1232,11 @@ void			test_pmait_more()
 	t_pmaen en = pma_search(&a, &first);
 	CHECK_EQ(en.found, true);
 	if (en.found)
-		pmait_cmp(pmait(&a), en.it);
+	{
+		found = en.it;
+		all = pmait(&a);
+		pmait_cmp_one(&found, &all, 0);
+	}
 	pma_free(&a);
 }
 
@@ -1519,12 +1526,12 @@ int				ft_getch()
 	int			c;
 	static bool	failed;
 
-	if (failed)
-		fcntl(0, F_SETFL, fcntl(0, F_GETFL) & ~O_NONBLOCK);
-	else
+	if (failed == false)
 		fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
 	
 	c = getchar();
+
+	fcntl(0, F_SETFL, fcntl(0, F_GETFL) & ~O_NONBLOCK);
 
 	failed = c < 0;
 	return (c);
@@ -1534,7 +1541,7 @@ void			test_pmait_manual(t_pmait it)
 {
 	bool		to_update;
 	int			out_key;
-	char		out_val;
+	int			out_val;
 
 	to_update = false;
 	while (1)
@@ -1581,12 +1588,75 @@ void			test_pmait_manual(t_pmait it)
 %3$s p %1$s:next_back \
 %3$s b %1$s:delete_back \
 %4$s q %1$s:quit\n", "\e[0m", "\e[1;42;39m", "\e[1;37;43m", "\e[1;41;39m");
-			pmait_display(&it, (t_printer)print_int, (t_printer)print_char);
+			pmait_display(&it, (t_printer)print_int, (t_printer)print_int);
 		}
 	}
 }
 
 # endif // TEST_PMA_BONUS_IT
+
+# ifdef TEST_PMA_BONUS_MULTI
+
+void			test_pma_bonus_multi_spe(bool reversed, bool str, t_order o)
+{
+	t_pma		a;
+	t_uint		size;
+	t_predicate	pred;
+	t_reverse	rev;
+
+	a = pma(&lt, sizeof(int), sizeof(int));
+	pma_free(&a);
+	if (str)
+	{
+		size = sizeof(char) * BUFFER_SIZE;
+		pred = reversed ? &gt_str : &lt_str;
+		rev = &reverse_str;
+	}
+	else
+	{
+		size = sizeof(int);
+		pred = reversed ? &gt : &lt;
+		rev = &reverse_int;
+	}
+	a = pma(pred, size, sizeof(int));
+	pma_fill(&a, o);
+	pma_check_get(&a, o, rev);
+	pma_fill_delete(&a, o, rev);
+	pma_check_get(&a, o, rev);
+	CHECK_EQ(pma_len(&a), PMA_TESTS);
+	pma_check_delete(&a, o, rev);
+	CHECK_EQ(pma_len(&a), 0);
+	pma_fill(&a, o);
+	pma_fill_delete(&a, o, rev);
+	pma_fill(&a, o);
+	pma_fill_delete(&a, o, rev);
+	CHECK_EQ(pma_len(&a), PMA_TESTS * 4);
+	pma_check_delete(&a, o, rev);
+	pma_check_delete(&a, o, rev);
+	pma_check_delete(&a, o, rev);
+	pma_check_delete(&a, o, rev);
+	CHECK_EQ(pma_len(&a), 0);
+	pma_free(&a);
+}
+
+void			test_pma_bonus_multi(void)
+{
+	test_pma_spe(false, false, asc);
+	test_pma_spe(false, false, desc);
+	test_pma_spe(false, false, gray);
+	test_pma_spe(true, false, asc);
+	test_pma_spe(true, false, desc);
+	test_pma_spe(true, false, gray);
+
+	test_pma_spe(false, true, asc_str);
+	test_pma_spe(false, true, desc_str);
+	test_pma_spe(false, true, gray_str);
+	test_pma_spe(true, true, asc_str);
+	test_pma_spe(true, true, desc_str);
+	test_pma_spe(true, true, gray_str);
+}
+
+# endif // TEST_PMA_BONUS_MULTI
 
 void			test_pma_manual(void)
 {
@@ -1607,7 +1677,10 @@ void			test_pma_manual(void)
 		c = ft_getch();
 		switch (c)
 		{
-			case 'r': pma_free(&a); break ;
+			case 'r': pma_free(&a); a = pma(&lt, sizeof(int), sizeof(int)); break;
+# ifdef TEST_PMA_BONUS_MULTI
+			case 'm': pma_free(&a); a = multi_pma(&lt, sizeof(int), sizeof(int)); break;
+# endif // TEST_PMA_BONUS_MULTI
 			case 'g':
 				scanf ("%d", &key);
 				if (pma_get(&a, &key, &out_key, &out_val) == OK)
@@ -1637,7 +1710,7 @@ void			test_pma_manual(void)
 				val = rand() % 26;
 				pma_insert(&a, &key, &val);
 				break ;
-			case 'm':
+			case 'o':
 				for (int i = 0; i < 1000000; i++)
 				{
 					key = rand() / ((1 << 20) - 1);
@@ -1648,7 +1721,23 @@ void			test_pma_manual(void)
 						pma_insert(&a, &key, &val);
 				}
 				break ;
+			case '?':
+				scanf("%i", &i);
+				printf("changed i to %i\n", i);
+				break;
 # ifdef TEST_PMA_BONUS_IT
+			case 'p':
+				if (pma_pop_front(&a, &out_key, &out_val) == OK)
+					printf("deleted {%i: %i}\n", out_key, out_val);
+				else
+					printf("empty\n");
+				break ;
+			case 'b':
+				if (pma_pop_back(&a, &out_key, &out_val) == OK)
+					printf("deleted {%i: %i}\n", out_key, out_val);
+				else
+					printf("empty\n");
+				break ;
 			case 's':
 				scanf ("%d", &key);
 				test_pmait_manual(pma_search(&a, &key).it);
@@ -1669,20 +1758,22 @@ void			test_pma_manual(void)
 		if (to_update)
 		{
 			to_update = false;
-			//clear();
 			printf("\n\
-%2$s r %1$s:reset             \
+%2$s r %1$s:reset  %3$s m %1$s:multi  \
 %2$s g %1$s:get(key)          \
 %2$s d %1$s:delete(key)\n\
 %2$s i %1$s:insert(key, rand) \
 %2$s j %1$s:insert(key, val)  \
 %2$s k %1$s:insert(rand, rand)\n\
-%2$s m %1$s:stress test\n\
+%2$s o %1$s:stress test       \
+%3$s p %1$s:pop front         \
+%3$s b %1$s:pop back\n\
 %3$s s %1$s:search(key)       \
 %3$s t %1$s:pmait             \
 %3$s x %1$s:range(low, high)\n\
 %4$s q %1$s:quit\n", "\e[0m", "\e[1;42;39m", "\e[1;37;43m", "\e[1;41;39m");
 			pma_display(&a, (t_printer)print_int, (t_printer)print_int);
+			printf("\n");
 		}
 	}
 }
@@ -1735,7 +1826,7 @@ int			main(void)
 	bool	all;
 
 	all = check_test("all");
-
+	
 #ifdef TEST_ARRAY
 	check_time("array", &test_array, all, 0.134236);
 	check_mem("array mem", &test_array_mem, all, 1865680);
@@ -1771,9 +1862,12 @@ int			main(void)
 # ifdef TEST_PMA_BONUS_IT
 	check_time("pmait", &test_pmait, all, 0.456048);
 #  ifdef TEST_PMA_BONUS_IT_BACK
-	check_time("pmait_back", &test_pmait_back, all, 0.897609);
+	check_time("pmait back", &test_pmait_back, all, 0.897609);
 #  endif // TEST_PMA_BONUS_IT
 # endif // TEST_PMA_BONUS_IT
+# ifdef TEST_PMA_BONUS_MULTI
+	check_time("pma multi", &test_pma_bonus_multi, all, 0.976539);
+# endif // TEST_PMA_BONUS_MULTI
 	if (check_test("pma manual"))
 		test_pma_manual();
 #endif // TEST_PMA

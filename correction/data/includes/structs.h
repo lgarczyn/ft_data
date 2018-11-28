@@ -77,7 +77,8 @@ typedef struct	s_pma
 {
 	t_predicate	predicate;
 	t_bucket	bucket;
-	size_t		canary;
+	size_t		canary:63;
+	bool		multi:1;
 }				t_pma;
 
 typedef struct	s_pmait

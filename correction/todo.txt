@@ -1,7 +1,3 @@
-todo
-    code
-        decide if sorted allows duplicate
-
 instructions
 	check norme
     check optimisation level
@@ -18,6 +14,21 @@ instructions
         if a crash is due to incorrect use, it's ok
         the main is strictly correct used
     prints are allowed under incorrect use
+
+todo
+    agnostic search tests
+    ideal
+        insert first
+        delete first
+        search first to last
+        range first to last
+        get first
+    
+    search where predicates are inverted always finds first
+    normal search with multiple elements always finds last
+
+    so 
+        
     
 advice
     check state at start

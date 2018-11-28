@@ -70,6 +70,7 @@ int			sorted_insert_hint(t_sorted *a, const void *d, size_t h);
 t_sorteden	sorted_replace_hint(t_sorted *a, void *data, size_t hint);
 
 t_pma		pma(t_predicate predicate, t_uint key, t_uint value);
+t_pma		multi_pma(t_predicate predicate, t_uint key, t_uint value);
 void		pma_free(t_pma *a);
 size_t		pma_len(const t_pma *a);
 int			pma_insert(t_pma *a, const void *key, const void *val);

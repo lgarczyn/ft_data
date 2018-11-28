@@ -40,11 +40,11 @@ void		pma_display(t_pma *a, t_printer print_key, t_printer print_val)
 	i = 0;
 	while (pmait_next(&it, buffer_key, buffer_val))
 	{
+		if (i++ != 0)
+			ft_putchar(' ');
 		print_key(buffer_key);
 		ft_putchar(':');
 		print_val(buffer_val);
-		if (++i < pma_len(a))
-			ft_putchar(' ');
 	}
 	ft_putstr("}\n");
 	xfree(buffer_key);
@@ -54,6 +54,10 @@ void		pmait_display(t_pmait *it, t_printer print_key, t_printer print_val)
 {
 	size_t	i;
 
+	ft_putnbr_64(it->id);
+	ft_putstr("->");
+	ft_putnbr_64(it->end);
+	ft_putchar('\n');
 	ft_putspace(ft_unumlen(pma_size(it->pma)) + 3);
 	i = 0;
 	while (i < pma_size(it->pma))
@@ -64,11 +68,11 @@ void		pmait_display(t_pmait *it, t_printer print_key, t_printer print_val)
 			ft_putchar('>');
 		else if (i == it->end - 1)
 			ft_putchar('<');
-		else if (i > it->id && i < it->end - 1)
+		else if (i > it->id && i < it->end)
 			ft_putchar('-');
-		else if (i < it->id && i < it->end - 1)
+		else if (i < it->id && i < it->end)
 			ft_putchar(' ');
-		else if (i < it->id && i > it->end - 1)
+		else if (i < it->id && i > it->end)
 			ft_putchar('?');
 		else
 			break ;

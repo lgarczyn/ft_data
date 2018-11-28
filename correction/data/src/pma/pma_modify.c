@@ -23,8 +23,7 @@ int				pma_delete(t_pma *a, const void *key,
 	en = pma_search(a, key);
 	if (en.found)
 	{
-		bucket_get(&(a->bucket), en.it.id, out_key, out_val);
-		bucket_delete(&(a->bucket), en.it.id, NULL, NULL);
+		pmait_delete(&en.it, out_key, out_val);
 	}
 	en.key = key;
 	return (en.found ? OK : ERR_MISSING);
@@ -36,7 +35,7 @@ int				pma_insert(t_pma *a, const void *key, const void *val)
 
 	a->canary++;
 	en = pma_search(a, key);
-	if (en.found)
+	if (en.found && a->multi == false)
 	{
 		bucket_set(&(a->bucket), en.it.id, key, val);
 		return (OK);

@@ -14,6 +14,13 @@
 
 #include "pma_int.h"
 
+static int		pred(const t_pma *a, const void *pa, const void *pb)
+{
+	if (a->multi)
+		return (!a->predicate(pb, pa));
+	return (a->predicate(pa, pb));
+}
+
 static t_pmait	pma_search_pos(const t_pma *a, const void *key)
 {
 	size_t		i;
@@ -29,13 +36,13 @@ static t_pmait	pma_search_pos(const t_pma *a, const void *key)
 			it.end = it.id + (it.end - it.id) / 2;
 		else if (it.end == it.id + 1)
 		{
-			if (it.id == 0 && a->predicate(key, pma_cat(a, i)))
+			if (it.id == 0 && pred(a, key, pma_cat(a, i)))
 				it.end--;
-			else if (a->predicate(pma_cat(a, i), key))
+			else if (pred(a, pma_cat(a, i), key))
 				it.id++;
 			break ;
 		}
-		else if (a->predicate(key, pma_cat(a, i)))
+		else if (pred(a, key, pma_cat(a, i)))
 			it.end = i;
 		else
 			it.id = i;
@@ -49,8 +56,12 @@ t_pmaen			pma_search(const t_pma *a, const void *key)
 
 	res.it = pma_search_pos(a, key);
 	res.key = (void*)key;
+	if (a->multi)
+		while (res.it.end < bucket_size(&a->bucket) &&
+			(bitset_get(&(a->bucket.flags), res.it.end) == false ||
+			a->predicate(key, pma_cat(a, res.it.end)) == 0))
+			res.it.end++;
 	res.found = res.it.id < res.it.end;
-	res.it.end = pmait(a).end;
 	return (res);
 }
 
@@ -61,9 +72,9 @@ t_pmait			pma_range(const t_pma *a,
 
 	it = pmait(a);
 	if (start)
-		it.id = pma_search_pos(a, start).id;
+		it.id = pma_search(a, start).it.id;
 	if (end)
-		it.end = pma_search_pos(a, end).end;
+		it.end = pma_search(a, end).it.end;
 	return (it);
 }
 

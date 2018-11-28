@@ -48,9 +48,9 @@ INC = -I../libft/includes -Iincludes
 
 LIB = -L ../libft/ -lft
 
-DEB = #-g -g3 #-fsanitize=address
+DEB = -g -g3 #-fsanitize=address
 
-OPT = -O2
+OPT = #-O2
 
 FLG = -Wall -Wextra -Werror -funsigned-char -m64 $(DEB)
 

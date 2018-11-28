@@ -12,9 +12,9 @@
 
 NAME = libft.a
 
-DEB = #-g -g3 #-fsanitize=address
+DEB = -g -g3 #-fsanitize=address
 
-OPT = -O2
+OPT = #-O2
 
 FLAGS = -Wall -Wextra -Werror -funsigned-char -fno-signed-char  $(DEB)
 
