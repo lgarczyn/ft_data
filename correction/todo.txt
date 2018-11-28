@@ -29,6 +29,7 @@ bonus implementation
     sorted
     pmait
     pmait 2
+    pmait 3
 
 bonus performance
     good perf mem

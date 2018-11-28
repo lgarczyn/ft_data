@@ -68,17 +68,17 @@ size_t	get_allocated_size(void *ptr)
 }
 #endif
 
-typedef struct					s_mem_report
+typedef struct				s_mem_report
 {
-	size_t						current;
-	size_t						max;
-}								t_mem_report;
+	size_t					current;
+	size_t					max;
+}							t_mem_report;
 
-static t_mem_report				modify_mem_score(size_t score, bool increment, bool reset)
+static t_mem_report			modify_mem_score(size_t score, bool increment, bool reset)
 {
-	static _Atomic size_t		mem_count = 0;
-	static _Atomic size_t		mem_max = 0;
-	t_mem_report				mem;
+	static _Atomic size_t	mem_count = 0;
+	static _Atomic size_t	mem_max = 0;
+	t_mem_report			mem;
 
 	if (score)
 	{
@@ -105,19 +105,19 @@ static t_mem_report				modify_mem_score(size_t score, bool increment, bool reset
 	CHECK_EQ(modify_mem_score(0, false, RESET).current, 0);\
 } while(0)
 
-void							print_score(int percent)
+static void		print_score(int percent)
 {
-	int							color;
-	char						colors[] = {123, 122, 121, 120, 119, 118, 112, 106, 100, 94, 88};
+	int			color;
+	char		colors[] = {123, 122, 121, 120, 119, 118, 112, 106, 100, 94, 88};
 
 	color = CLAMP(percent / 20, 0, 10);
 	printf("\x1b[30;48;5;%dm%d%%\e[0m", colors[color], percent);
 }
 
-void							print_max_memory(char *name, size_t baseline)
+static void		print_max_memory(char *name, size_t baseline)
 {
-	size_t						max;
-	int							percent;
+	size_t		max;
+	int			percent;
 
 	max = modify_mem_score(0, false, true).max;
 	percent = max * 100 / baseline;
@@ -126,9 +126,9 @@ void							print_max_memory(char *name, size_t baseline)
 	printf("\n");
 }
 
-void							print_used_time(char *name, double score, double baseline)
+static void		print_used_time(char *name, double score, double baseline)
 {
-	int							percent;
+	int			percent;
 
 	percent = (int)(score * 100.0 / baseline);
 	printf("%s: %fs ", name, score);
@@ -136,15 +136,15 @@ void							print_used_time(char *name, double score, double baseline)
 	printf("\n");
 }
 
-void							xfree(void *ptr)
+void			xfree(void *ptr)
 {
 	modify_mem_score((ssize_t)get_allocated_size(ptr), false, false);
 	free(ptr);
 }
 
-void							*xmalloc(size_t size)
+void			*xmalloc(size_t size)
 {
-	void						*ptr;
+	void		*ptr;
 
 	ptr = malloc(size);
 	modify_mem_score((ssize_t)get_allocated_size(ptr), true, false);
@@ -172,7 +172,7 @@ void			test_array(void)
 	a = array();
 	array_free(&a);
 	CHECK_LEAKS(false);
-	//CHECK_EQ(array_reserve(&a, (size_t)-1), ERR_ALLOC);
+	CHECK_EQ(array_reserve(&a, (size_t)-1), ERR_ALLOC);
 	CHECK_EQ(array_reserve(&a, ARRAY_TESTS * 11), OK);
 	array_free(&a);
 	CHECK_LEAKS(false);
@@ -1401,11 +1401,13 @@ void			test_pmait_back_more()
 	CHECK_EQ(en.found, true);
 	if (en.found)
 	{
-		pmait_cmp(pma_range(&a, &mid, NULL), en.it);
-		pmait_cmp_back(pma_range(&a, &mid, NULL), en.it);
-		pmait_cmp(pma_range(&a, &mid, &last), en.it);
-		pmait_cmp_back(pma_range(&a, &mid, &last), en.it);
+		t_pmait it_a = pma_range(&a, &mid, NULL);
+		t_pmait it_b = en.it;
+		pmait_cmp_one(&it_a, &it_b, 0);
 	}
+
+	pmait_cmp(pma_range(&a, &mid, &last), pma_range(&a, &mid, NULL));
+	pmait_cmp_back(pma_range(&a, &mid, &last), pma_range(&a, &mid, NULL));
 
 	pmait_cmp(pma_range(&a, &first, &last), pmait(&a));
 	pmait_cmp(pma_range(&a, NULL, &last), pmait(&a));
