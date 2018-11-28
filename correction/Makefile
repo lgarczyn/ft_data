@@ -18,8 +18,6 @@ INC = -Ilibft/includes -Iprintf/includes -Idata/includes
 		
 OBJ = $(addprefix obj/, $(addsuffix .o, $(basename $(SRC))))
 
-LIB = -L libft -lft -L printf -lftprintf -L data -lftdata
-
 DEB = #-g -g3 #-fsanitize=address 
 
 OPT = -O2
@@ -29,7 +27,7 @@ FLG = -Wall -Wextra -funsigned-char -fno-signed-char  $(OPT) $(DEB) -std=c11 -m6
 all: $(NAME)
 
 $(NAME):$(OBJ) libft/libft.a printf/libftprintf.a data/libftdata.a
-	gcc -o ft_data $(OBJ) $(INC) $(FLG) $(LIB) libft/libft.a printf/libftprintf.a data/libftdata.a
+	gcc -o ft_data $(OBJ) $(INC) $(FLG) libft/libft.a printf/libftprintf.a data/libftdata.a
 	
 obj/%.o: src/%.c
 	@mkdir -p obj
