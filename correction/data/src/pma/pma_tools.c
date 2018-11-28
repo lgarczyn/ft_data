@@ -54,10 +54,6 @@ void		pmait_display(t_pmait *it, t_printer print_key, t_printer print_val)
 {
 	size_t	i;
 
-	ft_putnbr_64(it->id);
-	ft_putstr("->");
-	ft_putnbr_64(it->end);
-	ft_putchar('\n');
 	ft_putspace(ft_unumlen(pma_size(it->pma)) + 3);
 	i = 0;
 	while (i < pma_size(it->pma))
