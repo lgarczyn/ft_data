@@ -1,6 +1,6 @@
 %******************************************************************************%
 %                                                                              %
-%                  sample.en.tex for LaTeX                                     %
+%                  ft_data.en.tex for LaTeX                                     %
 %                  Created on : Tue Mar 10 13:27:28 2015                       %
 %                  Made by : David "Thor" GIRON <thor@42.fr>                   %
 %                  Updated by : Catherine "Cat" MADINIER <cat@42.fr>           %
@@ -8,7 +8,7 @@
 %******************************************************************************%
 
 \documentclass{42-en}
-
+\graphicspath{ {./images/} }
 
 %******************************************************************************%
 %                                                                              %
@@ -19,14 +19,13 @@
 
 
 
-                           \title{Sample document}
-                          \subtitle{Awesome subtitle}
-                       \member{Your Name}{your@mail.com}
+                           \title{ft_data}
+                          \subtitle{Now go, and cache miss no more}
+                       \member{Louis Garczynski}{lgarczyn@student.42.fr}
                         \member{42 Staff}{pedago@42.fr}
 
 \summary {
-  This document is a sample and an introduction to \texttt{LaTeX} and
-  the style class homemade by \href{www.42.fr}{42}.
+  An introduction from simple to mid-level performance-oriented generic data structures
 }
 
 \maketitle
@@ -41,27 +40,55 @@
 %******************************************************************************%
 \chapter{Foreword}
 
-    The foreword section of a \texttt{42} subject is usually not
-    related in any way to the actual topic of the subject. The idea is
-    to share some jokes (often questionable) or something that the
-    community might be interested in.\\
+    \includegraphics{universe}
 
+    Your name is KANAYA MARYAM.\\
 
+    You are one of the few of your kind who can withstand the BLISTERING ALTERNIAN SUN,
+    and perhaps the only who enjoys the feel of its rays.
+    As such, you are one of the few of your kind who has taken a shining to LANDSCAPING.
+    You have cultivated a lush oasis around your hive, and in particular,
+    you have honed your craft through the art of TOPIARY,
+    sculpting your trees to match the PUFFY ORACLES from your dreams.
+    You have embraced the tool of this trade,
+    which conveniently is the weapon of choice for those who would hunt the
+    HEINOUS BROODS OF THE UNDEAD which crawl from the sand at sunrise to feast on the light and the living.\\
 
+    It would be convenient if you actually hunted them,
+    but it is of course far too dangerous,
+    every bit as suicidal as attempting to poach the terrible MUSCLEBEASTS who roam at night.
+    So you indulge in your bright fascination with the grim through literature.
+    Just before the sun goes down and you join your flora in rest,
+    you immerse yourself in tales of RAINBOW DRINKERS and SHADOW DROPPERS and FORBIDDEN PASSION.\\
 
+    You are one of the few of your kind with JADE GREEN BLOOD.
+    As such you are one of the few who could be selected and raised by a VIRGIN MOTHER GRUB,
+    an event so rare as to elude documented precedent.
+    She would defend you from desert threats,
+    and though her life would be short,
+    in time you would assure her of progeny.\\
 
-    % Spacing in the source code does not influence spacing in the
-    % generated pdf. The blank lines aboves and below won't appear.
-    % Instead, use \newline (or its shortcut \\) and \newpage to
-    % create vertical spacing.
+    You are one of the few of your kind whose affection for the aesthetic strongly overpowers
+    instinctive regard for the utilitarian.
+    As such, you are one of the few of your kind who has developed a zeal for FASHION and DESIGN and LIVELY COLORFUL PATTERNS.
+    You decorate your hive with FLORA and FABRIC, as delicately or aggressively as inspiration demands.
+    You are a SEAMSTRESS or a RAGRIPPER or a TREETRIMMER or a LUMBERJACK, whichever you care to be,
+    and your unique hive is equipped with a great supply of advanced technology to accommodate your interests.
+    The technology and indeed the hive itself were all recovered from the ruins nearby when you were very young.
+    The seed of your hive was deployed on the volcanic rocks beneath the sand with the assistance of your lusus
+    and her remarkable burrowing skills, and you have lived there happily together since.\\
 
+    You know the ruins and the hive and everything here that is not sand and rock originated from the world of your dreams.
+    You also know that one day you will visit this world while you are awake. That day is today.\\
 
+    Your trolltag is grimAuxiliatrix and you Tend To Enunciate Each Word You Speak Very Clearly And Carefully\\
 
-
+    What will you do?\\
 
     So, let's use the foreword section of this \texttt{42} subject
     template to introduce the content of this document and
-    its goals. Specifically, the formatting of a trivial
+    its goals.
+    Specifically, the formatting of a trivial
     \texttt{LaTeX} document and the normalized chaptering of our
     subjects. If you read this from the pdf, don't forget to open the
     source file (\texttt{sample.en.tex} file) next to it, in
@@ -229,11 +256,29 @@ int main( void ) {
 %******************************************************************************%
 \chapter{Introduction}
 
-    The introduction is a presentation of the project outline. It's good
-    practice to specify some context and some ideas about what needs to be
-    done. So with these few lines, students get a global overview
-    of the addressed topics.
+    So you've learned how to make linked lists, and binary trees. You're proud of yourself.\\
 
+    Don't be.\\
+
+    In fact, accept that both of these are terrible. Any data structure that calls
+    malloc at every insert is terrible. No exceptions\\
+
+    If you are familiar with the foreword, it meant you might have read the bestseller "Data Structures for Assholes".
+    I could have used that as a foreword, but hey, it might have relevant, and we don't want that.
+
+    Your first data structure will the be the dynamic array. Excidingly boring, but you won't look
+    inadequate in front of your future spouse's family when they ask "how do you store text" and you reply
+    "character by character in a linked list" like a moron.
+
+    Second will be the bitset. Because who can say no to reducing your memory overhead by 8.
+
+    Third will be a queue, because you gotta learn to write that at some point.
+
+    Fourth will be a sorted array, to get yourself ready for the
+
+    Fifth, a packed memory array, or the poor-man's-btree, and the smart-man's-hashtable.
+
+    Google each of them, ask yourself "can I do that", then think again.
 
 
 %******************************************************************************%
@@ -243,13 +288,15 @@ int main( void ) {
 %******************************************************************************%
 \chapter{Goals}
 
-    This chapter explains the educational interest of your project,
-    because in the end a project is only a means to discover and
-    explore new topics. Take our \texttt{42} \texttt{C++}
-    project \texttt{Nibbler}. Despite looking like a simple
-    \texttt{Snake} game, this project introduces the students to the
-    creation of an API and additional plugins for a \texttt{C++} program.
+    To not use linked lists. To delete them from your libft. To never. Speak. Of. Them. Again.
 
+    But seriously, the goal is not just an introduction to data structures, but also a tool
+    that can be used with any 42 C projects and drastically reduce teh amount of copy-pasted code, such
+    as sorts, reallocs, inserts, etc.
+
+    If you do your job well, you'll have a safe library of extremely multi-purpose tools for any situation.
+
+    I even included a 3000-lines colorful testing main ! How kind of me.
 
 
 %******************************************************************************%
@@ -259,8 +306,60 @@ int main( void ) {
 %******************************************************************************%
 \chapter{General instructions}
 
-    This chapter lists all the basic instructions of a project.
-    Languages, restrictions, authorizations, compilation, etc.
+    This is a C, Norme compliant library project.
+
+    As such, your makefile should produce a "libdata.a" file. It should ideally be placed in a "data"
+    folder, in your root or libft folder. Another Makefile will link the static library/libraries and compile them
+    with the main.c provided in the resources.
+
+    Your library folder must contain a "data.h" file based on the one provided in resources.
+
+    The whole program must compile without warnings or errors.
+
+    Both Makefiles must only compile what is necessary, and be able to fully clean the object files left behind,
+    as for any 42 projects.
+
+    The maximum allowed optimisation level is -O2
+
+    Your program must not crash or cause leaks during valid use. Valid use is defined as:
+
+    "anything in the main.c file, and anything that a user might reasonably do"
+
+    As such, should the main file show any leaks, or crash anytime, you will get 0.
+
+    Correctors will be encouraged to write their own tests.
+
+    Crashes, leaks and memory corruptions are allowed only if the alternative would come at
+    an unreasonable cost is performance, API simplicity or freedom in use.
+
+    Should you hesitate between safe and performant, usually choose safe.
+
+    Should you wish to change the main file, for a SIMPLE and REASONABLE change,
+    that DOESN'T give you an unfair advantage on ANY part of the project, you main join a diff
+    file to be applied to the main during correction.
+
+    You may add personnal tests to the repository, but they must be norme-compliant. 
+
+    You will only have access to these functions, as defined in the main file,
+
+        * xmalloc
+        * xfree
+    
+    As well as
+
+        * write
+
+    but only for error messages and display functions. 
+
+    You are ecouraged to use
+
+        * malloc_usable_size
+        * printf
+
+    during development.
+
+    You must *sigh* have an auteur file in your root. It can however contain anything you want.
+
 
 
 
@@ -271,14 +370,15 @@ int main( void ) {
 %******************************************************************************%
 \chapter{Mandatory part}
 
-    Heart of the subject, the mandatory part describes in detail the
-    work expected and the potentially required tools and/or technologies.
-    The secret of a good subject is the balance between
-    being specific and leaving some room for interpretation and
-    imagination. This balance is very important as it is what will
-    fuel debates and argumentations during peer-evaluations.
+    Fully implement the API, as used by the main.c with the flags 
 
+    * TEST_ARRAY
+    * TEST_BITSET
+    * TEST_QUEUE
+    * TEST_SORTED
+    * TEST_PMA
 
+    turned on. 
 
 %******************************************************************************%
 %                                                                              %
@@ -287,11 +387,29 @@ int main( void ) {
 %******************************************************************************%
 \chapter{Bonus part}
 
-    When students have invested time and efforts in a project and have reached
-    their goals, it's natural to want to go further! The bonus section
-    is here to nurture these ambitions. Of course, the bonus part is
-    available if and only if the mandatory part is complete and flawless.
+    Fully implement 5 of the 6 bonus options from the main.c file:
 
+    * TEST_ARRAY_BONUS
+    * TEST_BITSET_BONUS
+    * TEST_SORTED_BONUS
+    * TEST_PMA_BONUS_IT
+    * TEST_PMA_BONUS_IT_BACK
+    * TEST_PMA_BONUS_MULTI
+
+    Provide performances at least half as fast as the provided baseline.
+
+    Should you have both performances and coverage, you may try for 5 more bonus points.
+
+    Suggested bonuses includes:
+
+    * a define allowing the entire library to switch between the real "realloc" and your
+    implementation. You are not allowed to use it to boost your performances score though.
+
+    * an iterator for the other data structures
+
+    * additional functions such as array_concat, or pma_filter
+
+    Use stdlib, boost and rust APIs for inspiration!
 
 
 %******************************************************************************%
