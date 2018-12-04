@@ -1,0 +1,316 @@
+%******************************************************************************%
+%                                                                              %
+%                  ft_data.en.tex for LaTeX                                    %
+%                  Created on : Tue Mar 10 13:27:28 2015                       %
+%                  Made by : David "Thor" GIRON <thor@42.fr>                   %
+%                  Updated by : Catherine "Cat" MADINIER <cat@42.fr>           %
+%                                                                              %
+%******************************************************************************%
+
+\documentclass{42-en}
+\graphicspath{ {./images/} }
+
+%******************************************************************************%
+%                                                                              %
+%                                    Header                                    %
+%                                                                              %
+%******************************************************************************%
+\begin{document}
+
+
+
+                           \title{ft\_data}
+                          \subtitle{Now go, and cache miss no more}
+                       \member{Louis Garczynski}{lgarczyn@student.42.fr}
+                        \member{42 Staff}{pedago@42.fr}
+
+\summary {
+  An introduction to simple and mid-level performance-oriented generic data structures
+}
+
+%\maketitle
+
+\tableofcontents
+
+
+%******************************************************************************%
+%                                                                              %
+%                                  Foreword                                    %
+%                                                                              %
+%******************************************************************************%
+\chapter{Foreword}
+
+    %ß\includegraphics{universe}
+
+
+    \begin{figure}[H]
+        \begin{center}
+            \includegraphics[width=8cm]{kanaya.jpg}
+        \end{center}
+    \end{figure}
+
+    \newpage
+
+    Your name is \texttt{KANAYA MARYAM}.\\
+
+    You are one of the few of your kind who can withstand the \texttt{BLISTERING ALTERNIAN SUN},
+    and perhaps the only who enjoys the feel of its rays.
+    As such, you are one of the few of your kind who has taken a shining to \texttt{LANDSCAPING}.
+    You have cultivated a lush oasis around your hive, and in particular,
+    you have honed your craft through the art of \texttt{TOPIARY},
+    sculpting your trees to match the \texttt{PUFFY ORACLES} from your dreams.
+    You have embraced the tool of this trade,
+    which conveniently is the weapon of choice for those who would hunt the
+    \texttt{HEINOUS BROODS OF THE UNDEAD} which crawl from the sand at sunrise to feast on the light and the living.\\
+
+    It would be convenient if you actually hunted them,
+    but it is of course far too dangerous,
+    every bit as suicidal as attempting to poach the terrible \texttt{MUSCLEBEASTS} who roam at night.
+    So you indulge in your bright fascination with the grim through literature.
+    Just before the sun goes down and you join your flora in rest,
+    you immerse yourself in tales of \texttt{RAINBOW DRINKERS} and \texttt{SHADOW DROPPERS} and \texttt{FORBIDDEN PASSION}.\\
+
+    You are one of the few of your kind with \texttt{JADE GREEN BLOOD}.
+    As such you are one of the few who could be selected and raised by a \texttt{VIRGIN MOTHER GRUB},
+    an event so rare as to elude documented precedent.
+    She would defend you from desert threats,
+    and though her life would be short,
+    in time you would assure her of progeny.\\
+
+    You are one of the few of your kind whose affection for the aesthetic strongly overpowers
+    instinctive regard for the utilitarian.
+    As such, you are one of the few of your kind who has developed a zeal for
+    \texttt{FASHION} and \texttt{DESIGN} and \texttt{LIVELY COLORFUL PATTERNS}.
+    You decorate your hive with \texttt{FLORA} and \texttt{FABRIC}, as delicately or aggressively as inspiration demands.
+    You are a \texttt{SEAMSTRESS} or a \texttt{RAGRIPPER} or a \texttt{TREETRIMMER} or a \texttt{LUMBERJACK}, whichever you care to be,
+    and your unique hive is equipped with a great supply of advanced technology to accommodate your interests.
+    The technology and indeed the hive itself were all recovered from the ruins nearby when you were very young.
+    The seed of your hive was deployed on the volcanic rocks beneath the sand with the assistance of your lusus
+    and her remarkable burrowing skills, and you have lived there happily together since.\\
+
+    You know the ruins and the hive and everything here that is not sand and rock originated from the world of your dreams.
+    You also know that one day you will visit this world while you are awake. That day is today.\\
+
+    Your trolltag is grimAuxiliatrix and you Tend To Enunciate Each Word You Speak Very Clearly And Carefully\\
+
+    What will you do?
+
+%******************************************************************************%
+%                                                                              %
+%                                 Introduction                                 %
+%                                                                              %
+%******************************************************************************%
+\chapter{Introduction}
+
+    So you've learned how to make linked lists and binary trees. You're proud of yourself.\\
+
+    Time to forget about them, and never use them again. In fact, accept that both of these are terrible.
+    Any data structure implementation that calls malloc at every insert is terrible. No exceptions.\\
+
+    You will implement 5 different data structures, for various different purpose.\\
+
+    You will have access to a rudimentary test suite that will be used to help you
+    write working code and to correct it during your evaluation.\\
+
+    Because of the provided test suite, your implementations will have to follow a strict
+    API, provided to you as a header file. You will have to figure out what most
+    of the functions do, by comparing them to existing data structure libraries,
+    and by reading the test file.
+
+
+%******************************************************************************%
+%                                                                              %
+%                                  Goals                                       %
+%                                                                              %
+%******************************************************************************%
+\chapter{Goals}
+
+    Your project, once finished, will not just have been an introduction to data structures,
+    but also powerful library usable in any 42 C projects, while drastically reducing
+    the amount of copy-pasted code, such as sorts, reallocs, and inserts.\\
+
+    It will allow you to think more modularly, and not reinvent the wheel at every turn.\\
+
+    If you do your job well, you'll have a safe library of multi-purpose tools for any situation.\\
+
+    You will also have to learn how to use the debugging tool of your choice.
+
+%******************************************************************************%
+%                                                                              %
+%                             General instructions                             %
+%                                                                              %
+%******************************************************************************%
+\chapter{General instructions}
+
+    This is a C, Norme compliant library project.\\
+
+    The library should be organized in a seperate repository, containing its
+    Makefile and headers, just like your libft. The repository should be
+    named \texttt{data} and be placed in your libft or root repository.\\
+
+    The library makefile will produce a \texttt{libdata.a} or \texttt{libftdata.a} file.\\
+    
+    The project Makefile will join said library and the provided main.c file.\\
+
+    Do not include the main.c file in your final commit.\\
+
+    The whole program must compile without warnings or errors.\\
+
+    Both Makefiles must only compile what is necessary, and implement the usual rules.\\
+
+    The maximum allowed optimisation level is -O2.\\
+
+    You will only have access to these functions:\\
+    \begin{itemize}\itemsep7pt
+        \item xmalloc
+        \item xfree
+        \item write
+    \end{itemize}
+    
+    \warn {
+        \texttt{xmalloc} and \texttt{xfree} are defined in the main file, and allow the testing suite to measure
+        your memory performances. As such, calling the real malloc anywhere in your implementations
+        will result in a failing grade. If the call was not an accident, but an attempt to trick
+        the memory counter, the corrector may decide to give you a cheating grade of -42.
+    }
+
+    Your implementations must not crash or cause leaks during valid use. Valid use is defined as:
+    \begin{itemize}\itemsep7pt
+        \item anything in the main.c file
+        \item anything that a normal user might reasonably do
+    \end{itemize}
+
+    As such, should the executable built with the provided main file show any leaks,
+    or crash at any time, you will fail the project. The only exception is a potential
+    error in the testing suite, which should be reported to me immediatly.\\
+
+    Correctors will be encouraged to write their own tests, and use the manual tests provided.\\
+
+    You must provide tests for any bonus beyond the suggested ones.\\
+
+    You must have an auteur file in your root repository. It can however contain anything you want.\\
+
+    Crashes, leaks and memory corruptions are allowed only if the alternative would come at
+    an unreasonable cost is performance, in API simplicity or in freedom in use. See "iterator
+    invalidation" in c++.\\
+    
+    \hint {
+        Should you hesitate between safe and fast, usually choose safe.
+    }
+
+    Should you wish to change the main file, for a SIMPLE and REASONABLE change,
+    which DOESN'T give you an unfair advantage on ANY part of the project, you main join a diff
+    file to be applied to the main during evaluation.\\
+
+    \hint {
+        Lookup "debugging c in vscode", \texttt{malloc\_usable\_size} and \texttt{-fsanitize=address}
+        for help during development.
+    }
+
+
+%******************************************************************************%
+%                                                                              %
+%                             Mandatory part                                   %
+%                                                                              %
+%******************************************************************************%
+\chapter{Mandatory part}
+
+    Fully implement the API as used by the main.c with the flags:
+
+    \begin{itemize}\itemsep7pt
+        \item TEST\_ARRAY
+        \item TEST\_BITSET
+        \item TEST\_QUEUE
+        \item TEST\_SORTED
+        \item TEST\_PMA
+    \end{itemize}
+
+    \section{The dynamic array}
+    Excidingly boring, but extremely useful.
+    Your implementation should mirror the c++ vector. Your growth factor should
+    be defined in a constant, to be easily modifiable if you want to prioritize
+    memory or performance.
+
+    \section{The bitset}
+    Because who can say no to reducing your memory overhead by 8?\\
+    It is inspired by the bitset implementation of the Rust and c++ standard libraries.\\
+    Again, the growth factor should be defined as a constant.
+
+    \section{The double ended queue}
+    Inspired by the \texttt{dequeue} implementation in Rust.\\
+    You will very probably have to implement it with a ring buffer.
+
+    \section{The sorted array}
+    A bit exotic, and not very fast, but a good introduction for the following part.
+    Allows for incredibly easy "insert sort" and search.\\
+    You will not allow duplicate elements by default, but may add it as a bonus.
+
+    \section{The packed memory array}
+    Like the btree, binary tree and hashtable, it allows searching
+    for elements in log(n) time. Unlike the hashtable, it can iterate on elements in
+    a specific order. Unlike the binary tree, it is FAST. Unlike the btree,
+    it is not too hard to implement. The API is close to a btreemap in rust or a map in c++.
+
+    Google each of those containers, ask yourself "can I do that", then think again.
+
+    \warn {
+        None of the pointers you receive are meant to be stored directly inside the structure.
+        The reason you receive a size parameter is to copy the memory.
+    }
+
+    \hint {
+        During debug, check the state of your structures every call, using \texttt{malloc\_usable\_size}.
+    }
+
+    \hint {
+        Reimplement realloc, and zero-init all allocated memory. It will make your life much easier.
+    } 
+
+%******************************************************************************%
+%                                                                              %
+%                                 Bonus part                                   %
+%                                                                              %
+%******************************************************************************%
+\chapter{Bonus part}
+
+    \section{Bonuses A: Tested Bonuses}
+        Fully implement 5 of the 6 bonus functions sets as used by the main.c with the flags:
+        \begin{itemize}\itemsep1pt
+            \item TEST\_ARRAY\_BONUS
+            \item TEST\_BITSET\_BONUS
+            \item TEST\_SORTED\_BONUS
+            \item TEST\_PMA\_BONUS\_IT
+            \item TEST\_PMA\_BONUS\_IT\_BACK
+            \item TEST\_PMA\_BONUS\_MULTI
+        \end{itemize}
+    
+    \section{Bonuses B: Custom Bonuses}
+        Some suggestions for your own bonuses:
+        \begin{itemize}\itemsep7pt
+            \item A define to switch between to switch between the real \texttt{realloc} and your implementation.
+            \item Additional functions such as array\_concat, or pma\_filter
+            \item Making a template system to generate a data structure specialized for any type
+            \item Using macros to automatically choose the right size for various functions
+            \item Using the \_Generic macro to check that the right type was inserted
+            \item Using a canary system to check that iterators are still valid when used
+        \end{itemize}
+
+    \warn {
+        Custom bonuses won't be graded unless the tested part is complete
+    }
+
+%******************************************************************************%
+%                                                                              %
+%                           Turn-in and peer-evaluation                        %
+%                                                                              %
+%******************************************************************************%
+\chapter{Turn-in and peer-evaluation}
+
+    Turn in your work using your \texttt{GiT} repository, as
+    usual. Only the work that's in your repository will be graded during
+    the evaluation.
+
+
+
+%******************************************************************************%
+\end{document}
