@@ -1,3 +1,10 @@
+todo:
+    find way to chck for forbidden functions
+    add instructions for profiler use
+    test malloc failure
+    find way to 
+
+
 instructions
 	check norme
     check optimisation level

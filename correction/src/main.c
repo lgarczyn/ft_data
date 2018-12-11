@@ -20,6 +20,22 @@
 #include <fcntl.h>
 #include "data.h"
 
+#define TEST_ARRAY
+#define TEST_ARRAY_BONUS
+#define TEST_BITSET
+#define TEST_BITSET_BONUS
+#define TEST_QUEUE
+#define TEST_SORTED
+#define TEST_SORTED_BONUS
+#define TEST_PMA
+#define TEST_PMA_BONUS_IT
+#define TEST_PMA_BONUS_IT_BACK
+#define TEST_PMA_BONUS_MULTI
+
+#define MEM_TEST_COUNT			1000
+#define GET_MEM_TEST_SPREAD(x)	(x * x / MEM_TEST_COUNT)
+
+// used to use the print_err macro outside of a loop
 int i = 42;
 
 void	print_err(ssize_t a, ssize_t b, int line, int i)
@@ -34,21 +50,6 @@ void	print_err(ssize_t a, ssize_t b, int line, int i)
 #define CHECK_EQ(a, b) do {\
 	if ((a) != (b)) PRINT_ERR(a, b);\
 } while(0)
-
-#define MEM_TEST_COUNT			1000
-#define GET_MEM_TEST_SPREAD(x)	(x * x / MEM_TEST_COUNT)
-
-#define TEST_ARRAY
-#define TEST_ARRAY_BONUS
-#define TEST_BITSET
-#define TEST_BITSET_BONUS
-#define TEST_QUEUE
-#define TEST_SORTED
-#define TEST_SORTED_BONUS
-#define TEST_PMA
-#define TEST_PMA_BONUS_IT
-#define TEST_PMA_BONUS_IT_BACK
-#define TEST_PMA_BONUS_MULTI
 
 #define BUFFER_SIZE 12
 

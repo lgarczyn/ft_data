@@ -148,7 +148,11 @@
     Makefile and headers, just like your libft. The repository should be
     named \texttt{data} and be placed in your libft or root repository.\\
 
-    The library makefile will produce a \texttt{libdata.a} or \texttt{libftdata.a} file.\\
+    Whatever you chose to do, your library will have its own makefile,
+    its own folder, and its own static library file (.a).
+    
+    The static library must not contain your libft, as it will be checked for
+    any forbidden functions.
     
     The project Makefile will join said library and the provided main.c file.\\
 
@@ -157,6 +161,9 @@
     The whole program must compile without warnings or errors.\\
 
     Both Makefiles must only compile what is necessary, and implement the usual rules.\\
+
+    Both makefile won't recompile valid .o files. For example running "make" twice should do nothing
+    the second time.
 
     The maximum allowed optimisation level is -O2.\\
 
