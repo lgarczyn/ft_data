@@ -46,8 +46,6 @@ SRC = $(addprefix src/, $(addsuffix .c, $(NAMES)))
 
 INC = -I../libft/includes -Iincludes
 
-LIB = -L ../libft/ -lft
-
 DEB = -g -g3 #-fsanitize=address
 
 OPT = #-O2

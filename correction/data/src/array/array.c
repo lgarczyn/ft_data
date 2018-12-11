@@ -17,7 +17,7 @@ void			check_array(const t_array *a)
 {
 	if (a->warning || a->pos > a->size || (!a->size != !a->data))
 	{
-		ft_perror("CORRUPTED ARRAY\n");
+		ft_putstr_fd("CORRUPTED ARRAY\n", STDERR);
 	}
 }
 

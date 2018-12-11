@@ -2,8 +2,8 @@ todo:
     find way to chck for forbidden functions
     add instructions for profiler use
     test malloc failure
-    find way to 
-
+    update subject for correction
+    remove diff thing
 
 instructions
 	check norme

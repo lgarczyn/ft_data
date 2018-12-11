@@ -1,0 +1,307 @@
+
+# **************************************************************************** #
+#                                                                              #
+#               ft_data.en.yml for ft_data                                     #
+#               Created on : Mon Oct  5 18:10:13 2015                          #
+#               Made by : David "Thor" GIRON <thor@staff.42.fr>                #
+#               Updated by : Catherine "Cat" MADINIER <cat@42.fr>              #
+#                                                                              #
+# **************************************************************************** #
+
+# **************************************************************************** #
+#                                                                              #
+#    The source code of the scales used during 42's peer-evaluations is a      #
+#  YAML description. This description is then uploaded to the school's         #
+#  intranet by the Pedago team in order to generate the web form that the      #
+#  students will use for peer-evaluation.                                      #
+#                                                                              #
+#    This template documents in detail the style and content of a scale's      #
+#  YAML description. As a consequence, this template is a perfect starting     #
+#  point to write your own scale. Please don't hesitate to delete documentation#
+#  comment boxes such as this one once your scale is complete, but also be     #
+#  careful not to delete chaptering comment boxes in order to help anyone      #
+#  who might work on this scale after you. Documentation boxes have the '%'    #
+#  character in their bottom right corner to help you identify them.           #
+#  Chaptering boxes don't have it.                                             #
+#                                                                              #
+#    The architecture of the scales of regular projects allows you to group    #
+#  together questions about a common topic under a same section. The author    #
+#  of the scale of a regular project can organize his or her sections and      #
+#  their questions as he or she wishes, but the following requirements must    #
+#  be respected:                                                               #
+#                                                                              #
+#    - A scale is always made of a header block followed by one or more        #
+#      section blocks.                                                         #
+#    - Each section block is always made of one or more question blocks.       #
+#                                                                              #
+#    42 uses a "skills" system inspired from role playing games to represent   #
+#  the abilities of the students. 2 to 4 skills are assigned to each projet,   #
+#  and each time a student succeeds, he or she earns experience points         #
+#  for the project's matching skills. Here is the comprehensive list of the    #
+#  skills in use at 42:                                                        #
+#                                                                              #
+#  - Adaptation & creativity                                                   #
+#  - Algorithms & AI                                                           #
+#  - Company experience                                                        #
+#  - DB & Data                                                                 #
+#  - Functional programming                                                    #
+#  - Graphics                                                                  #
+#  - Group & interpersonal                                                     #
+#  - Imperative programming                                                    #
+#  - Network & system administration                                           #
+#  - Object-oriented programming                                               #
+#  - Organization                                                              #
+#  - Parallel computing                                                        #
+#  - Rigor                                                                     #
+#  - Security                                                                  #
+#  - Technology integration                                                    #
+#  - Unix                                                                      #
+#  - Web                                                                       #
+#                                                                              #
+#    A scale couples a distinct bank of 100 points to EACH selected skill,     #
+#  NOT a single bank of 100 points shared among the 2 to 4 selected skills.    #
+#  Each bank must be allocated to the different questions.                     #
+#                                                                              #
+#    Let's take a simple example. Let a project named "Lube" use the skills    #
+#  "Group & interpersonal", "Adaptation & creativity" and "Web".               #
+#  As a consequence, 100 points are allocated to "Group & interpersonal",      #
+#  100 points to "Adaptation & creativity", and 100 points to "Web".           #
+#  Let's imagine that the scale has 2 sections with 3 questions per section,   #
+#  the author could spend his or her banks like:                               #
+#                                                                              #
+#  Section 1:                                                                  #
+#      Question 1:                                                             #
+#          Group & interpersonal:    0                                         #
+#          Adaptation & creativity: 20                                         #
+#          Web:                     33                                         #
+#      Question 2:                                                             #
+#          Group & interpersonal:   10                                         #
+#          Adaptation & creativity: 20                                         #
+#          Web:                     33                                         #
+#      Question 3:                                                             #
+#          Group & interpersonal:    0                                         #
+#          Adaptation & creativity: 20                                         #
+#          Web:                     34                                         #
+#  Section 2:                                                                  #
+#      Question 1:                                                             #
+#          Group & interpersonal:   33                                         #
+#          Adaptation & creativity: 20                                         #
+#          Web:                      0                                         #
+#      Question 2:                                                             #
+#          Group & interpersonal:   23                                         #
+#          Adaptation & creativity: 15                                         #
+#          Web:                      0                                         #
+#      Question 3:                                                             #
+#          Group & interpersonal:   34                                         #
+#          Adaptation & creativity:  5                                         #
+#          Web:                      0                                         #
+#                                                                              #
+#    In the submodule "resources/" coupled to your repository, you will find   #
+#  a script named "scale_validator.rb". This script takes a scale description  #
+#  file as a parameter, such as the one you are reading right now, and checks  #
+#  its syntax and semantics. In case of error, the problematic parts of your   #
+#  description will be highlighted. Please note that you will also find the    #
+#  script "scaleFormat.py" to help you format your scale once it's written.   %#
+# **************************************************************************** #
+
+name: ft_data
+is_primary: true
+lg: en
+comment: ''
+introduction_md: |
+
+  In order to maintain high evaluation standards, you are expected to:
+
+  - Remain polite, courteous, respectful and constructive at every moment
+    of the discussion. Trust between you and our community depends on
+    your behaviour.
+
+  - Highlight the flaws and issues you uncover in the turned-in
+    work to the evaluated student or team, and take the time to discuss
+    every aspect extensively.
+
+  - Please take into account that discrepancies regarding the expected
+    work or functionalities definitions might occur. Keep an open
+    mind towards the opposite party (is he or she right or wrong?),
+    and grade as honestly as possible. 42's pedagogy only makes
+    sense if peer-evaluations are carried out seriously.
+
+
+# **************************************************************************** #
+# Entry 'disclamer_md':                                                        #
+#   This entry is reserved to provide the students with information regarding  #
+#   sensitive or confidential aspects of the project and/or the techs used.    #
+#   In the specific situation where you write this scale for a project in      #
+#   partnership with a company, please use this entry to remind the students   #
+#   of the context of the partnership, as well as a few words about your       #
+#   business and expectations.                                                 #
+#   Otherwise, please leave this entry blank.                                 %#
+# **************************************************************************** #
+disclaimer_md: ''
+
+
+# **************************************************************************** #
+# Entry 'guidelines_md':                                                       #
+#   This entry details the generail evaluation instructions. If your project   #
+#   includes exotic turn-in instructions, please write them again here.        #
+#   Otherwise, leave the default instructions untouched.                       #
+#   Note: you will read mentions of 'flags' below. These 'flags' only exist on #
+#   the generated web form and allow the assessor to tag an unusual situation: #
+#   no work turned in, compilation failure, runtime error, cheating,           #
+#   and so on.                                                                %#
+# **************************************************************************** #
+guidelines_md: |
+
+  - You must grade only what exists in the GiT repository of the
+    student or team.
+
+  - Remember to check the GiT repository's ownership: is it the
+    student's or team's repository, and for the right project?
+
+  - Check thoroughly that no wicked aliases have been used to trick
+    you into grading something other than the genuine repository.
+
+  - Any script supposed to ease the evaluation provided by one party
+    must be thoroughly checked be the other party in order to avoid unpleasant
+    situations.
+
+  - If the student in charge of the grading hasn't done the project
+    yet, it is mandatory that he or she reads it before starting the
+    evaluation.
+
+  - Use the available flags on this scale to tag an empty work, a non
+    functional work, a coding style ("norm") error if applicable,
+    cheating, and so on. If a flag is set, the grade is 0 (or -42 in
+    case of cheating). However, cheating case excluded, you are encouraged
+    to carry on discussing what went wrong, why, and how to address it,
+    even if the grading itself is over.
+
+correction_number: 3
+duration: 2
+sections:
+- name: Preliminaries
+  position: 1
+  description: ''
+  questions:
+  - name: Bases
+    position: 1
+    guidelines: |
+        Before starting anything, check that:
+        - the project is in C
+        - the project follows the norme
+        - the ft_data code is not directly in the root repository
+        - at least two makefiles exist, one compiling the ft_data code and one linking it to the main.c
+        - the makefiles contain the usual rules
+        If any of those are incorrect, no point can be awarded and the evaluation stops
+    rating: bool
+    kind: standard
+    questions_skills:
+  - name: Compilation
+    position: 2
+    guidelines: | 
+        - Download the main.c file from the project resources, and drop it in the root repository.
+        - Run "make re", and check for any error or warning.
+        - Run "make" and check that nothing compiles again.
+        - Attempting to hide any warning or error through Makefile hijinks is an instant -42.
+        - Verify that -O2 is the maximum optimisation level used (no -O3 or -Ofast)
+        - Check that the only functions called by the project (directly or through libft) are:
+          - xmalloc
+          - xfree
+          - write
+        #The student may provide a diff file to modify the main. If said file is provided,
+        #open it, and ask the student to explain every single part in excruciating detail.
+        #If the student is incapable of explaining a part, or if it appears that such modification
+        #would give him an advantage, ignore the diff file.
+        #Modifications that give an advantage include modifying any numerical constant in the main,
+        #or modifying the xmalloc/xfree functions or similar.
+    rating: bool
+    kind: standard
+    questions_skills:
+  - name: Full compilation
+    position: 3
+    guidelines: | 
+        Ask the student which parts of the project he has completed.
+        Uncomment the appropriate lines in the main file.
+        For example, if the student has completed every mandatory parts and the first bonus, uncomment:
+          - \#define TEST_ARRAY
+          - \#define TEST_BITSET
+          - \#define TEST_QUEUE
+          - \#define TEST_SORTED
+          - \#define TEST_PMA
+          - \#define TEST_ARRAY_BONUS
+        Run "make" and verify that the library is not compiled again, as we have not modified it.
+    rating: bool
+    kind: standard
+    questions_skills:
+
+  - name: Array
+    position: 2
+    guidelines: |
+        Use the compiled program to verify the array implementation.
+        Only give this point if:
+          - All tests are correct
+          - The implementation run time and memory scores are at most 200%
+          - The user can justify his growth algorithm, and easily change the factor
+          - The numbers of allocations doesn't grow linearly with the size of the array, or Oarray < O(n)
+          - You cannot find any error such as data corruption, bad implementation or leaks
+          - The implementation doesn't print anything, unless it's been used incorrectly
+        
+        You will continue the evaluation unless you experience an unplanned crash.
+    rating: bool
+    kind: standard
+    questions_skills:
+    - percentage: 20
+      name: Adaptation & creativity
+    - percentage: 30
+      name: Algorithms & AI
+    - percentage: 10
+      name: DB & Data
+    - percentage: 10
+      name: Imperative programming
+    - percentage: 15
+      name: Object-oriented programming
+    - percentage: 15
+      name: Rigor
+
+  - name: Mandatory bonuses
+    position: 7
+    guidelines: |
+      Run the tests for every implemented bonus.
+      Every correct bonus gives one point, up to 5 points. 
+    rating: multi
+    kind: bonus
+    questions_skills:
+    - percentage: 20
+      name: Adaptation & creativity
+    - percentage: 30
+      name: Algorithms & AI
+    - percentage: 10
+      name: DB & Data
+    - percentage: 10
+      name: Imperative programming
+    - percentage: 15
+      name: Object-oriented programming
+    - percentage: 15
+      name: Rigor
+  
+  - name: Personnal bonuses
+    position: 8
+    guidelines: |
+      Only correct personnal bonuses if you graded the mandatory bonuses as 5 points.
+      If appropriate, the user should provide you with a main.c to check the personnal bonuses. 
+      Use your own discretion to decide if a bonus is actually worth 1 point, or maybe even 2 points. 
+    rating: multi
+    kind: bonus
+    questions_skills:
+    - percentage: 20
+      name: Adaptation & creativity
+    - percentage: 30
+      name: Algorithms & AI
+    - percentage: 10
+      name: DB & Data
+    - percentage: 10
+      name: Imperative programming
+    - percentage: 15
+      name: Object-oriented programming
+    - percentage: 15
+      name: Rigor
