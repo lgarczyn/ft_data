@@ -1,9 +1,9 @@
 todo:
     find way to chck for forbidden functions
-    add instructions for profiler use
     test malloc failure
     update subject for correction
     remove diff thing
+    rename bonus options
 
 instructions
 	check norme
@@ -29,29 +29,6 @@ advice
     init memory to 0
     reimplement realloc
         (can offer some cheap perf if authorized)
-
-bonus implementation
-    array
-    bitset
-    sorted
-    pmait
-    pmait 2
-    pmait 3
-
-bonus performance
-    good perf mem
-        total vs max total
-        for every functions ?
-        prevent min-maxxing
-    good perf cpu
-        vs standard on school computer
-        not much to do
-
-bonus suggestions
-    a switch allowing pma or sorted to have duplicate elements
-    some way to templatize all that using makefile MAGIC
-    1 point per 5 small functions, or 3 larger functions
-    possibility to use realloc if allowed
 
 mandatory header parts
     prototypes

@@ -195,7 +195,7 @@ sections:
         If any of those are incorrect, no point can be awarded and the evaluation stops
     rating: bool
     kind: standard
-    questions_skills:
+    questions_skills: []
   - name: Compilation
     position: 2
     guidelines: | 
@@ -216,7 +216,7 @@ sections:
         #or modifying the xmalloc/xfree functions or similar.
     rating: bool
     kind: standard
-    questions_skills:
+    questions_skills: []
   - name: Full compilation
     position: 3
     guidelines: | 
@@ -232,10 +232,10 @@ sections:
         Run "make" and verify that the library is not compiled again, as we have not modified it.
     rating: bool
     kind: standard
-    questions_skills:
+    questions_skills: []
 
   - name: Array
-    position: 2
+    position: 4
     guidelines: |
         Use the compiled program to verify the array implementation.
         Only give this point if:
@@ -250,58 +250,166 @@ sections:
     rating: bool
     kind: standard
     questions_skills:
-    - percentage: 20
+    - percentage: 0
       name: Adaptation & creativity
-    - percentage: 30
+    - percentage: 0
       name: Algorithms & AI
-    - percentage: 10
+    - percentage: 0
       name: DB & Data
     - percentage: 10
       name: Imperative programming
-    - percentage: 15
+    - percentage: 10
       name: Object-oriented programming
     - percentage: 15
       name: Rigor
 
-  - name: Mandatory bonuses
-    position: 7
+  - name: Bitset
+    position: 5
     guidelines: |
-      Run the tests for every implemented bonus.
-      Every correct bonus gives one point, up to 5 points. 
-    rating: multi
-    kind: bonus
+        Use the compiled program to verify the bitset implementation.
+        Only give this point if:
+          - All tests are correct
+          - The implementation run time and memory scores are at most 200%
+          - The user can explain the bitwise operations used to get and set bits
+          - You cannot find any error such as data corruption, bad implementation or leaks
+          - The implementation doesn't print anything, unless it's been used incorrectly
+        
+        You will continue the evaluation unless you experience an unplanned crash.
+    rating: bool
+    kind: standard
     questions_skills:
-    - percentage: 20
+    - percentage: 5
       name: Adaptation & creativity
-    - percentage: 30
+    - percentage: 0
       name: Algorithms & AI
-    - percentage: 10
+    - percentage: 5
       name: DB & Data
     - percentage: 10
       name: Imperative programming
+    - percentage: 10
+      name: Object-oriented programming
+    - percentage: 10
+      name: Rigor
+
+  - name: Double Ended Queue
+    position: 6
+    guidelines: |
+        Use the compiled program to verify the queue implementation.
+        Only give this point if:
+          - Tests, memory, prints and runtimes are valid as before.
+          - The user can explain how they achieved O(1) push and pop operations.
+          - You cannot find any error such as data corruption, bad implementation or leaks.
+        
+        You will continue the evaluation unless you experience an unplanned crash.
+    rating: bool
+    kind: standard
+    questions_skills:
+    - percentage: 5
+      name: Adaptation & creativity
+    - percentage: 10
+      name: Algorithms & AI
+    - percentage: 5
+      name: DB & Data
+    - percentage: 10
+      name: Imperative programming
+    - percentage: 10
+      name: Object-oriented programming
+    - percentage: 10
+      name: Rigor
+
+  - name: Sorted Array
+    position: 7
+    guidelines: |
+        Use the compiled program to verify the sorted array implementation.
+        Only give this point if:
+          - Tests, memory, prints and runtimes are valid as before.
+          - The user can explain the binary search.
+          - You cannot find any error such as data corruption, bad implementation or leaks.
+        
+        You will continue the evaluation unless you experience an unplanned crash.
+    rating: bool
+    kind: standard
+    questions_skills:
     - percentage: 15
+      name: Adaptation & creativity
+    - percentage: 15
+      name: Algorithms & AI
+    - percentage: 15
+      name: DB & Data
+    - percentage: 25
+      name: Imperative programming
+    - percentage: 10
       name: Object-oriented programming
     - percentage: 15
       name: Rigor
-  
-  - name: Personnal bonuses
+
+  - name: Packed Memory Array
     position: 8
     guidelines: |
-      Only correct personnal bonuses if you graded the mandatory bonuses as 5 points.
+        Use the compiled program to verify the packed memory array implementation.
+        Only give this point if:
+          - Tests, memory, prints and runtimes are valid as before.
+          - The user can explain the search, insert and rebalance algorithms
+          - The user can explain more or less why inserts and deletes are O(log(n))
+          - The user can explain the choice of structure (seperating or packing data, key and flags)
+          - You cannot find any error such as data corruption, bad implementation or leaks.
+        
+        You will continue the evaluation unless you experience an unplanned crash.
+    rating: bool
+    kind: standard
+    questions_skills:
+    - percentage: 50
+      name: Adaptation & creativity
+    - percentage: 50
+      name: Algorithms & AI
+    - percentage: 50
+      name: DB & Data
+    - percentage: 20
+      name: Imperative programming
+    - percentage: 10
+      name: Object-oriented programming
+    - percentage: 20
+      name: Rigor
+
+  - name: Optional implementations
+    position: 9
+    guidelines: |
+      Run the tests for every implemented bonus, and follow the previous methodology.
+      Every correct bonus gives one point, up to 5 points. 
+    rating: multi
+    kind: standard
+    questions_skills:
+    - percentage: 25
+      name: Adaptation & creativity
+    - percentage: 25
+      name: Algorithms & AI
+    - percentage: 25
+      name: DB & Data
+    - percentage: 25
+      name: Imperative programming
+    - percentage: 50
+      name: Object-oriented programming
+    - percentage: 30
+      name: Rigor
+  
+  - name: Bonuses
+    position: 10
+    guidelines: |
+      Only correct bonuses if both the mandatory and optional parts are perfect.
       If appropriate, the user should provide you with a main.c to check the personnal bonuses. 
       Use your own discretion to decide if a bonus is actually worth 1 point, or maybe even 2 points. 
     rating: multi
     kind: bonus
     questions_skills:
-    - percentage: 20
+    - percentage: 25
       name: Adaptation & creativity
-    - percentage: 30
+    - percentage: 25
       name: Algorithms & AI
-    - percentage: 10
+    - percentage: 25
       name: DB & Data
-    - percentage: 10
+    - percentage: 25
       name: Imperative programming
-    - percentage: 15
+    - percentage: 25
       name: Object-oriented programming
-    - percentage: 15
+    - percentage: 25
       name: Rigor

@@ -133,7 +133,8 @@
 
     If you do your job well, you'll have a safe library of multi-purpose tools for any situation.\\
 
-    You will also have to learn how to use the debugging tool of your choice.
+    You will also have to learn how to use the debugging tool of your choice, and most likely
+    a profiler too.
 
 %******************************************************************************%
 %                                                                              %
@@ -142,30 +143,26 @@
 %******************************************************************************%
 \chapter{General instructions}
 
-    This is a C, Norme compliant library project.\\
+    This is a C, Norm compliant library project.\\
 
-    The library should be organized in a seperate repository, containing its
+    The library should be organized in a separate repository, containing its
     Makefile and headers, just like your libft. The repository should be
     named \texttt{data} and be placed in your libft or root repository.\\
 
     Whatever you chose to do, your library will have its own makefile,
-    its own folder, and its own static library file (.a).
+    its own folder, and its own static library file (.a).\\
     
-    The static library must not contain your libft, as it will be checked for
-    any forbidden functions.
-    
-    The project Makefile will join said library and the provided main.c file.\\
+    You root repository will contain a Makefile to build a program
+    with the provided main.c file and the static library.\\
 
     Do not include the main.c file in your final commit.\\
 
     The whole program must compile without warnings or errors.\\
 
-    Both Makefiles must only compile what is necessary, and implement the usual rules.\\
+    Both Makefiles must only compile when necessary, and implement the usual rules.
+    Running "make" twice should do nothing the second time.\\
 
-    Both makefile won't recompile valid .o files. For example running "make" twice should do nothing
-    the second time.
-
-    The maximum allowed optimisation level is -O2.\\
+    The maximum allowed optimization level is -O2.\\
 
     You will only have access to these functions:\\
     \begin{itemize}\itemsep7pt
@@ -189,99 +186,81 @@
 
     As such, should the executable built with the provided main file show any leaks,
     or crash at any time, you will fail the project. The only exception is a potential
-    error in the testing suite, which should be reported to me immediatly.\\
+    error in the testing suite, which should be reported to me immediately.\\
 
     Correctors will be encouraged to write their own tests, and use the manual tests provided.\\
 
-    You must provide tests for any bonus beyond the suggested ones.\\
+    You must provide tests for your bonuses to prove that they work.\\
 
     You must have an auteur file in your root repository. It can however contain anything you want.\\
 
     Crashes, leaks and memory corruptions are allowed only if the alternative would come at
     an unreasonable cost is performance, in API simplicity or in freedom in use. See "iterator
-    invalidation" in c++.\\
+    invalidation" in c++. Crashing may be the safest option.\\
     
     \hint {
         Should you hesitate between safe and fast, usually choose safe.
     }
 
-    Should you wish to change the main file, for a SIMPLE and REASONABLE change,
-    which DOESN'T give you an unfair advantage on ANY part of the project, you main join a diff
-    file to be applied to the main during evaluation.\\
-
     \hint {
-        Lookup "debugging c in vscode", \texttt{malloc\_usable\_size} and \texttt{-fsanitize=address}
+        Lookup "debugging c in vscode", "instruments time profiler",
+        \texttt{malloc\_usable\_size} and \texttt{-fsanitize=address}
         for help during development.
     }
-
 
 %******************************************************************************%
 %                                                                              %
 %                             Mandatory part                                   %
 %                                                                              %
 %******************************************************************************%
-\chapter{Mandatory part}
+\chapter{Mandatory Part}
 
-    Fully implement the API as used by the main.c with the flags:
+    \section{Basic implementation}
+        Fully implement the API as used by the main.c with the flags:
 
-    \begin{itemize}\itemsep7pt
-        \item TEST\_ARRAY
-        \item TEST\_BITSET
-        \item TEST\_QUEUE
-        \item TEST\_SORTED
-        \item TEST\_PMA
-    \end{itemize}
+        \begin{itemize}\itemsep7pt
+            \item TEST\_ARRAY
+            \item TEST\_BITSET
+            \item TEST\_QUEUE
+            \item TEST\_SORTED
+            \item TEST\_PMA
+        \end{itemize}
 
-    \section{The dynamic array}
-    Excidingly boring, but extremely useful.
-    Your implementation should mirror the c++ vector. Your growth factor should
-    be defined in a constant, to be easily modifiable if you want to prioritize
-    memory or performance.
+        More information is available in the data.h file.
 
-    \section{The bitset}
-    Because who can say no to reducing your memory overhead by 8?\\
-    It is inspired by the bitset implementation of the Rust and c++ standard libraries.\\
-    Again, the growth factor should be defined as a constant.
+        \subsection{The dynamic array}
+        Exceedingly boring, but extremely useful.
+        Your implementation should mirror the c++ vector. Your growth factor should
+        be defined in a constant, to be easily modifiable if you want to prioritize
+        memory or performance.
 
-    \section{The double ended queue}
-    Inspired by the \texttt{dequeue} implementation in Rust.\\
-    You will very probably have to implement it with a ring buffer.
+        \subsection{The bitset}
+        Because who can say no to reducing your memory overhead by 8?\\
+        It is inspired by the bitset implementation of the Rust and c++ standard libraries.\\
 
-    \section{The sorted array}
-    A bit exotic, and not very fast, but a good introduction for the following part.
-    Allows for incredibly easy "insert sort" and search.\\
-    You will not allow duplicate elements by default, but may add it as a bonus.
+        \subsection{The double ended queue}
+        Inspired by the \texttt{dequeue} implementation in Rust.\\
+        You will very probably have to implement it with a ring buffer.
 
-    \section{The packed memory array}
-    Like the btree, binary tree and hashtable, it allows searching
-    for elements in log(n) time. Unlike the hashtable, it can iterate on elements in
-    a specific order. Unlike the binary tree, it is FAST. Unlike the btree,
-    it is not too hard to implement. The API is close to a btreemap in rust or a map in c++.
+        \subsection{The sorted array}
+        A bit exotic, and not very fast, but a good introduction for the following part.
+        Allows for incredibly easy "insert sort" and search.\\
+        You will not allow duplicate elements by default, but may add the option as a bonus.
 
-    Google each of those containers, ask yourself "can I do that", then think again.
+        \subsection{The packed memory array}
+        Like the btree, binary tree and hashtable, it allows searching
+        for elements in log(n) time. Unlike the hashtable, it can iterate on elements in
+        a specific order. Unlike the binary tree, it is FAST. Unlike the btree,
+        it is not too hard to implement. The API is close to a btreemap in rust or a map in c++.
 
-    \warn {
-        None of the pointers you receive are meant to be stored directly inside the structure.
-        The reason you receive a size parameter is to copy the memory.
-    }
+        Google each of those containers, ask yourself "can I do that", then think again.
 
-    \hint {
-        During debug, check the state of your structures every call, using \texttt{malloc\_usable\_size}.
-    }
+    /section{Full implementation}
 
-    \hint {
-        Reimplement realloc, and zero-init all allocated memory. It will make your life much easier.
-    } 
+        You can validate the project without this part, but you won't get much XP,
+        and any bonus will be ignored.
 
-%******************************************************************************%
-%                                                                              %
-%                                 Bonus part                                   %
-%                                                                              %
-%******************************************************************************%
-\chapter{Bonus part}
-
-    \section{Bonuses A: Tested Bonuses}
-        Fully implement 5 of the 6 bonus functions sets as used by the main.c with the flags:
+        Fully implement 5 of the 6 optional functions sets as used by the main.c with the flags:
         \begin{itemize}\itemsep1pt
             \item TEST\_ARRAY\_BONUS
             \item TEST\_BITSET\_BONUS
@@ -290,21 +269,42 @@
             \item TEST\_PMA\_BONUS\_IT\_BACK
             \item TEST\_PMA\_BONUS\_MULTI
         \end{itemize}
-    
-    \section{Bonuses B: Custom Bonuses}
-        Some suggestions for your own bonuses:
-        \begin{itemize}\itemsep7pt
-            \item A define to switch between to switch between the real \texttt{realloc} and your implementation.
-            \item Additional functions such as array\_concat, or pma\_filter
-            \item Making a template system to generate a data structure specialized for any type
-            \item Using macros to automatically choose the right size for various functions
-            \item Using the \_Generic macro to check that the right type was inserted
-            \item Using a canary system to check that iterators are still valid when used
-        \end{itemize}
+
 
     \warn {
-        Custom bonuses won't be graded unless the tested part is complete
+        None of the pointers you receive are meant to be stored directly inside the structure.
+        The reason you receive a size parameter is to copy the memory.
     }
+
+    \hint {
+        During debug, check the state of your structures every call,
+        possibly using \texttt{malloc\_usable\_size}.
+    }
+
+    \hint {
+        Reimplement realloc, and zero-init all allocated memory. It will make your life much easier.
+    }
+
+
+%******************************************************************************%
+%                                                                              %
+%                                 Optional part                                %
+%                                                                              %
+%******************************************************************************%
+\chapter{Optional Part}
+
+    If the two previous parts are perfect, you may implement your own custom
+    bonuses.
+
+    Some suggestions for your own bonuses:
+    \begin{itemize}\itemsep7pt
+        \item A define to switch between to switch between the real \texttt{realloc} and your implementation.
+        \item Additional functions such as array\_concat, or pma\_filter
+        \item Making a template system to generate a data structure specialized for any type
+        \item Using macros to automatically choose the right size for various functions
+        \item Using the \_Generic macro to check that the right type was inserted
+        \item Using a canary system to check that iterators are still valid when used
+    \end{itemize}
 
 %******************************************************************************%
 %                                                                              %
