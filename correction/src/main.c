@@ -102,10 +102,6 @@ static t_mem_report			modify_mem_score(size_t score, bool increment, bool reset)
 	return (mem);
 }
 
-#define CHECK_LEAKS(RESET) do {\
-	CHECK_EQ(modify_mem_score(0, false, RESET).current, 0);\
-} while(0)
-
 static void		print_score(int percent)
 {
 	int			color;
@@ -143,14 +139,42 @@ void			xfree(void *ptr)
 	free(ptr);
 }
 
+bool			fail_next_alloc(bool fail)
+{
+	static bool	fail_next;
+
+	if (fail)
+	{
+		fail_next = true;
+		return (false);
+	}
+	if (fail_next)
+	{
+		fail_next = false;
+		return (true);
+	}
+	return (false);
+}
+
 void			*xmalloc(size_t size)
 {
 	void		*ptr;
 
+	if (fail_next_alloc(false))
+		return (NULL);
 	ptr = malloc(size);
 	modify_mem_score((ssize_t)get_allocated_size(ptr), true, false);
 	return (ptr);
 }
+
+#define CHECK_LEAKS(reset) do {\
+	CHECK_EQ(modify_mem_score(0, false, reset).current, 0);\
+} while(0)
+
+#define CHECK_FAILED_ALLOC(a) do {\
+	fail_next_alloc(true);\
+	CHECK_EQ(a, ERR_ALLOC);\
+} while(0)
 
 #ifdef TEST_ARRAY
 
@@ -175,6 +199,7 @@ void			test_array(void)
 	CHECK_LEAKS(false);
 	CHECK_EQ(array_reserve(&a, (size_t)-1), ERR_ALLOC);
 	CHECK_EQ(array_reserve(&a, ARRAY_TESTS * 11), OK);
+	CHECK_FAILED_ALLOC(array_reserve(&a, ARRAY_TESTS * 12));
 	array_free(&a);
 	CHECK_LEAKS(false);
 	CHECK_EQ(array_reserve(&a, ARRAY_TESTS * 11), OK);
@@ -247,6 +272,7 @@ void			test_array_bonus(void)
 	int			len;
 	
 	a = array();
+	CHECK_FAILED_ALLOC(array_insert(&a, buf, 0, BUFFER_SIZE));
 	for (int i = 0; i < ARRAY_B_TESTS; i++)
 	{
 		len = sprintf(buf, "%d", i) + 1;
@@ -289,6 +315,7 @@ void			test_bitset()
 	b = bitset();
 	CHECK_EQ(bitset_len(&b), 0);
 	bitset_free(&b);
+	CHECK_FAILED_ALLOC(bitset_set_len(&b, BITSET_TESTS));
 	CHECK_EQ(bitset_set_len(&b, BITSET_TESTS), OK);
 	CHECK_EQ(bitset_len(&b), BITSET_TESTS);
 	for (int i = 0; i < BITSET_TESTS; i++)
@@ -353,6 +380,7 @@ void			test_bitset_bonus(void)
 	bitset_free(&b);
 	b = bitset();
 	bitset_free(&b);
+	CHECK_FAILED_ALLOC(bitset_reserve(&b, BITSET_TESTS_B / 100));
 	CHECK_EQ(bitset_reserve(&b, BITSET_TESTS_B / 100), OK);
 	CHECK_EQ(bitset_len(&b), 0);
 	for (int i = 0; i < BITSET_TESTS_B; i++)
@@ -416,6 +444,7 @@ void			test_queue_spe(bool push_back, bool pop_back, bool reserve)
 	queue_free(&a);
 	if (reserve)
 	{
+		CHECK_FAILED_ALLOC(queue_reserve(&a, QUEUE_TESTS));
 		CHECK_EQ(queue_reserve(&a, QUEUE_TESTS), OK);
 		CHECK_EQ(queue_len(&a), 0);
 	}
@@ -705,6 +734,7 @@ void			test_sorted_spe(bool less_pred, bool str, t_order o)
 		rev = &reverse_int;
 	}
 	a = sorted(pred, size);
+	CHECK_FAILED_ALLOC(sorted_reserve(&a, SORTED_TESTS / 10));
 	sorted_fill(&a, o);
 	sorted_fill_delete(&a, o, rev);
 	sorted_check(&a, rev, less_pred == false);
@@ -982,6 +1012,7 @@ void			pma_fill(t_pma *a, t_order o)
 {
 	char		buffer[BUFFER_SIZE];
 
+	CHECK_FAILED_ALLOC(pma_insert(a, buffer, &i));
 	for (int i = 0; i < PMA_TESTS; i++)
 	{
 		o(buffer, i, PMA_TESTS);

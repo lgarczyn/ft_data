@@ -1,40 +1,5 @@
 todo:
     find way to chck for forbidden functions
-    test malloc failure
-    update subject for correction
-    remove diff thing
+        can't trust anything
+            check when memcpy appears
     rename bonus options
-
-instructions
-	check norme
-    check optimisation level
-	check allowed functions
-		xmalloc
-		xfree
-        any call to functiosn defined in mem, especially modify_mem_score, is -42
-		You can use more, but remember that this is supposed to be used in projects
-	check MAGIC numbers
-	check main.c after diff
-    check valgrind if you want, but the user can defend himself
-        basically is he erasing sensitive data or not
-    check crash
-        if a crash is due to incorrect use, it's ok
-        the main is strictly correct used
-    prints are allowed under incorrect use
-        
-    
-advice
-    check state at start
-    use debugger
-    init memory to 0
-    reimplement realloc
-        (can offer some cheap perf if authorized)
-
-mandatory header parts
-    prototypes
-    t_sortedres/t_sorteden/t_sorteden
-    t_pmaen
-    t_uint
-    t_array
-        bzeroed must be valid
-        must contain a data element ?
