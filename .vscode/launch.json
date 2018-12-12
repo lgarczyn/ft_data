@@ -8,7 +8,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/ft_data",
+            "program": "${workspaceFolder}/correction/ft_data",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

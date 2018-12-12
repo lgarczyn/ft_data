@@ -208,12 +208,6 @@ sections:
           - xmalloc
           - xfree
           - write
-        #The student may provide a diff file to modify the main. If said file is provided,
-        #open it, and ask the student to explain every single part in excruciating detail.
-        #If the student is incapable of explaining a part, or if it appears that such modification
-        #would give him an advantage, ignore the diff file.
-        #Modifications that give an advantage include modifying any numerical constant in the main,
-        #or modifying the xmalloc/xfree functions or similar.
     rating: bool
     kind: standard
     questions_skills: []
