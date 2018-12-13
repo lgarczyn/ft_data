@@ -152,7 +152,7 @@
     Whatever you chose to do, your library will have its own makefile,
     its own folder, and its own static library file (.a).\\
     
-    You root repository will contain a Makefile to build a program
+    Your root repository will contain a Makefile to build a program
     with the provided main.c file and the static library.\\
 
     Do not include the main.c file in your final commit.\\
@@ -195,8 +195,8 @@
     You must have an auteur file in your root repository. It can however contain anything you want.\\
 
     Crashes, leaks and memory corruptions are allowed only if the alternative would come at
-    an unreasonable cost is performance, in API simplicity or in freedom in use. See "iterator
-    invalidation" in c++. Crashing may be the safest option.\\
+    an unreasonable cost is performance, in API simplicity or in freedom in use. See "iterator~invalidation"
+    in c++. Crashing may be the safest option.\\
     
     \hint {
         Should you hesitate between safe and fast, usually choose safe.
@@ -216,7 +216,7 @@
 \chapter{Mandatory Part}
 
     \section{Basic implementation}
-        Fully implement the API as used by the main.c with the flags:
+        Fully implement the API as used by the main.c with the flags:\\
 
         \begin{itemize}\itemsep7pt
             \item TEST\_ARRAY
@@ -236,7 +236,7 @@
 
         \subsection{The bitset}
         Because who can say no to reducing your memory overhead by 8?\\
-        It is inspired by the bitset implementation of the Rust and c++ standard libraries.\\
+        It is inspired by the bitset implementation of the Rust and c++ standard libraries.
 
         \subsection{The double ended queue}
         Inspired by the \texttt{dequeue} implementation in Rust.\\
@@ -251,11 +251,10 @@
         Like the btree, binary tree and hashtable, it allows searching
         for elements in log(n) time. Unlike the hashtable, it can iterate on elements in
         a specific order. Unlike the binary tree, it is FAST. Unlike the btree,
-        it is not too hard to implement. The API is close to a btreemap in rust or a map in c++.
-
+        it is not too hard to implement. The API is close to a btreemap in rust or a map in c++.\\
         Google each of those containers, ask yourself "can I do that", then think again.
 
-    /section{Full implementation}
+    \section{Full implementation}
 
         You can validate the project without this part, but you won't get much XP,
         and any bonus will be ignored.
@@ -277,12 +276,12 @@
     }
 
     \hint {
-        During debug, check the state of your structures every call,
+        During debug, you should check the state of your structures every call,
         possibly using \texttt{malloc\_usable\_size}.
     }
 
     \hint {
-        Reimplement realloc, and zero-init all allocated memory. It will make your life much easier.
+        You should reimplement realloc, and zero-init all allocated memory. It will make your life much easier.
     }
 
 
@@ -294,11 +293,11 @@
 \chapter{Optional Part}
 
     If the two previous parts are perfect, you may implement your own custom
-    bonuses.
+    bonuses.\\
 
     Some suggestions for your own bonuses:
     \begin{itemize}\itemsep7pt
-        \item A define to switch between to switch between the real \texttt{realloc} and your implementation.
+        \item A define to switch between the real \texttt{realloc} and your implementation.
         \item Additional functions such as array\_concat, or pma\_filter
         \item Making a template system to generate a data structure specialized for any type
         \item Using macros to automatically choose the right size for various functions
