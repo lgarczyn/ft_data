@@ -4,7 +4,7 @@
 ** ERR_ALLOC if it failed to allocate new memory
 ** ERR_SIZE if it would need to access an element out of bounds
 ** ERR_MISSING if a search function fails to find the key
-** A function that returned an error value must not modify the structure in any way
+** A function cannot both return an error and modify the structure
 */
 
 /*
@@ -35,7 +35,7 @@ int			array_set_len(t_array *a, size_t len);
 int			array_insert(t_array *a, const void *data, size_t i, size_t size);
 int			array_remove(t_array *a, void *data, size_t i, size_t size);
 
-/* 
+/*
 ** bitset          Return a valid empty bitset. Don't allocate any memory.
 ** bitset_free     Free bitset, and reset it to an empty state
 ** bitset_len      Return number of bits in the used part of the bitset
@@ -52,12 +52,12 @@ size_t		bitset_len(const t_bitset *a);
 int			bitset_set_len(t_bitset *bitset, size_t len);
 bool		bitset_get(const t_bitset *a, size_t i);
 void		bitset_set(t_bitset *a, size_t i, bool b);
-void        bitset_display(const t_bitset *a);
+void		bitset_display(const t_bitset *a);
 
 /*
 ** bitset_reserve   Increase available memory, doesn't affect length
 ** bitset_get_safe  Set "b" to the value of the bit at position "i"
-** bitset_set_safe  Set the bit at position "i" to the value of "b" 
+** bitset_set_safe  Set the bit at position "i" to the value of "b"
 ** bitset_push      Add "b" to the end of the bitset
 ** bitset_pop       Removes the last bit and store it in "b"
 */
@@ -103,7 +103,7 @@ t_sorted	sorted(t_predicate predicate, t_uint word);
 void		sorted_free(t_sorted *a);
 size_t		sorted_len(const t_sorted *a);
 int			sorted_reserve(t_sorted *a, size_t s);
-const void  *sorted_get(t_sorted *a, size_t index);
+const void	*sorted_get(t_sorted *a, size_t index);
 t_sorteden	sorted_search(const t_sorted *a, const void *data);
 int			sorted_insert(t_sorted *a, const void *data);
 t_sorteden	sorted_delete(t_sorted *a, const void *data, void *out);
@@ -159,7 +159,7 @@ t_pmaen		pma_search(const t_pma *a, const void *key);
 t_pmait		pmait(const t_pma *a);
 bool		pmait_next(t_pmait *i, void *o_key, void *o_val);
 bool		pmait_delete(t_pmait *i, void *o_key, void *o_val);
-void		pmait_display(t_pmait *it, t_printer print_key, t_printer print_char);
+void		pmait_display(t_pmait *it, t_printer pr_key, t_printer pr_char);
 
 /*
 ** for further information, lookup Rust double-ended iterators
@@ -167,8 +167,8 @@ void		pmait_display(t_pmait *it, t_printer print_key, t_printer print_char);
 ** pma_range          return an iterator to every entry
 **                      greater or equal than "key_a"
 **                      lesser or equal than "key_b"
-** pmait_next_back    store element at end of iterator, the decrement end
-** pmait_delete_back  delete and store element at end of iterator, the decrement end
+** pmait_next_back    store last element, then decrement end
+** pmait_delete_back  remove and store last element, then decrement end
 */
 
 t_pmait		pma_range(const t_pma *a, void *key_a, void *key_b);
