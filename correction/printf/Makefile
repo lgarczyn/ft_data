@@ -24,7 +24,7 @@ INC = -I../libft/includes
 
 LIB = -L ../libft/ -lft
 
-DEB = -g -g3 #-fsanitize=address
+DEB = -O2 # -g #-fsanitize=address
 
 OPT = #-O2
 

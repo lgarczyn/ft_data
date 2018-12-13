@@ -1860,47 +1860,47 @@ int			main(void)
 	bool	all;
 
 	all = check_test("all");
-	
+
 #ifdef TEST_ARRAY
-	check_time("array", &test_array, all, 0.134236);
-	check_mem("array mem", &test_array_mem, all, 1865680);
+	check_time("array", &test_array, all, 0.084376);
+	check_mem("array mem", &test_array_mem, all, 2015344);
 # ifdef TEST_ARRAY_BONUS
-	check_time("array bonus", &test_array_bonus, all, 0.128956);
+	check_time("array bonus", &test_array_bonus, all, 0.019434);
 # endif // TEST_ARRAY_BONUS
 #endif // TEST_ARRAY
 
 #ifdef TEST_BITSET
-	check_time("bitset", &test_bitset, all, 0.091664);
-	check_mem("bitset mem", &test_bitset_mem, all, 57168);
+	check_time("bitset", &test_bitset, all, 0.067785);
+	check_mem("bitset mem", &test_bitset_mem, all, 50704);
 # ifdef TEST_BITSET_BONUS
-	check_time("bitset bonus", &test_bitset_bonus, all, 0.126755);
+	check_time("bitset bonus", &test_bitset_bonus, all, 0.069532);
 # endif // TEST_BITSET_BONUS
 #endif // TEST_BITSET
 
 #ifdef TEST_QUEUE
-	check_time("queue", &test_queue, all, 0.110551);
-	check_mem("queue mem", &test_queue_mem, all, 1873872);
+	check_time("queue", &test_queue, all, 0.048501);
+	check_mem("queue mem", &test_queue_mem, all, 1875920);
 #endif
 
 #ifdef TEST_SORTED
- 	check_time("sorted", &test_sorted, all, 0.224660);
+ 	check_time("sorted", &test_sorted, all, 0.029244);
 	check_mem("sorted mem", &test_sorted_mem, all, 3014336);
 # ifdef TEST_SORTED_BONUS
- 	check_time("sorted bonus", &test_sorted_bonus, all, 0.167893);
+ 	check_time("sorted bonus", &test_sorted_bonus, all, 0.032561);
 # endif // TEST_SORTED_BONUS
 #endif // TEST_SORTED
 
 #ifdef TEST_PMA
-	check_time("pma", &test_pma, all, 1.037202);
-	check_mem("pma mem", &test_pma_mem, all, 6589456);
+	check_time("pma", &test_pma, all, 0.419975);
+	check_mem("pma mem", &test_pma_mem, all, 6587648);
 # ifdef TEST_PMA_BONUS_IT
-	check_time("pmait", &test_pmait, all, 0.456048);
+	check_time("pmait", &test_pmait, all, 0.159824);
 #  ifdef TEST_PMA_BONUS_IT_BACK
-	check_time("pmait back", &test_pmait_back, all, 0.897609);
+	check_time("pmait back", &test_pmait_back, all, 0.378684);
 #  endif // TEST_PMA_BONUS_IT
 # endif // TEST_PMA_BONUS_IT
 # ifdef TEST_PMA_BONUS_MULTI
-	check_time("pma multi", &test_pma_bonus_multi, all, 0.976539);
+	check_time("pma multi", &test_pma_bonus_multi, all, 0.419218);
 # endif // TEST_PMA_BONUS_MULTI
 	if (check_test("pma manual"))
 		test_pma_manual();

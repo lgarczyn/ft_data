@@ -32,9 +32,7 @@ static size_t	count_moves(t_bitset *b, size_t id, bool *forward)
 		r++;
 	if (r >= id)
 	{
-		ft_perror("room wasn't made");
-		ft_putchar('\n');
-		exit(1);
+		ft_putstr_fd("ERROR: ROOM WASN'T MADE\n", STDERR);
 	}
 	return (r);
 }

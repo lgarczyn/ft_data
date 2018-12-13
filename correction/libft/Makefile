@@ -12,7 +12,7 @@
 
 NAME = libft.a
 
-DEB = -g -g3 #-fsanitize=address
+DEB = -O2 # -g #-fsanitize=address
 
 OPT = #-O2
 

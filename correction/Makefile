@@ -20,7 +20,7 @@ OBJ = $(addprefix obj/, $(addsuffix .o, $(basename $(SRC))))
 
 LIB = -L libft -lft -L printf -lftprintf -L data -lftdata
 
-DEB = -g -g3 #-fsanitize=address 
+DEB = -O2 # -g #-fsanitize=address 
 
 OPT = #-O3
 
@@ -31,7 +31,7 @@ all: $(NAME)
 $(NAME):$(OBJ) libft/libft.a printf/libftprintf.a data/libftdata.a
 	gcc -o ft_data $(OBJ) $(INC) $(FLG) $(LIB) libft/libft.a printf/libftprintf.a data/libftdata.a
 	
-obj/%.o: src/%.c
+obj/%.o: %.c
 	@mkdir -p obj
 	gcc  -o $@ -c $< $(INC) $(FLG)
 

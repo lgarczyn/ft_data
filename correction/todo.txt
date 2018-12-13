@@ -1,5 +1,0 @@
-todo:
-    find way to chck for forbidden functions
-        can't trust anything
-            check when memcpy appears
-    rename bonus options
